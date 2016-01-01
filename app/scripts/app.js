@@ -10,8 +10,8 @@
     window.Polymer = window.Polymer || {dom: 'shadow'};
 
     function onImportLoaded() {
-      // var skeleton = document.getElementById('skeleton');
-      // skeleton.remove();
+      var skeleton = document.getElementById('skeleton');
+      skeleton.remove();
 
       console.log('Elements are upgraded!');
     }
@@ -51,7 +51,6 @@
   // // Grab a reference to our auto-binding template
   // // and give it some initial binding values
   // // Learn more about auto-binding templates at http://goo.gl/Dx1u2g
-  var sw = document.querySelector('#sw');
   // // Sets app default base URL
   // app.baseUrl = '/';
   // if (window.location.port === '') {  // if production
@@ -59,47 +58,49 @@
   //   // set app.baseURL to '/your-pathname/' if running from folder in production
   //   // app.baseUrl = '/polymer-starter-kit/';
   // }
-  var stateColor = sw.state === 'installed' ? '#673AB7' :
-                   sw.state === 'updated' ? '#4CAF50' :
-                   sw.state === 'error' ? '#F44336' :
-                   sw.state === 'unsupported' ? '#9E9E9E' :
-                   'background-color: #3F51B5; color: #F44336; font-weight: 800;';
-  console.log('%cThe state of Service Worker on current browser: %c %s ',
-      'color: #2196f3',
-      stateColor,
-      sw.state);
-  var displayInstalledToast = function() {
-    // Check to make sure caching is actually enabled—it won't be in the dev environment.
-    if (!Polymer.dom(document).querySelector('platinum-sw-cache').disabled) {
-      // Polymer.dom(document).querySelector('#caching-complete').show();
-      console.log('%cThe' + '%c %s ' + '%capp is ready to ' + '%cwork offline!',
-      'color: #fff; background-color: #424242;',
-      'background-color: #eee; color: #009688; font-weight: 800;',
-      'Semafloor',
-      'background-color: #424242; color: #fff;',
-      'background-color: #424242; color: #ffff00');
-    }
-  };
 
-  var displayUpdatedToast = function() {
-    console.log('%cThe' + '%c %s ' + '%capp is updated progressively to ' + '%crock!',
-    'background-color: #424242; color: #fff;',
-    'background-color: #eee; color: #009688; font-weight: 800;',
-    'Semafloor',
-    'background-color: #424242; color: #4CAF50;',
-    'background-color: #424242; color: #4CAF50');
-  };
-
-  var displayErrorToast = function() {
-    console.log('%cJesus Christ! The ' + '%c%s' + '%c app is throwing errors' + '%c!',
-    'background-color: #424242; color: #fff;',
-    'background-color: #eee; color: #009688; font-weight: 800;',
-    'Semafloor',
-    'background-color: #424242; color: #F44336;',
-    'background-color: #424242; color: #F44336');
-  };
-
-  sw.addEventListener('service-worker-installed', displayInstalledToast, false);
-  sw.addEventListener('service-worker-updated', displayUpdatedToast, false);
-  sw.addEventListener('service-worker-error', displayErrorToast, false);
+  // var sw = document.querySelector('#sw');
+  // var stateColor = sw.state === 'installed' ? '#673AB7' :
+  //                  sw.state === 'updated' ? '#4CAF50' :
+  //                  sw.state === 'error' ? '#F44336' :
+  //                  sw.state === 'unsupported' ? '#9E9E9E' :
+  //                  'background-color: #3F51B5; color: #F44336; font-weight: 800;';
+  // console.log('%cThe state of Service Worker on current browser: %c %s ',
+  //     'color: #2196f3',
+  //     stateColor,
+  //     sw.state);
+  // var displayInstalledToast = function() {
+  //   // Check to make sure caching is actually enabled—it won't be in the dev environment.
+  //   if (!Polymer.dom(document).querySelector('platinum-sw-cache').disabled) {
+  //     // Polymer.dom(document).querySelector('#caching-complete').show();
+  //     console.log('%cThe' + '%c %s ' + '%capp is ready to ' + '%cwork offline!',
+  //     'color: #fff; background-color: #424242;',
+  //     'background-color: #eee; color: #009688; font-weight: 800;',
+  //     'Semafloor',
+  //     'background-color: #424242; color: #fff;',
+  //     'background-color: #424242; color: #ffff00');
+  //   }
+  // };
+  //
+  // var displayUpdatedToast = function() {
+  //   console.log('%cThe' + '%c %s ' + '%capp is updated progressively to ' + '%crock!',
+  //   'background-color: #424242; color: #fff;',
+  //   'background-color: #eee; color: #009688; font-weight: 800;',
+  //   'Semafloor',
+  //   'background-color: #424242; color: #4CAF50;',
+  //   'background-color: #424242; color: #4CAF50');
+  // };
+  //
+  // var displayErrorToast = function() {
+  //   console.log('%cJesus Christ! The ' + '%c%s' + '%c app is throwing errors' + '%c!',
+  //   'background-color: #424242; color: #fff;',
+  //   'background-color: #eee; color: #009688; font-weight: 800;',
+  //   'Semafloor',
+  //   'background-color: #424242; color: #F44336;',
+  //   'background-color: #424242; color: #F44336');
+  // };
+  //
+  // sw.addEventListener('service-worker-installed', displayInstalledToast, false);
+  // sw.addEventListener('service-worker-updated', displayUpdatedToast, false);
+  // sw.addEventListener('service-worker-error', displayErrorToast, false);
 })(document);

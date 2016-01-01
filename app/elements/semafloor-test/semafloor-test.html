@@ -1,0 +1,81 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/semafloor-profile-page/semafloor-profile-page.html">
+<link rel="import" href="../../bower_components/app-layout/app-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+
+<dom-module id="semafloor-test">
+  <template>
+    <style>
+      :host {
+        display: block;
+        box-sizing: border-box;
+        user-select: none;
+      }
+
+      app-header {
+        --app-header-front-background: {
+          background-color: #009688;
+        };
+        --app-header-back-background: {
+          background-color: #fff;
+        };
+      }
+
+      [condensed-title] {
+        color: #009688;
+        font-size: 20px;
+        font-weight: 300;
+        margin-left: 8px;
+      }
+      [title] {
+        color: #fff;
+        font-size: 32px;
+        font-weight: 300;
+        margin-left: 8px;
+      }
+    </style>
+
+    <app-drawer-layout>
+      <app-header-layout drawer>
+      </app-header-layout>
+
+      <app-header-layout main>
+        <app-header id="mainHeader" condenses reveals effects="material">
+          <app-toolbar>
+            <span condensed-title>Profile</span>
+          </app-toolbar>
+          <app-toolbar>
+            <span title>Profile</span>
+          </app-toolbar>
+        </app-header>
+
+        <!-- 57 nodes index.html -->
+        <!-- 22 nodes shell -->
+        <!-- 93 nodes profile -->
+        <semafloor-profile-page></semafloor-profile-page>
+      </app-header-layout>
+    </app-drawer-layout>
+  </template>
+  <script>
+  (function() {
+    'use strict';
+
+    Polymer({
+      is: 'semafloor-test',
+
+      properties: {
+        foo: {
+          type: String,
+          value: 'semafloor-test',
+          notify: true
+        }
+      },
+
+      'created': function() {
+        console.time('profile-page-attached');
+      },
+
+    });
+  })();
+  </script>
+</dom-module>

@@ -302,7 +302,7 @@ gulp.task('default', ['clean'], function(cb) {
     'elements',
     ['lint', 'images', 'fonts', 'html'],
     'vulcanize',
-    'cache-config',
+    // 'cache-config',
     cb);
 });
 
