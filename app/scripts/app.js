@@ -59,7 +59,7 @@
   //   // app.baseUrl = '/polymer-starter-kit/';
   // }
 
-  // var sw = document.querySelector('#sw');
+  var sw = document.querySelector('#sw');
   // var stateColor = sw.state === 'installed' ? '#673AB7' :
   //                  sw.state === 'updated' ? '#4CAF50' :
   //                  sw.state === 'error' ? '#F44336' :
@@ -69,38 +69,38 @@
   //     'color: #2196f3',
   //     stateColor,
   //     sw.state);
-  // var displayInstalledToast = function() {
-  //   // Check to make sure caching is actually enabled—it won't be in the dev environment.
-  //   if (!Polymer.dom(document).querySelector('platinum-sw-cache').disabled) {
-  //     // Polymer.dom(document).querySelector('#caching-complete').show();
-  //     console.log('%cThe' + '%c %s ' + '%capp is ready to ' + '%cwork offline!',
-  //     'color: #fff; background-color: #424242;',
-  //     'background-color: #eee; color: #009688; font-weight: 800;',
-  //     'Semafloor',
-  //     'background-color: #424242; color: #fff;',
-  //     'background-color: #424242; color: #ffff00');
-  //   }
-  // };
-  //
-  // var displayUpdatedToast = function() {
-  //   console.log('%cThe' + '%c %s ' + '%capp is updated progressively to ' + '%crock!',
-  //   'background-color: #424242; color: #fff;',
-  //   'background-color: #eee; color: #009688; font-weight: 800;',
-  //   'Semafloor',
-  //   'background-color: #424242; color: #4CAF50;',
-  //   'background-color: #424242; color: #4CAF50');
-  // };
-  //
-  // var displayErrorToast = function() {
-  //   console.log('%cJesus Christ! The ' + '%c%s' + '%c app is throwing errors' + '%c!',
-  //   'background-color: #424242; color: #fff;',
-  //   'background-color: #eee; color: #009688; font-weight: 800;',
-  //   'Semafloor',
-  //   'background-color: #424242; color: #F44336;',
-  //   'background-color: #424242; color: #F44336');
-  // };
-  //
-  // sw.addEventListener('service-worker-installed', displayInstalledToast, false);
-  // sw.addEventListener('service-worker-updated', displayUpdatedToast, false);
-  // sw.addEventListener('service-worker-error', displayErrorToast, false);
+  var displayInstalledToast = function() {
+    // Check to make sure caching is actually enabled—it won't be in the dev environment.
+    if (!Polymer.dom(document).querySelector('platinum-sw-cache').disabled) {
+      // Polymer.dom(document).querySelector('#caching-complete').show();
+      console.log('%cThe' + '%c %s ' + '%capp is ready to ' + '%cwork offline!',
+      'color: #fff; background-color: #424242;',
+      'background-color: #eee; color: #009688; font-weight: 800;',
+      'Semafloor',
+      'background-color: #424242; color: #fff;',
+      'background-color: #424242; color: #ffff00');
+    }
+  };
+
+  var displayUpdatedToast = function() {
+    console.log('%cThe' + '%c %s ' + '%capp is updated progressively to ' + '%crock!',
+    'background-color: #424242; color: #fff;',
+    'background-color: #eee; color: #009688; font-weight: 800;',
+    'Semafloor',
+    'background-color: #424242; color: #4CAF50;',
+    'background-color: #424242; color: #4CAF50');
+  };
+
+  var displayErrorToast = function() {
+    console.log('%cJesus Christ! The ' + '%c%s' + '%c app is throwing errors' + '%c!',
+    'background-color: #424242; color: #fff;',
+    'background-color: #eee; color: #009688; font-weight: 800;',
+    'Semafloor',
+    'background-color: #424242; color: #F44336;',
+    'background-color: #424242; color: #F44336');
+  };
+  
+  sw.addEventListener('service-worker-installed', displayInstalledToast, false);
+  sw.addEventListener('service-worker-updated', displayUpdatedToast, false);
+  sw.addEventListener('service-worker-error', displayErrorToast, false);
 })(document);
