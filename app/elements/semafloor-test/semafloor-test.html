@@ -1,7 +1,9 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/semafloor-profile-page/semafloor-profile-page.html">
 <link rel="import" href="../../bower_components/app-layout/app-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+
+<link rel="import" href="../../bower_components/semafloor-profile-page/semafloor-profile-page.html">
+<link rel="import" href="../../bower_components/semafloor-reserve-page/semafloor-reserve-page.html">
 
 <dom-module id="semafloor-test">
   <template>
@@ -12,14 +14,34 @@
         user-select: none;
       }
 
+      /* workaround to hide fake toolbar */
+      app-drawer-layout {
+        --app-drawer-layout-narrow-drawer: {
+          z-index: 2;
+        };
+      }
+      app-drawer-layout::content app-scrim {
+        z-index: 2;
+      }
       app-header {
+        background-color: #009688;
+        color: #fff;
+      }
+      .fake-toolbar {
+          height: 64px;
+          z-index: 0;
+          pointer-events: none;
+          visibility: hidden;
+        }
+
+      /*app-header {
         --app-header-front-background: {
           background-color: #009688;
         };
         --app-header-back-background: {
           background-color: #fff;
         };
-      }
+      }*/
 
       [condensed-title] {
         color: #009688;
@@ -40,19 +62,39 @@
       </app-header-layout>
 
       <app-header-layout main>
-        <app-header id="mainHeader" condenses reveals effects="material">
-          <app-toolbar>
+        <!-- <app-header id="mainHeader" condenses reveals effects="material"> -->
+        <app-header condenses fixed effects="waterfall" on-app-header-transform="_onAppHeaderTransform">
+          <!-- <app-toolbar>
             <span condensed-title>Profile</span>
           </app-toolbar>
           <app-toolbar>
             <span title>Profile</span>
+          </app-toolbar> -->
+          <app-toolbar>
+            Reservations Demo
           </app-toolbar>
+          <div class="fake-toolbar"></div>
         </app-header>
 
         <!-- 57 nodes index.html -->
         <!-- 22 nodes shell -->
         <!-- 93 nodes profile -->
-        <semafloor-profile-page></semafloor-profile-page>
+
+        <!-- 69 nodes index.html on FF -->
+        <!-- 25 nodes shell on FF -->
+        <!-- 94 nodes profile on FF -->
+        <!-- 261 nodes reserve on FF -->
+        <!-- 351 nodes profile + reserve on FF -->
+
+        <!-- 59 nodes index.html on CH/ OP -->
+        <!-- 25 nodes shell on CH/ OP -->
+        <!-- 94 nodes profile on CH/ OP -->
+        <!-- 261 nodes reserve on CH/ OP -->
+        <!-- 351 nodes profile + reserve on CH/ OP -->
+
+
+        <!-- <semafloor-profile-page></semafloor-profile-page> -->
+        <semafloor-reserve-page id="reserve"></semafloor-reserve-page>
       </app-header-layout>
     </app-drawer-layout>
   </template>
@@ -64,15 +106,21 @@
       is: 'semafloor-test',
 
       properties: {
-        foo: {
+        category: {
           type: String,
-          value: 'semafloor-test',
-          notify: true
+          value: 'reserve'
         }
       },
 
       'created': function() {
         console.time('profile-page-attached');
+      },
+
+      _onAppHeaderTransform: function(ev) {
+        if (this.category === 'reserve') {
+          // console.log('scrolling...', ev.detail.progress);
+          this.$.reserve.condenseTabs(ev.detail.progress);
+        }
       },
 
     });
