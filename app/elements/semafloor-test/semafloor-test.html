@@ -35,14 +35,14 @@
           visibility: hidden;
         }
 
-      /*app-header {
+      app-header {
         --app-header-front-background: {
           background-color: #009688;
         };
         --app-header-back-background: {
           background-color: #fff;
         };
-      }*/
+      }
 
       [condensed-title] {
         color: #009688;
@@ -64,17 +64,18 @@
 
       <app-header-layout main>
         <!-- <app-header id="mainHeader" condenses reveals effects="material"> -->
-        <app-header condenses fixed effects="waterfall" on-app-header-transform="_onAppHeaderTransform">
+        <app-header condenses fixed effects="material">
+        <!-- <app-header condenses fixed effects="waterfall" on-app-header-transform="_onAppHeaderTransform"> -->
+          <app-toolbar>
+            <span condensed-title>Search</span>
+          </app-toolbar>
+          <app-toolbar>
+            <span title>Search</span>
+          </app-toolbar>
           <!-- <app-toolbar>
-            <span condensed-title>Profile</span>
-          </app-toolbar>
-          <app-toolbar>
-            <span title>Profile</span>
-          </app-toolbar> -->
-          <app-toolbar>
             Reservations Demo
-          </app-toolbar>
-          <div class="fake-toolbar"></div>
+            <div class="fake-toolbar"></div>
+          </app-toolbar> -->
         </app-header>
 
         <!-- 57 nodes index.html -->
