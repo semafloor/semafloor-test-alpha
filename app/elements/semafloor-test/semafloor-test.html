@@ -4,6 +4,7 @@
 
 <link rel="import" href="../../bower_components/semafloor-profile-page/semafloor-profile-page.html">
 <link rel="import" href="../../bower_components/semafloor-reserve-page/semafloor-reserve-page.html">
+<link rel="import" href="../../bower_components/semafloor-search-page/semafloor-search-page.html">
 
 <dom-module id="semafloor-test">
   <template>
@@ -94,7 +95,8 @@
 
 
         <!-- <semafloor-profile-page></semafloor-profile-page> -->
-        <semafloor-reserve-page id="reserve"></semafloor-reserve-page>
+        <!-- <semafloor-reserve-page id="reserve"></semafloor-reserve-page> -->
+        <semafloor-search-page></semafloor-search-page>
       </app-header-layout>
     </app-drawer-layout>
   </template>
@@ -116,12 +118,12 @@
         console.time('profile-page-attached');
       },
 
-      _onAppHeaderTransform: function(ev) {
-        if (this.category === 'reserve') {
-          // console.log('scrolling...', ev.detail.progress);
-          this.$.reserve.condenseTabs(ev.detail.progress);
-        }
-      },
+      // _onAppHeaderTransform: function(ev) {
+      //   if (this.category === 'reserve') {
+      //     // console.log('scrolling...', ev.detail.progress);
+      //     this.$.reserve.condenseTabs(ev.detail.progress);
+      //   }
+      // },
 
     });
   })();
