@@ -2,10 +2,14 @@
 <link rel="import" href="../../bower_components/app-layout/app-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
 
+<!--
 <link rel="import" href="../../bower_components/semafloor-profile-page/semafloor-profile-page.html">
 <link rel="import" href="../../bower_components/semafloor-reserve-page/semafloor-reserve-page.html">
 <link rel="import" href="../../bower_components/semafloor-search-page/semafloor-search-page.html">
 <link rel="import" href="../../bower_components/semafloor-current-page/semafloor-current-page.html">
+-->
+<link rel="import" href="../../bower_components/semafloor-room-page/semafloor-room-page.html">
+<script src="../../bower_components/lodash/lodash.min.js"></script>
 
 <dom-module id="semafloor-test">
   <template>
@@ -17,33 +21,33 @@
       }
 
       /* workaround to hide fake toolbar */
-      app-drawer-layout {
+      /*app-drawer-layout {
         --app-drawer-layout-narrow-drawer: {
           z-index: 2;
         };
       }
       app-drawer-layout::content app-scrim {
         z-index: 2;
-      }
+      }*/
       app-header {
-        background-color: #009688;
-        color: #fff;
+        background-color: #fff;
+        color: #009688;
       }
-      .fake-toolbar {
+      /*.fake-toolbar {
           height: 64px;
           z-index: 0;
           pointer-events: none;
           visibility: hidden;
-        }
+        }*/
 
-      app-header {
+      /*app-header {
         --app-header-front-background: {
           background-color: #009688;
         };
         --app-header-back-background: {
           background-color: #fff;
         };
-      }
+      }*/
 
       [condensed-title] {
         color: #009688;
@@ -65,13 +69,17 @@
 
       <app-header-layout main>
         <!-- <app-header id="mainHeader" condenses reveals effects="material"> -->
-        <app-header condenses fixed effects="material">
+        <!-- <app-header condenses fixed effects="material"> -->
+        <app-header effects="waterfall">
         <!-- <app-header condenses fixed effects="waterfall" on-app-header-transform="_onAppHeaderTransform"> -->
-          <app-toolbar>
+          <!-- <app-toolbar>
             <span condensed-title>Search</span>
           </app-toolbar>
           <app-toolbar>
             <span title>Search</span>
+          </app-toolbar> -->
+          <app-toolbar>
+            <span>Room Information</span>
           </app-toolbar>
           <!-- <app-toolbar>
             Reservations Demo
@@ -89,6 +97,7 @@
         <!-- 261 nodes reserve on FF -->
         <!-- 940 nodes search on FF -->
         <!-- 88 nodes current on FF -->
+        <!-- 86 nodes room on FF -->
         <!-- 1252 nodes profile + reserve + search + current on FF -->
 
         <!-- 59 nodes index.html on CH/ OP -->
@@ -97,13 +106,17 @@
         <!-- 261 nodes reserve on CH/ OP -->
         <!-- 938 nodes search on CH/ OP -->
         <!-- 86 nodes current on CH/ OP -->
+        <!-- 86 nodes room on CH/ OP -->
         <!-- 1250 nodes profile + reserve + search + current on CH/ OP -->
 
 
-        <!-- <semafloor-profile-page></semafloor-profile-page>
+        <!--
+        <semafloor-profile-page></semafloor-profile-page>
         <semafloor-reserve-page id="reserve"></semafloor-reserve-page>
-        <semafloor-search-page></semafloor-search-page> -->
+        <semafloor-search-page></semafloor-search-page>
         <semafloor-current-page></semafloor-current-page>
+        -->
+        <semafloor-room-page></semafloor-room-page>
       </app-header-layout>
     </app-drawer-layout>
   </template>
