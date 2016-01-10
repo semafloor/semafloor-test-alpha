@@ -7,7 +7,7 @@
 
   function finishLazyLoading() {
     var link = document.querySelector('#bundle');
-    window.Polymer = window.Polymer || {dom: 'shadow'};
+    // window.Polymer = window.Polymer || {dom: 'shadow'};
 
     function onImportLoaded() {
       var skeleton = document.getElementById('skeleton');
