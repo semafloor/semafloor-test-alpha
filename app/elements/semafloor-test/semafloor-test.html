@@ -1,41 +1,51 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="semafloor-test-icons.html">
+<link rel="import" href="../../bower_components/semafloor-icons/semafloor-icons.html">
 
 <link rel="import" href="../../bower_components/app-layout/app-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
 
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../bower_components/paper-badge/paper-badge.html">
 <!--
+-->
 <link rel="import" href="../../bower_components/semafloor-profile-page/semafloor-profile-page.html">
 <link rel="import" href="../../bower_components/semafloor-reserve-page/semafloor-reserve-page.html">
+<link rel="import" href="../../bower_components/semafloor-search-page/semafloor-search-page.html">
 <link rel="import" href="../../bower_components/semafloor-current-page/semafloor-current-page.html">
 <link rel="import" href="../../bower_components/semafloor-room-page/semafloor-room-page.html">
--->
-<link rel="import" href="../../bower_components/semafloor-search-page/semafloor-search-page.html">
+
 <script src="../../bower_components/lodash/lodash.min.js"></script>
 
 <dom-module id="semafloor-test">
   <template>
     <style>
       :host {
-        display: block;
         box-sizing: border-box;
         user-select: none;
+
+        display: block;
       }
 
+      /* app-header */
       app-header {
-        /*background-color: #fff;*/
         color: #009688;
       }
       [title] {
         color: #009688;
         font-size: 20px;
-        font-weight: 300;
         margin-left: 8px;
       }
+      [drawer] > app-header {
+        height: 192px;
+        background-color: rgba(0, 150, 136, 0.5);
+        border-bottom: 1px solid #ddd;
+      }
 
+      /* paper-tabs */
       paper-tabs {
         background-color: #009688;
         color: #fff;
@@ -52,6 +62,8 @@
       paper-tab.iron-selected {
         color: #FFFF8D;
       }
+
+      /* paper-badge */
       paper-badge {
         --paper-badge-margin-left: -6px;
         --paper-badge-background: #FFFF8D;
@@ -59,6 +71,40 @@
       }
       paper-badge[for=thisweekTab] {
         --paper-badge-margin-bottom: 16px;
+      }
+
+      /* anchor tags */
+      a {
+        text-decoration: none;
+        color: inherit;
+        font-size: inherit;
+      }
+      .nav-menu > a {
+        display: block;
+        padding: 12px 16px;
+        font-size: 20px;
+        color: #616161;
+        font-weight: 500;
+        font-weight: 500;
+      }
+      .nav-menu > a.iron-selected {
+        font-weight: normal;
+        background-color: #eee;
+      }
+      .nav-menu > a[name=profile] > iron-icon{
+        color: #3F51B5;
+      }
+      .nav-menu > a[name=reserve] > iron-icon{
+        color: #795548;
+      }
+      .nav-menu > a[name=search] > iron-icon{
+        color: #FF5722;
+      }
+      .nav-menu > a[name=current] > iron-icon{
+        color: #607D8B;
+      }
+      .nav-menu > a[name=room] > iron-icon{
+        color: #F44336;
       }
 
       /* workaround to hide fake toolbar */
@@ -89,13 +135,27 @@
     </style>
 
     <app-drawer-layout>
-      <app-header-layout drawer>
+      <app-header-layout drawer has-scrolling-region>
+        <app-header>
+        </app-header>
+
+        <iron-selector class="nav-menu" selected="[[category]]" attr-for-selected="name">
+          <!-- <template is="dom-repeat" items="[[_menu]]" index-as="index" strip-whitespace>
+            <a href$="[[_computeHref(index)]]" name="[[_computeHref(index)]]">[[item]]</a>
+          </template> -->
+          <a href="/home/view" name="home">Home</a>
+          <a href="/profile/view" name="profile">My Profile</a>
+          <a href="/reserve/view" name="reserve">My Reservations</a>
+          <a href="/search/view" name="search">Search &amp; Reserve</a>
+          <a href="/current/view" name="current">Current Reservations</a>
+          <a href="/room/view" name="room">Room Information</a>
+        </iron-selector>
       </app-header-layout>
 
       <app-header-layout main>
         <app-header condenses reveals effects="waterfall">
           <app-toolbar>
-            <paper-icon-button icon="test:menu" drawer-toggle></paper-icon-button>
+            <paper-icon-button icon="icons:menu" drawer-toggle></paper-icon-button>
             <span title>[[title]]</span>
           </app-toolbar>
           <app-toolbar hidden$="[[!_isReserve(category)]]">
@@ -140,20 +200,31 @@
         <!-- 86 nodes room on CH/ OP -->
         <!-- 1250 nodes profile + reserve + search + current on CH/ OP -->
 
-
         <!--
-        <semafloor-profile-page></semafloor-profile-page>
-        <semafloor-reserve-page id="reserve" selected-tab="{{tab}}" today-count="{{todayCount}}" thisweek-count="{{thisweekCount}}" upcoming-count="{{upcomingCount}}"></semafloor-reserve-page>
-        <semafloor-current-page></semafloor-current-page>
-        <semafloor-room-page></semafloor-room-page>
         -->
-        <semafloor-search-page></semafloor-search-page>
+        <iron-pages selected="[[page]]" attr-for-selected="name">
+          <div name="home">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          </div>
+          <semafloor-profile-page name="profile"></semafloor-profile-page>
+          <semafloor-reserve-page id="reserve" selected-tab="{{tab}}" today-count="{{todayCount}}" thisweek-count="{{thisweekCount}}" upcoming-count="{{upcomingCount}}" name="reserve"></semafloor-reserve-page>
+          <semafloor-search-page name="search"></semafloor-search-page>
+          <semafloor-current-page name="current"></semafloor-current-page>
+          <semafloor-room-page name="room"></semafloor-room-page>
+        </iron-pages>
       </app-header-layout>
     </app-drawer-layout>
   </template>
   <script>
   (function() {
     'use strict';
+    var _pages = [
+      'Home', 'My Profile', 'My Reservations',
+      'Search & Reserve', 'Current Reservations', 'Room Information'
+    ];
+    var _pageCodes = [
+      'home', 'profile', 'reserve', 'search', 'current', 'room'
+    ];
 
     Polymer({
       is: 'semafloor-test',
@@ -163,34 +234,75 @@
           type: String,
           value: 'search'
         },
+        page: {
+          type: String,
+          value: 'search'
+        },
+        upgraded: {
+          type: Boolean,
+          value: false
+        },
+
         tab: {
           type: String,
           value: 'today'
         },
         title: {
           type: String,
-          value: 'Search & Reserve'
+          value: 'Search & Reserve',
+          computed: '_computeTitle(category)'
         },
+
+        // _menu: {
+        //   type: Array,
+        //   value: function() {
+        //     return _pages;
+        //   }
+        // },
+        // todayCount: {
+        //   type: Number,
+        //   value: 99
+        // },
+        // thisweekCount: {
+        //   type: Number,
+        //   value: 99
+        // },
+        // upcomingCount: {
+        //   type: Number,
+        //   value: 99
+        // },
 
       },
 
       // 'created': function() {
       //   console.time('profile-page-attached');
       // },
+      ready: function() {
+        this.fire('upgraded');
+        this.upgraded = true;
+      },
 
       _isReserve: function(_category) {
         return _category === 'reserve';
       },
-      // _onTransitionend: function(ev) {
-      //   if (ev.target.tagName !== 'PAPER-RIPPLE') {
-      //     return;
-      //   }
-      //
-      //   this.$.reserve.onTransitionend(ev);
+      _computeTitle: function(_category) {
+        return _pages[_pageCodes.indexOf(_category)];
+      },
+      // _computeHref: function(_index) {
+      //   return '/' + _pageCodes[_index] + '/view';
       // },
-      // _onIronSelect: function() {
-      //   this.$.reserve.onIronSelect();
-      // },
+
+      // reserve page logics.
+      _onTransitionend: function(ev) {
+        if (ev.target.tagName !== 'PAPER-RIPPLE') {
+          return;
+        }
+
+        this.$.reserve.onTransitionend(ev);
+      },
+      _onIronSelect: function() {
+        this.$.reserve.onIronSelect();
+      },
 
     });
   })();

@@ -37,6 +37,45 @@
     finishLazyLoading();
   }
 
+  // main logic...
+  function once(node, event, fn, args) {
+    /* jshint validthis: true */
+    var _self = this;
+    var listener = function() {
+      fn.apply(_self, args);
+      node.removeEventListener(event, listener, false);
+    };
+    node.addEventListener(event, listener, false);
+  }
+
+  var semafloor = document.querySelector('semafloor-test');
+
+  page('/:category/view/', function(ctx) {
+    var _category = ctx.params.category;
+
+    function setData() {
+      semafloor.category = _category;
+      semafloor.page = _category;
+      window.scrollTo(0, 0);
+    }
+
+    if (!semafloor.upgraded) {
+      once(semafloor, 'upgraded', setData);
+    }else {
+      setData();
+    }
+  });
+
+  page('*', function() {
+    console.log('Cant\'t find: ' + window.location.href +
+      '. Redirected you to Home Page.');
+    page.redirect('/home/view');
+  });
+
+  page({
+    hashbang: true
+  });
+
   // Listen for template bound event to know when bindings
   // have resolved and content has been stamped to the page
   // app.addEventListener('dom-change', function() {
