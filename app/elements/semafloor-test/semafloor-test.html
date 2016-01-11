@@ -9,11 +9,11 @@
 <link rel="import" href="../../bower_components/paper-badge/paper-badge.html">
 <!--
 <link rel="import" href="../../bower_components/semafloor-profile-page/semafloor-profile-page.html">
-<link rel="import" href="../../bower_components/semafloor-search-page/semafloor-search-page.html">
+<link rel="import" href="../../bower_components/semafloor-reserve-page/semafloor-reserve-page.html">
 <link rel="import" href="../../bower_components/semafloor-current-page/semafloor-current-page.html">
 <link rel="import" href="../../bower_components/semafloor-room-page/semafloor-room-page.html">
 -->
-<link rel="import" href="../../bower_components/semafloor-reserve-page/semafloor-reserve-page.html">
+<link rel="import" href="../../bower_components/semafloor-search-page/semafloor-search-page.html">
 <script src="../../bower_components/lodash/lodash.min.js"></script>
 
 <dom-module id="semafloor-test">
@@ -26,7 +26,7 @@
       }
 
       app-header {
-        background-color: #fff;
+        /*background-color: #fff;*/
         color: #009688;
       }
       [title] {
@@ -96,7 +96,7 @@
         <app-header condenses reveals effects="waterfall">
           <app-toolbar>
             <paper-icon-button icon="test:menu" drawer-toggle></paper-icon-button>
-            <span title>Room Information</span>
+            <span title>[[title]]</span>
           </app-toolbar>
           <app-toolbar hidden$="[[!_isReserve(category)]]">
             <paper-tabs id="fakeTabs" selected="{{tab}}" attr-for-selected="name" on-transitionend="_onTransitionend" on-iron-select="_onIronSelect" bottom-item>
@@ -143,11 +143,11 @@
 
         <!--
         <semafloor-profile-page></semafloor-profile-page>
-        <semafloor-search-page></semafloor-search-page>
+        <semafloor-reserve-page id="reserve" selected-tab="{{tab}}" today-count="{{todayCount}}" thisweek-count="{{thisweekCount}}" upcoming-count="{{upcomingCount}}"></semafloor-reserve-page>
         <semafloor-current-page></semafloor-current-page>
         <semafloor-room-page></semafloor-room-page>
         -->
-        <semafloor-reserve-page id="reserve" selected-tab="{{tab}}" today-count="{{todayCount}}" thisweek-count="{{thisweekCount}}" upcoming-count="{{upcomingCount}}"></semafloor-reserve-page>
+        <semafloor-search-page></semafloor-search-page>
       </app-header-layout>
     </app-drawer-layout>
   </template>
@@ -161,37 +161,35 @@
       properties: {
         category: {
           type: String,
-          value: 'reserve'
+          value: 'search'
         },
         tab: {
           type: String,
           value: 'today'
         },
+        title: {
+          type: String,
+          value: 'Search & Reserve'
+        },
+
       },
 
-      'created': function() {
-        console.time('profile-page-attached');
-      },
+      // 'created': function() {
+      //   console.time('profile-page-attached');
+      // },
 
       _isReserve: function(_category) {
         return _category === 'reserve';
       },
-      _onTransitionend: function(ev) {
-        if (ev.target.tagName !== 'PAPER-RIPPLE') {
-          return;
-        }
-
-        this.$.reserve.onTransitionend(ev);
-      },
-      _onIronSelect: function() {
-        this.$.reserve.onIronSelect();
-      },
-
-      // _onAppHeaderTransform: function(ev) {
-      //   if (this.category === 'reserve') {
-      //     // console.log('scrolling...', ev.detail.progress);
-      //     this.$.reserve.condenseTabs(ev.detail.progress);
+      // _onTransitionend: function(ev) {
+      //   if (ev.target.tagName !== 'PAPER-RIPPLE') {
+      //     return;
       //   }
+      //
+      //   this.$.reserve.onTransitionend(ev);
+      // },
+      // _onIronSelect: function() {
+      //   this.$.reserve.onIronSelect();
       // },
 
     });
