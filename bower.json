@@ -1,6 +1,6 @@
 {
   "name": "semafloor-test-alpha",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "private": true,
   "dependencies": {
     "iron-elements": "PolymerElements/iron-elements#^1.0.0",
@@ -9,7 +9,6 @@
     "platinum-elements": "PolymerElements/platinum-elements#^1.1.0",
     "page": "visionmedia/page.js#~1.6.4",
     "polymer": "Polymer/polymer#^1.2.0",
-    "paper-menu": "PolymerElements/paper-menu#4fecb43601",
     "semafloor-profile-page": "semafloor/semafloor-profile-page#~0.1.14",
     "app-layout": "PolymerLabs/app-layout#~0.0.6",
     "semafloor-reserve-page": "semafloor/semafloor-reserve-page#~0.3.4",
@@ -24,10 +23,7 @@
     "semafloor-icons": "semafloor/semafloor-icons#~0.1.1"
   },
   "devDependencies": {
-    "web-component-tester": "*"
+    "web-component-tester": "~4.1.0"
   },
-  "ignore": [],
-  "resolutions": {
-    "paper-menu": "4fecb43601"
-  }
+  "ignore": []
 }

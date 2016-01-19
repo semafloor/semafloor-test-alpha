@@ -24,6 +24,9 @@ var historyApiFallback = require('connect-history-api-fallback');
 var packageJson = require('./package.json');
 var crypto = require('crypto');
 // var ghPages = require('gulp-gh-pages');
+var htmlmin = require('gulp-htmlmin');
+var cssnano = require('gulp-cssnano');
+var replace = require('gulp-replace');
 
 var AUTOPREFIXER_BROWSERS = [
   'ie >= 10',
@@ -302,9 +305,153 @@ gulp.task('default', ['clean'], function(cb) {
     ['copy', 'styles'],
     'elements',
     ['lint', 'images', 'fonts', 'html'],
-    'vulcanize',
+    // 'vulcanize',
     'cache-config',
     cb);
+});
+
+// TODO: Everything can be reinstalled using Bower and Bower is fast!
+// backup all dependencies inside bower_components.
+// gulp.task('backup', function() {
+// 	return gulp.src([
+// 		'bower_components/**/*'
+// 	])
+// 		.pipe(gulp.dest('backup'));
+// });
+
+// minifying all dependencies inside bower_components.
+gulp.task('mindep', function() {
+  return gulp.src([
+		'bower_components/@(app-|iron-|paper-|google-|firebase-|gold-|platinum-|neon-|font-|polymer)' +
+		'*/**/*.html',
+		// 'bower_components/@(app-|iron-|paper-|google-|firebase-|gold-|platinum-|neon-)*/**/*.js',
+		'!bower_components/@(app-|iron-|paper-|google-|firebase-|gold-|platinum-|neon-|font-)' +
+		'*/@(demo|test)/**/*',
+		'!bower_components/@(app-|iron-|paper-|google-|firebase-|gold-|platinum-|neon-|font-)' +
+		'*/**/@(demo|test)/**/*',
+		'!bower_components/@(app-|iron-|paper-|google-|firebase-|gold-|platinum-|neon-|font-)' +
+		'*/index.html',
+		'!bower_components/iron-flex-layout/*' // avoid iron-flex-layout.
+	])
+	.pipe($.size({
+  showFiles: true,
+  pretty: true,
+  title: 'mindep: '
+	}))
+	.pipe(htmlmin({
+  minifyCSS: true,
+  minifyJS: true,
+  collapseWhitespace: true,
+  collapseInlineTagWhitespace: true,
+  removeComments: true,
+  removeCommentsFromCDATA: true,
+  caseSensitive: true,
+  customAttrAssign: [/\$=/]
+	}))
+	.pipe(gulp.dest('backup'));
+});
+// TODO: special treatment for page.js.
+gulp.task('minpage', function() {
+  return gulp.src([
+		'bower_components/page/*.js'
+	])
+		.pipe($.uglify())
+		.pipe(gulp.dest('backup/page'));
+});
+gulp.task('cleandep', function() {
+  del([
+  'bower_components/' +
+	'@(app-|iron-|paper-|google-|firebase-|gold-|platinum-|neon-|font-|page|polymer)*'
+	]);
+});
+gulp.task('movemin', function() {
+  return gulp.src([
+		'backup/**/*'
+	])
+		.pipe(gulp.dest('bower_components'));
+});
+gulp.task('nobackup', function() {
+  del([
+		'backup',
+		'.tmp'
+	]);
+});
+// special treatment for iron-flex-layout as clean-css doesn't know how to parse Polymer's mixins.
+gulp.task('minflex', function() {
+  return gulp.src([
+		'bower_components/iron-flex-layout/**/*.html'
+	])
+  .pipe($.htmlExtract({
+    sel: 'style'
+  }))
+  .pipe(cssnano())
+  .pipe($.rename({
+    extname: '.css'
+  }))
+  .pipe(gulp.dest('.tmp'));
+});
+gulp.task('reflex', function() {
+  var allFiles = [];
+  var fileIdx = 0;
+  var flexlayout = gulp.src([
+		'bower_components/iron-flex-layout/iron-flex-layout.html'
+	], function(un, files) {
+  for (var i = 0; i < files.length; i++) {
+    var temp = files[i].slice(0, -5).split('/');
+    allFiles.push(temp.slice(temp.indexOf('bower_components'), temp.length).join('/'));
+  }
+	})
+		.pipe(replace(/<style>[\s\S]*<\/style>/, function() {
+  var style = fs.readFileSync('.tmp/' + allFiles[fileIdx] + '.css', 'utf8');
+  fileIdx++;
+  return '<style>' + style + '</style>';
+		}))
+		.pipe(htmlmin({
+  collapseWhitespace: true,
+  collapseInlineTagWhitespace: true,
+  removeComments: true,
+  removeCommentsFromCDATA: true,
+  caseSensitive: true,
+  customAttrAssign: [/\$=/]
+		}))
+		.pipe(gulp.dest('backup/iron-flex-layout/'));
+  var flexcls =  gulp.src([
+		'bower_components/iron-flex-layout/classes/iron-flex-layout.html',
+		'bower_components/iron-flex-layout/classes/iron-shadow-flex-layout.html'
+	], function(un, files) {
+  for (var i = 0; i < files.length; i++) {
+    var temp = files[i].slice(0, -5).split('/');
+    allFiles.push(temp.slice(temp.indexOf('bower_components'), temp.length).join('/'));
+  }
+	})
+		.pipe(replace(/<style>[\s\S]*<\/style>/, function() {
+  var style = fs.readFileSync('.tmp/' + allFiles[fileIdx] + '.css', 'utf8');
+  fileIdx++;
+  return '<style>' + style + '</style>';
+		}))
+		.pipe(htmlmin({
+  collapseWhitespace: true,
+  collapseInlineTagWhitespace: true,
+  removeComments: true,
+  removeCommentsFromCDATA: true,
+  caseSensitive: true,
+  customAttrAssign: [/\$=/]
+		}))
+		.pipe(gulp.dest('backup/iron-flex-layout/classes/'));
+
+  return merge(flexlayout, flexcls);
+});
+gulp.task('crunch', function() {
+  runSequence(
+		'nobackup',
+		['mindep', 'minpage', 'minflex'],
+		'reflex',
+		'cleandep',
+		'movemin'
+	);
+});
+gulp.task('nobower', function() {
+  del('bower_components');
 });
 
 // Build then deploy to GitHub pages gh-pages branch

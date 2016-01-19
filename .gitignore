@@ -5,3 +5,4 @@ bower_components
 .publish/
 firebase.json
 firebase-debug.log
+gulpfile.babel.js
