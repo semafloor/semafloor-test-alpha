@@ -1,0 +1,40 @@
+{
+  "name": "semafloor-profile-page",
+  "version": "0.1.17",
+  "authors": [
+    "semafloor <semafloor@semafloor.com>"
+  ],
+  "description": "An element providing a solution to no problem in particular.",
+  "keywords": [
+    "web-component",
+    "polymer",
+    "seed",
+    "semafloor"
+  ],
+  "main": "semafloor-profile-page.html",
+  "license": "MIT",
+  "homepage": "https://github.com/semafloor/semafloor-profile-page",
+  "ignore": [
+    "/.*",
+    "/test/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.1.0",
+    "paper-dialog": "PolymerElements/paper-dialog#^1.0.3",
+    "paper-input": "PolymerElements/paper-input#^1.1.1",
+    "paper-toast": "PolymerElements/paper-toast#^1.1.0",
+    "paper-radio-group": "PolymerElements/paper-radio-group#^1.0.6",
+    "paper-radio-button": "PolymerElements/paper-radio-button#^1.0.11",
+    "paper-dialog-scrollable": "PolymerElements/paper-dialog-scrollable#~1.1.0",
+    "semafloor-icons": "semafloor/semafloor-icons#~0.1.1",
+    "productionizer": "semafloor/productionizer#~0.2.5"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "*",
+    "app-layout": "PolymerLabs/app-layout#~0.0.6",
+    "paper-icon-button": "PolymerElements/paper-icon-button#~1.0.6",
+    "iron-iconset-svg": "PolymerElements/iron-iconset-svg#~1.0.9",
+    "iron-icon": "PolymerElements/iron-icon#~1.0.7"
+  }
+}

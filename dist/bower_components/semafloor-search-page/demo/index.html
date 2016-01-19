@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>semafloor-search-page Demo</title>
+    <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+    <script src="../../lodash/lodash.min.js" charset="utf-8"></script>
+
+    <link rel="import" href="../semafloor-search-page.html">
+    <link rel="import" href="../../semafloor-icons/semafloor-icons.html">
+
+    <link rel="import" href="../../app-layout/app-layout.html">
+    <link rel="import" href="../../app-layout/app-scroll-effects/app-scroll-effects.html">
+    <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+
+    <style is="custom-style">
+      body {
+        margin: 0;
+        font-family: 'Roboto', 'Noto', 'Helvetica', sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      app-header {
+        color: #009688;
+      }
+
+      [title] {
+        color: #009688;
+        font-size: 20px;
+        margin-left: 8px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <app-drawer-layout>
+      <!-- nav panel -->
+      <app-header-layout drawer has-scrolling-region>
+      </app-header-layout>
+
+      <!-- main panel -->
+      <app-header-layout main>
+        <app-header condenses reveals effects="waterfall">
+          <app-toolbar>
+            <paper-icon-button id="button" icon="icons:menu" drawer-toggle></paper-icon-button>
+            <div title>Search &amp; Reserve</div>
+          </app-toolbar>
+        </app-header>
+
+        <!-- 471 el before optimization w/o pickers on OP/ CH -->
+        <!-- 479 el before optimization w/o pickers on FF -->
+        <!-- 13xx el before optimization w/ pickers on OP/ CH -->
+        <!-- 13xx el before optimization w/ pickers on FF -->
+
+        <!-- 54 el clean on CH/ OP -->
+        <!-- 64 el clean on FF -->
+        <!-- 31 app shell on CH/ OP -->
+        <!-- 31 app shell on FF -->
+        <!-- 365 el after optimization w/o pickers on OP/ CH -->
+        <!-- 365 el after optimization w/o pickers on FF -->
+        <!-- 963 el after optimization w/ pickers on OP/ CH -->
+        <!-- 963 el after optimization w/ pickers on FF -->
+
+        <!-- 613 el after datepicker optimization on OP/ CH -->
+        <!-- 613 el after datepicker optimization on FF -->
+        <semafloor-search-page></semafloor-search-page>
+      </app-header-layout>
+    </app-drawer-layout>
+
+    <script>
+      var header = document.querySelector('app-header[condenses]');
+    </script>
+
+  </body>
+</html>
