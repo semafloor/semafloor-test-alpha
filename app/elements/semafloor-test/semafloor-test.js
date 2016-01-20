@@ -127,6 +127,7 @@
         }else if (_category === 'room' && this._roomAttached) {
           this.$.room.updateIronImageWidth();
         }
+        // after 300ms.
       }, 300);
     },
 
@@ -158,6 +159,7 @@
       // console.log('room-page-attached');
       this.async(function() {
         this.$.room.updateIronImageWidth();
+        // after 10ms.
       }, 10);
       this.set('_roomAttached', true);
     },
