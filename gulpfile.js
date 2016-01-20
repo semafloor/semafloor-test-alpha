@@ -1,8 +1,8 @@
 /*
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+The compvare set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The compvare set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
@@ -46,7 +46,7 @@ var dist = function(subpath) {
   return !subpath ? DIST : path.join(DIST, subpath);
 };
 
-var styleTask = function(stylesPath, srcs) {
+var styvarask = function(stylesPath, srcs) {
   return gulp.src(srcs.map(function(src) {
       return path.join('app', stylesPath, src);
     }))
@@ -101,11 +101,11 @@ var optimizeHtmlTask = function(src, dest) {
 
 // Compile and automatically prefix stylesheets
 gulp.task('styles', function() {
-  return styleTask('styles', ['**/*.css']);
+  return styvarask('styles', ['**/*.css']);
 });
 
 gulp.task('elements', function() {
-  return styleTask('elements', ['**/*.css']);
+  return styvarask('elements', ['**/*.css']);
 });
 
 // Lint JavaScript
@@ -242,7 +242,7 @@ gulp.task('clean', function() {
 });
 
 // Watch files for changes & reload
-gulp.task('serve', ['lint', 'styles', 'elements', 'images'], function() {
+gulp.task('serve', ['styles', 'elements', 'images'], function() {
   browserSync({
     port: 5000,
     notify: false,
@@ -441,14 +441,73 @@ gulp.task('reflex', function() {
 
   return merge(flexlayout, flexcls);
 });
+// TODO: special treatment for polymer.
+// nopolymer
+gulp.task('nopolymer', function() {
+  del('bower_components/polymer*');
+});
+// minpolymer
+gulp.task('minpolymer', function() {
+  return gulp.src([
+    // 'bower_components/polymer/polymer-mini.html',
+    // 'bower_components/polymer/polymer-micro.html',
+    // 'bower_components/polymer/polymer.html'
+    'bower_components/polymer/polymer*.html'
+  ])
+    .pipe($.htmlExtract({
+      sel: 'script'
+    }))
+    .pipe($.uglify())
+    .pipe($.rename({
+      extname: '.min.js'
+    }))
+    .pipe(gulp.dest('.tmp'));
+});
+// repolymer
+gulp.task('repolymer', function() {
+  var _polymerFile = [];
+  var _idx = 0;
+  return gulp.src([
+    'bower_components/polymer/*.html'
+  ], function(u, files) {
+    for (var i = 0, _file; i < files.length; i++) {
+      _file = files[i].split('/');
+      _polymerFile.push(_file[_file.length - 1].slice(0, -5));
+    }
+  })
+    .pipe(replace(/<script>[\s\S]*<\/script>/, function() {
+      var s = fs.readFileSync('.tmp/bower_components/polymer/' + _polymerFile[_idx] +
+        '.min.js', 'utf8');
+      _idx++;
+      return '<script>' + s + '</script>';
+    }))
+    .pipe($.minifyHtml())
+    .pipe(gulp.dest('backup/polymer'));
+});
+// movepolymer
+gulp.task('movepolymer', function() {
+  return gulp.src([
+    'backup/polymer/*'
+  ])
+    .pipe(gulp.dest('bower_components/polymer'));
+});
+// TODO: crunch
 gulp.task('crunch', function() {
   runSequence(
 		'nobackup',
 		['mindep', 'minpage', 'minflex'],
 		'reflex',
-		'cleandep',
 		'movemin'
 	);
+});
+gulp.task('crunch-polymer', function() {
+  runSequence(
+    'nobackup',
+    'minpolymer',
+    'repolymer',
+    'nopolymer',
+    'movepolymer'
+  );
 });
 gulp.task('nobower', function() {
   del('bower_components');

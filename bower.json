@@ -1,6 +1,6 @@
 {
   "name": "semafloor-test-alpha",
-  "version": "0.1.21",
+  "version": "0.1.22",
   "private": true,
   "dependencies": {
     "iron-elements": "PolymerElements/iron-elements#^1.0.0",

@@ -12,11 +12,51 @@
 <link rel="import" href="../../bower_components/paper-badge/paper-badge.html">
 <!--
 -->
-<link rel="import" href="../../bower_components/semafloor-profile-page/semafloor-profile-page.html">
+<!-- <link rel="import" href="../../bower_components/semafloor-profile-page/semafloor-profile-page.html">
 <link rel="import" href="../../bower_components/semafloor-reserve-page/semafloor-reserve-page.html">
 <link rel="import" href="../../bower_components/semafloor-search-page/semafloor-search-page.html">
 <link rel="import" href="../../bower_components/semafloor-current-page/semafloor-current-page.html">
-<link rel="import" href="../../bower_components/semafloor-room-page/semafloor-room-page.html">
+<link rel="import" href="../../bower_components/semafloor-room-page/semafloor-room-page.html"> -->
+
+<!-- profile -->
+
+<!-- reserve -->
+
+<!-- search -->
+
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
+
+<!-- current page -->
+
+<!-- room -->
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
+
+<link rel="import" href="../../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+
+<!-- duplicated -->
+<link rel="import" href="../../bower_components/paper-ripple/paper-ripple.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../bower_components/paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner-lite.html">
+<link rel="import" href="../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/firebase-element/firebase-collection.html">
+<link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/transform-animation.html">
+<link rel="import" href="../../bower_components/compound-datepicker/compound-datepicker-dialog.html">
+<link rel="import" href="../../bower_components/compound-timepicker/compound-timepicker-dialog.html">
 
 <script src="../../bower_components/lodash/lodash.min.js"></script>
 
@@ -215,128 +255,15 @@
           <div name="home">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
           </div>
-          <semafloor-profile-page name="profile"></semafloor-profile-page>
+          <semafloor-profile-page id="profile" name="profile"></semafloor-profile-page>
           <semafloor-reserve-page id="reserve" selected-tab="{{tab}}" today-count="{{todayCount}}" thisweek-count="{{thisweekCount}}" upcoming-count="{{upcomingCount}}" name="reserve"></semafloor-reserve-page>
-          <semafloor-search-page name="search"></semafloor-search-page>
-          <semafloor-current-page name="current"></semafloor-current-page>
+          <semafloor-search-page id="search" name="search"></semafloor-search-page>
+          <semafloor-current-page id="current" name="current"></semafloor-current-page>
           <semafloor-room-page id="room" name="room"></semafloor-room-page>
         </iron-pages>
       </app-header-layout>
     </app-drawer-layout>
   </template>
-  <script>
-  (function() {
-    'use strict';
-    var _pages = [
-      'Home', 'My Profile', 'My Reservations',
-      'Search & Reserve', 'Current Reservations', 'Room Information'
-    ];
-    var _pageCodes = [
-      'home', 'profile', 'reserve', 'search', 'current', 'room'
-    ];
 
-    Polymer({
-      is: 'semafloor-test',
-
-      properties: {
-        category: {
-          type: String,
-          value: 'search'
-        },
-        page: {
-          type: String,
-          value: 'search'
-        },
-        upgraded: {
-          type: Boolean,
-          value: false
-        },
-
-        tab: {
-          type: String,
-          value: 'today'
-        },
-        title: {
-          type: String,
-          value: 'Search & Reserve',
-          computed: '_computeTitle(category)'
-        },
-
-        // _menu: {
-        //   type: Array,
-        //   value: function() {
-        //     return _pages;
-        //   }
-        // },
-        // todayCount: {
-        //   type: Number,
-        //   value: 99
-        // },
-        // thisweekCount: {
-        //   type: Number,
-        //   value: 99
-        // },
-        // upcomingCount: {
-        //   type: Number,
-        //   value: 99
-        // },
-
-      },
-
-      observers: [
-        '_notifyResizeAppHeaderOnCategoryChange(category)'
-      ],
-
-      // 'created': function() {
-      //   console.time('profile-page-attached');
-      // },
-      ready: function() {
-        this.fire('upgraded');
-        this.upgraded = true;
-      },
-
-      _isReserve: function(_category) {
-        // reserve - notifyResize paper-tabs.
-        if (_category === 'reserve') {
-          this.async(function() {
-            this.$.fakeTabs.notifyResize();
-          });
-        }
-
-        // room - updateIronImageWidth iron-image.
-        if (_category === 'room') {
-          this.async(function() {
-            this.$.room.updateIronImageWidth();
-          });
-        }
-
-        return _category === 'reserve';
-      },
-      _computeTitle: function(_category) {
-        return _pages[_pageCodes.indexOf(_category)];
-      },
-      // _computeHref: function(_index) {
-      //   return '/' + _pageCodes[_index] + '/view';
-      // },
-
-      // reserve page logics.
-      _onTransitionend: function(ev) {
-        if (ev.target.tagName !== 'PAPER-RIPPLE') {
-          return;
-        }
-
-        this.$.reserve.onTransitionend(ev);
-      },
-      _onIronSelect: function() {
-        this.$.reserve.onIronSelect();
-      },
-
-      _notifyResizeAppHeaderOnCategoryChange: function() {
-        console.log('app-header-notify-resize');
-        this.$.mainHeader.notifyResize();
-      },
-
-    });
-  })();
-  </script>
+  <script src="semafloor-test.js"></script>
 </dom-module>
