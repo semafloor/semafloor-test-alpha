@@ -10,8 +10,8 @@
     // window.Polymer = window.Polymer || {dom: 'shadow'};
 
     function onImportLoaded() {
-      var skeleton = document.getElementById('skeleton');
-      skeleton.remove();
+      // var skeleton = document.getElementById('skeleton');
+      // skeleton.remove();
 
       console.log('Elements are upgraded!');
     }
@@ -33,7 +33,7 @@
     document.head.appendChild(script);
     console.log('web-components polyfill is needed!');
   }else {
-    console.log('Native Shadow DOM supported! finishlazyLoading...');
+    console.log('Native Web Components supported! finishlazyLoading...');
     finishLazyLoading();
   }
 
@@ -49,11 +49,18 @@
   }
 
   var semafloor = document.querySelector('semafloor-test');
+  var skeleton = document.getElementById('skeleton');
 
   page('/:category/view/', function(ctx) {
     var _category = ctx.params.category;
 
     function setData() {
+      // remove skeleton when page is attached.
+      if (skeleton !== null) {
+        skeleton.remove();
+        skeleton = null;
+      }
+
       semafloor.category = _category;
       semafloor.page = _category;
       window.scrollTo(0, 0);
@@ -75,6 +82,7 @@
   page({
     hashbang: true
   });
+  // page();
 
   // Listen for template bound event to know when bindings
   // have resolved and content has been stamped to the page

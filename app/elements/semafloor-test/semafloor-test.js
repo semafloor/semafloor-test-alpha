@@ -67,7 +67,12 @@
       'reserve-page-attached': '_onReservePageAttached',
       'search-page-attached': '_onSearchPageAttached',
       'current-page-attached': '_onCurrentPageAttached',
-      'room-page-attached': '_onRoomPageAttached'
+      'room-page-attached': '_onRoomPageAttached',
+      'profile-upgraded': 'importAnotherHref',
+      'reserve-upgraded': 'importAnotherHref',
+      'search-upgraded': 'importAnotherHref',
+      'current-upgraded': 'importAnotherHref',
+      'room-upgraded': 'importAnotherHref'
     },
 
     // 'created': function() {
@@ -105,7 +110,7 @@
       var _category = this.category;
       console.log('app-header-notify-resize', this.category);
       // Dynamically HTML importing pages.
-      if (_category !== 'home') {
+      if (_category !== 'home' && !this['_' + _category + 'Attached']) {
         var _dynamicallyImportHrefs = '../../bower_components/semafloor-' + _category +
           '-page/semafloor-' + _category + '-page.html';
         this.importHref(_dynamicallyImportHrefs, function() {
@@ -133,35 +138,52 @@
 
     // page attached event.
     _onProfilePageAttached: function() {
-      // console.log('profile-page-attached');
       this.async(function() {
         this.set('_profileAttached', true);
+        this.fire('profile-upgraded', 'reserve');
       }, 1);
     },
     _onReservePageAttached: function() {
-      // console.log('reserve-page-attached');
       // Always notifyResize async-ly after 1.
       this.async(function() {
         // console.log('reserve-page-notify-resize');
-        this.$.mainHeader.notifyResize();
         this.set('_reserveAttached', true);
+        this.$.mainHeader.notifyResize();
+        this.fire('reserve-upgraded', 'search');
       }, 1);
     },
     _onSearchPageAttached: function() {
-      // console.log('search-page-attached');
       this.set('_searchAttached', true);
+      this.fire('search-upgraded', 'current');
     },
     _onCurrentPageAttached: function() {
-      // console.log('current-page-attached');
       this.set('_currentAttached', true);
+      this.fire('current-upgraded', 'room');
     },
     _onRoomPageAttached: function() {
-      // console.log('room-page-attached');
       this.async(function() {
         this.$.room.updateIronImageWidth();
         // after 10ms.
+        this.fire('room-upgraded', 'profile');
       }, 10);
       this.set('_roomAttached', true);
+    },
+
+    // dynamically import subsequent href.
+    importAnotherHref: function(ev) {
+      // when it's room page OR when the requested page has been ready no import is needed.
+      if (ev.detail[0] === undefined || this['_' + ev.detail + 'Attached']) {
+        return;
+      }
+
+      var _category = ev.detail;
+      var _dynamicallyImportHrefs = '../../bower_components/semafloor-' + _category +
+        '-page/semafloor-' + _category + '-page.html';
+      this.importHref(_dynamicallyImportHrefs, function() {
+        console.log(_category + ' is loaded.');
+      }, function(error) {
+        console.error(_category, error);
+      });
     },
 
   });
