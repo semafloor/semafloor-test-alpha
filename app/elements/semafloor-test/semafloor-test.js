@@ -179,11 +179,13 @@
       var _category = ev.detail;
       var _dynamicallyImportHrefs = '../../bower_components/semafloor-' + _category +
         '-page/semafloor-' + _category + '-page.html';
-      this.importHref(_dynamicallyImportHrefs, function() {
-        console.log(_category + ' is loaded.');
-      }, function(error) {
-        console.error(_category, error);
-      });
+      this.async(function() {
+        this.importHref(_dynamicallyImportHrefs, function() {
+          console.log(_category + ' is loaded.');
+        }, function(error) {
+          console.error(_category, error);
+        });
+      }, 1);
     },
 
   });
