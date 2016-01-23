@@ -119,7 +119,13 @@
           console.error(_category, error);
         });
       }
-      // Always notifyResize async-ly after 1.
+      // paper-tabs has missing selectionBar even though page was attached.
+      if (_category === 'reserve' && this._reserveAttached) {
+        this.async(function() {
+          console.log(this.$.fakeTabs);
+          this.$.fakeTabs.notifyResize();
+        }, 1);
+      }
       // this.async(function() {
       // console.log('2) ' + _category + ' after loaded!');
       // }, 1);
