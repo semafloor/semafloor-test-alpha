@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <base href="/">
+  <base href="../">
   <meta charset="utf-8">
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -181,9 +181,11 @@
 
   <platinum-sw-register id="sw" auto-register
                         clients-claim
-                        skip-waiting>
+                        skip-waiting
+                        href="/sw-import.js"
+                        scope="/">
     <platinum-sw-cache default-cache-strategy="fastest"
-                       cache-config-file="cache-config.json">
+                       cache-config-file="/cache-config.json">
     </platinum-sw-cache>
   </platinum-sw-register>
 
@@ -192,7 +194,7 @@
   <!-- build:js scripts/app.js -->
   <script src="/bower_components/lodash/lodash.min.js" async></script>
   <script src="/bower_components/page/page.js"></script>
-  <script src="/scripts/app.js"></script>
+  <script src="/scripts/app.js" async></script>
   <!-- endbuild-->
 </body>
 

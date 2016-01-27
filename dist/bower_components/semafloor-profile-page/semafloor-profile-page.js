@@ -95,7 +95,8 @@ Polymer({
     // This is a good place to perform any work related to your element's
     // visual state or active behavior (measuring sizes, beginning animations,
     // loading resources, etc).
-    console.timeEnd('profile-page-attached');
+    // console.timeEnd('profile-page-attached');
+    console.log('profile-page-attached');
     this.fire('profile-page-attached');
   },
 
