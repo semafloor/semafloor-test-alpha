@@ -79,10 +79,10 @@
     page.redirect('/home/view');
   });
 
-  // page({
-  //   hashbang: true
-  // });
-  page();
+  page({
+    hashbang: true
+  });
+  // page();
 
   // Listen for template bound event to know when bindings
   // have resolved and content has been stamped to the page

@@ -55,6 +55,29 @@
         value: false
       },
 
+      authURL: {
+        type: String,
+        value: 'https://semafloor-webapp.firebaseio.com'
+      },
+      authProvider: {
+        type: String,
+        value: 'google'
+      },
+      authStatus: {
+        type: String,
+        value: false
+      },
+      authUser: {
+        type: Object,
+        value: function() {
+          return {};
+        }
+      },
+      authMessage: {
+        type: String,
+        value: 'Some auth message.'
+      },
+
     },
 
     observers: [
@@ -67,7 +90,9 @@
       'reserve-page-attached': '_onReservePageAttached',
       'search-page-attached': '_onSearchPageAttached',
       'current-page-attached': '_onCurrentPageAttached',
-      'room-page-attached': '_onRoomPageAttached'
+      'room-page-attached': '_onRoomPageAttached',
+      'firebaseAuth.login': '_onLogin',
+      'firebaseAuth.logout': '_onLogout'
       // 'profile-upgraded': 'importAnotherHref',
       // 'reserve-upgraded': 'importAnotherHref',
       // 'search-upgraded': 'importAnotherHref',
@@ -182,6 +207,147 @@
         // this.fire('room-upgraded', 'profile');
       }, 1);
       this.set('_roomAttached', true);
+    },
+
+    isAuthed: function(_authStatus, _authUser) {
+      return !_authStatus || !_authUser;
+    },
+    _computeAuthHidden: function(_authStatus, _authUser) {
+      return (!_authStatus || !_authUser) ? 'need-login' : '';
+    },
+
+    onError: function(ev) {
+      console.log(ev.detail.message);
+    },
+    _onLogin: function() {
+      var _authMessage = !!this.authUser ? 'Logged in as ' + this.authUser.google.displayName + '.' :
+        'Logged in!';
+      console.log(this.authUser);
+      if (this.$.authToast.opened) {
+        this.$.authToast.close();
+      }
+      this.async(function() {
+        this.set('authMessage', _authMessage);
+        this.$.authToast.open();
+        // notifyResize drawerHeaderLayout after logged in.
+        this.$.dhl.notifyResize();
+      }, 1);
+      // if user exists, access to its database, else create new user database.
+      this.async(function() {
+        this._checkIfUserExists(this.authUser);
+      }, 1);
+    },
+    _onLogout: function() {
+      var _authMessage = 'Logged out!';
+      if (this.$.authToast.opened) {
+        this.$.authToast.close();
+      }
+      this.async(function() {
+        this.set('authMessage', _authMessage);
+        this.$.authToast.open();
+      }, 1);
+    },
+    _authWithGoogle: function() {
+      if (!!this.authUser) {
+        return;
+      }
+
+      // this.set('authProvider', 'google'); // temporarily default to google.
+      this.async(function() {
+        this.$.firebaseAuth.login();
+      }, 1);
+    },
+    _unAuth: function(ev) {
+      console.log(ev);
+      this.async(function() {
+        this.$.firebaseAuth.logout();
+        // notifyResize drawerHeaderLayout after logged out.
+        this.$.dhl.notifyResize();
+      }, 1);
+    },
+
+    // if user exists, access to its database, else create new user database.
+    _checkIfUserExists: function(_authUser) {
+      // var uid = 'google:103450531185198654719';
+      var _ref = this.$.firebaseAuth.ref;
+      var _that = this;
+      _ref.child('users/' + _authUser.provider).once('value', function(snapshot) {
+        var _isUser = snapshot.child(_authUser.uid).exists();
+        if (_isUser) {
+          // access data directly from the user.
+          console.log('allow profile page to read data from the user.');
+          _that.$.profile.uid = _authUser.uid;
+        }else {
+          _ref.child('users/' + _authUser.provider + '/' + _authUser.uid)
+            .transaction(function(data) {
+            if (data === null) {
+              return {
+                displayName: _authUser.google.displayName,
+                email: _authUser.google.email,
+                id: _authUser.google.id,
+                profileImageURL: _authUser.google.profileImageURL,
+                provider: _authUser.provider,
+                uid: _authUser.uid,
+                cachedUserProfile: _authUser.google.cachedUserProfile,
+                createdTime: Firebase.ServerValue.TIMESTAMP,
+                profile: {
+                  username: _authUser.google.displayName,
+                  uid: _authUser.google.cachedUserProfile.given_name.slice(0, 1).toLowerCase() +
+                    _authUser.google.cachedUserProfile.family_name.slice(0,1).toLowerCase() +
+                    String.fromCharCode(_.random(97, 122)) +
+                    String.fromCharCode(_.random(97, 122)) +
+                    String.fromCharCode(_.random(97, 122)),
+                  group: _.random(99),
+                  email: _authUser.google.email,
+                  role: _.sample(['normal', 'vip', 'boss', 'janitor', 'elite']),
+                  room: String.fromCharCode(_.random(65, 90)) + ('000' + _.random(999)).slice(-3),
+                  floor: String.fromCharCode(_.random(65, 90)) + ('000' + _.random(999)).slice(-3),
+                  tzone: 'GMT +8',
+                  tout: 1440
+                }
+              };
+            }else {
+              // console.log('User already exists.');
+              return;
+            }
+          }, function(error, committed, snapshot) {
+            if (error) {
+              console.error(error);
+            }else if (!committed) {
+              console.warn('Mission aborted!');
+            }else {
+              console.log(snapshot.val());
+            }
+          });
+        }
+      });
+
+      // ref.child('users/google').once('value').then(function(snapshot) {
+      //  //console.log(snapshot.child("google:103450531185198654719").exists());
+      //  var _isUser = snapshot.child(uid).exists();
+      //  if (_isUser) {
+      //   // access data directly from the user.
+      //   console.log('User exists.');
+      //  }else {
+      //   ref.child('/users' + '/google/' + uid).transaction(function(data) {
+      //    if (data === null) {
+      //     return {
+      //      email: 'haha@haha.com',
+      //      provider: 'google',
+      //      displayName: 'haha haha',
+      //      createdTime: Firebase.ServerValue.TIMESTAMP
+      //     };
+      //    }else {
+      //     console.log('User already exists.');
+      //     return;
+      //    }
+      //   }, function(error, committed, snapshot) {
+      //    if (error) console.error(error);
+      //    else if (!committed) { console.log('Mission aborted.'); }
+      //    else { console.log('User added!'); }
+      //   });
+      //  }
+      // });
     },
 
     // dynamically import subsequent href.
