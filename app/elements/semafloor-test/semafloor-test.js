@@ -34,6 +34,12 @@
         value: 'Search & Reserve',
         computed: '_computeTitle(category)'
       },
+
+      uid: {
+        type: String,
+        value: 'google:56483'
+      },
+
       _profileAttached: {
         type: Boolean,
         value: false
@@ -81,11 +87,12 @@
     },
 
     observers: [
-      '_notifyResizeAppHeaderOnCategoryChange(category)'
+      '_notifyResizeAppHeaderOnCategoryChange(category)',
+      '_updateUid(uid)'
     ],
 
     listeners: {
-      // 'home-page-attached': '_onHomePageAttached',
+      // 'home-page-attached': '_onHomePageAttached',uid
       'profile-page-attached': '_onProfilePageAttached',
       'reserve-page-attached': '_onReservePageAttached',
       'search-page-attached': '_onSearchPageAttached',
@@ -146,10 +153,7 @@
       }
       // paper-tabs has missing selectionBar even though page was attached.
       if (_category === 'reserve' && this._reserveAttached) {
-        this.async(function() {
-          console.log(this.$.fakeTabs);
-          this.$.fakeTabs.notifyResize();
-        }, 1);
+        this.$.fakeTabs.notifyResize();
       }
       // this.async(function() {
       // console.log('2) ' + _category + ' after loaded!');
@@ -158,23 +162,28 @@
 
     // page attached event.
     _onProfilePageAttached: function() {
-      // console.log('3) on-profile-page-attached');
+      console.log('3) on-profile-page-attached');
       this.async(function() {
         // console.log('4) profile-page-notify-resize');
         this.set('_profileAttached', true);
         this.$.mainHeader.notifyResize();
+        // if uid already updated, but profile has yet to attached to document.
+        // reassign new uid to profile page when attached.
+        this.$.profile.uid = this.uid;
         // this.fire('profile-upgraded', 'reserve');
       }, 1);
     },
     _onReservePageAttached: function() {
       // Always notifyResize async-ly after 1.
-      // console.log('3) on-reserve-page-attached');
+      console.log('3) on-reserve-page-attached');
       this.async(function() {
         // console.log('4) reserve-page-notify-resize');
-        this.set('_reserveAttached', true);
         this.$.mainHeader.notifyResize();
         this.$.fakeTabs.notifyResize();
+        this.set('_reserveAttached', true);
         this.$.reserve.updateReservePages();
+        console.log(this.uid);
+        this.$.reserve.uid = this.uid;
         // this.fire('reserve-upgraded', 'search');
       }, 1);
     },
@@ -220,8 +229,8 @@
       console.log(ev.detail.message);
     },
     _onLogin: function() {
-      var _authMessage = !!this.authUser ? 'Logged in as ' + this.authUser.google.displayName + '.' :
-        'Logged in!';
+      var _authMessage = !!this.authUser ?
+      'Logged in as ' + this.authUser.google.displayName + '.' : 'Logged in!';
       console.log(this.authUser);
       if (this.$.authToast.opened) {
         this.$.authToast.close();
@@ -266,6 +275,8 @@
       }, 1);
     },
 
+    /* jshint ignore:start */
+    /* jscs:disable requireCamelCaseOrUpperCaseIdentifiers */
     // if user exists, access to its database, else create new user database.
     _checkIfUserExists: function(_authUser) {
       // var uid = 'google:103450531185198654719';
@@ -275,8 +286,10 @@
         var _isUser = snapshot.child(_authUser.uid).exists();
         if (_isUser) {
           // access data directly from the user.
-          console.log('allow profile page to read data from the user.');
-          _that.$.profile.uid = _authUser.uid;
+          console.log('allow profile page to read2
+           data from the user.');
+          // _that.$.profile.uid = _authUser.uid;
+          _that.set('uid', _authUser.uid);
         }else {
           _ref.child('users/' + _authUser.provider + '/' + _authUser.uid)
             .transaction(function(data) {
@@ -304,6 +317,10 @@
                   floor: String.fromCharCode(_.random(65, 90)) + ('000' + _.random(999)).slice(-3),
                   tzone: 'GMT +8',
                   tout: 1440
+                },
+                reservations: {
+                  totalReservations: 0,
+                  lastUpdateTime: Firebase.ServerValue.TIMESTAMP
                 }
               };
             }else {
@@ -321,33 +338,17 @@
           });
         }
       });
+    },
+    /* jshint ignore:end */
+    /* jscs:enable requireCamelCaseOrUpperCaseIdentifiers */
 
-      // ref.child('users/google').once('value').then(function(snapshot) {
-      //  //console.log(snapshot.child("google:103450531185198654719").exists());
-      //  var _isUser = snapshot.child(uid).exists();
-      //  if (_isUser) {
-      //   // access data directly from the user.
-      //   console.log('User exists.');
-      //  }else {
-      //   ref.child('/users' + '/google/' + uid).transaction(function(data) {
-      //    if (data === null) {
-      //     return {
-      //      email: 'haha@haha.com',
-      //      provider: 'google',
-      //      displayName: 'haha haha',
-      //      createdTime: Firebase.ServerValue.TIMESTAMP
-      //     };
-      //    }else {
-      //     console.log('User already exists.');
-      //     return;
-      //    }
-      //   }, function(error, committed, snapshot) {
-      //    if (error) console.error(error);
-      //    else if (!committed) { console.log('Mission aborted.'); }
-      //    else { console.log('User added!'); }
-      //   });
-      //  }
-      // });
+    // update uid when Firebase is connected to logged in user's database.
+    _updateUid: function(_uid) {
+      var _pageAttached = '_' + this.page + 'Attached';
+      // if current page already attached to document, update its uid.
+      if (this[_pageAttached]) {
+        this.$[this.page].uid = _uid;
+      }
     },
 
     // dynamically import subsequent href.
