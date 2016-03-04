@@ -6,22 +6,26 @@ Polymer({
   is: 'semafloor-profile-page',
 
   properties: {
-
     profile: {
       type: Object,
       value: function() {
-        return {
-          username: 'John Doe',
-          uid: 'jdxhr',
-          group: 2,
-          email: 'johndoe@jmail.com',
-          role: 'normal',
-          room: 'A002',
-          floor: 'T001',
-          tzone: 'GMT +8',
-          tout: 1440
-        }
+        return {};
+        // return {
+        //   username: 'John Doe',
+        //   uid: 'jdxhr',
+        //   group: 2,
+        //   email: 'johndoe@jmail.com',
+        //   role: 'normal',
+        //   room: 'A002',
+        //   floor: 'T001',
+        //   tzone: 'GMT +8',
+        //   tout: 1440
+        // }
       }
+    },
+    uid: {
+      type: String,
+      value: 'google:9999'
     },
 
     _invalidEmail: {
@@ -65,16 +69,25 @@ Polymer({
       value: false
     },
 
+    _profileURL: {
+      type: String,
+      value: 'https://semafloor-webapp.firebaseio.com'
+    },
+
   },
 
   listeners: {
     'touchmove': '_cancelRippleWhileScrolling'
   },
 
+  observers: [
+    '_updateProfile(uid)'
+  ],
+
   // Element Lifecycle
   created: function() {
-    console.time('profile-page-ready');
-    console.log('profile-page-created');
+    // console.time('profile-page-ready');
+    // console.log('profile-page-created');
   },
 
   ready: function() {
@@ -84,8 +97,8 @@ Polymer({
     //
     // This is the point where you should make modifications to the DOM (when
     // necessary), or kick off any processes the element wants to perform.
-    console.timeEnd('profile-page-ready');
-    this.fire('profile-page-ready');
+    // console.timeEnd('profile-page-ready');
+    // this.fire('profile-page-ready');
   },
 
   attached: function() {
@@ -96,7 +109,6 @@ Polymer({
     // visual state or active behavior (measuring sizes, beginning animations,
     // loading resources, etc).
     // console.timeEnd('profile-page-attached');
-    console.log('profile-page-attached');
     this.fire('profile-page-attached');
   },
 
@@ -105,7 +117,6 @@ Polymer({
     // removed from a document.
     //
     // Use this to clean up anything you did in `attached`.
-    console.log('profile-page-detached');
   },
 
   _cancelRippleWhileScrolling: function(ev) {
@@ -190,22 +201,62 @@ Polymer({
         if (_changeEmail && !this._invalidEmail) {
           _text = 'Email has been changed successfully!';
           // TODO: change to modify value in Firebase.
-          this.set('profile.email', _changeEmail);
+          // this.set('profile.email', _changeEmail);
+          this._commitFirebase('email', _changeEmail, _text);
         }
       }else {
         if (this._timezone) {
           _text = 'Time zone has been changed successfully!';
           // TODO: change to modify value in Firebase.
-          this.set('profile.tzone', this._timezone === 'eight' ?
-            'GMT +8' : 'GMT +9');
+          // this.set('profile.tzone', this._timezone === 'eight' ?
+          //   'GMT +8' : 'GMT +9');
+          this._commitFirebase('tzone', this._timezone === 'eight' ? 'GMT +8' : 'GMT +9', _text);
         }
       }
       // update toast message.
-      this.set('_message', _text);
-      this.async(function() {
-        this.$.profileToast.show()
-      }, 350);
+      // this.set('_message', _text);
+      // this.async(function() {
+      //   this.$.profileToast.show()
+      // }, 350);
     }
+  },
+
+  _updateProfile: function(_uid) {
+    // when user logged in, uid will change thus Firebase references to different location.
+    this.set('_profileURL', 'https://semafloor-webapp.firebaseio.com/users/google/' + _uid);
+  },
+
+  _onFirebaseValue: function(ev) {
+    if (_.isNull(ev.detail.val())) {
+      return;
+    }
+    // when Firebase retrieves new data, update profile.
+    this.set('profile', ev.detail.val().profile);
+  },
+  // commit user changes to Firebase.
+  _commitFirebase: function(_category, _commitValue, _successText) {
+    var _that = this;
+    var _ref = new Firebase(this.$.firebaseProfile.location);
+    _ref.child('profile').once('value', function(snapshot) {
+      _ref.child('profile/' + _category).transaction(function(data) {
+        return _commitValue;
+      }, function(error, committed, snapshot) {
+        if (error) {
+          console.error(error);
+        }else if (!committed) {
+          console.warn('Changes not committed!');
+        }else {
+          console.log('Changes committed to Firebase!');
+          // Update toast message.
+          _that.set('_message', _successText);
+          _that.async(function() {
+            _that.$.profileToast.show()
+          }, 350);
+        }
+      });
+    }, function(error) {
+      console.error(error);
+    });
   },
 
 });

@@ -129,7 +129,6 @@ Polymer({
   },
 
   _onFirebaseValue: function(ev) {
-    console.log('on-firebase-value');
     // set _currentReservations when data is fetched.
     this.set('_currentReservations', ev.detail.val());
     // hide spinner and switch to room page.
@@ -141,6 +140,7 @@ Polymer({
     this.$.roomsList.fire('iron-resize');
     // fire an event when data is fetched.
     this.fire('current-reservations-ready');
+    console.log('on-firebase-value');
   },
 
   _computeFloorsAtSelection: function(_selectedSite) {

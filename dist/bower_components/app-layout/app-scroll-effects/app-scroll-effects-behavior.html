@@ -9,13 +9,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../../polymer/polymer.html">
-<link rel="import" href="../../iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="../app-scroll-behaviors/app-custom-scroller-behavior.html">
+<link rel="import" href="../helpers/helpers.html">
 
 <script>
   /**
    * `Polymer.AppScrollEffectsBehavior` provides an interface that allows to consume scrolls events.
-   * Effects are installed in the `Polymer.AppScrollEffects` namescape.
+   * Effects are installed in the `Polymer.AppLayout.scrollEffects` namescape.
    *
    * A few effects are defined in `app-scroll-effects.html`, but, by default, no effect is imported.
    * Thus, users need to explicitly import the dependency.
@@ -25,13 +25,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
    * * `_updateScrollState`
    * * `isOnScreen`
    * * `isContentBelow`
-   * * `setup`
    *
    * @polymerBehavior
    */
   Polymer.AppScrollEffectsBehavior = [
     Polymer.AppCustomScrollerBehavior,
-    Polymer.IronResizableBehavior,
    {
 
     properties: {
@@ -69,21 +67,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       /**
-       * Disables any CSS transitions in the current element.
+       * Disables CSS transitions and scroll effects on the element.
        */
-      noTransitions: {
+      disabled: {
         type: Boolean,
-        reflectToAttribute: true
+        reflectToAttribute: true,
+        value: false
       }
     },
 
     observers: [
       '_effectsChanged(effects, effectsConfig)'
     ],
-
-    listeners: {
-      'iron-resize': '_resizeHandler'
-    },
 
     /**
      * Updates the scroll state. This method should be overridden
@@ -120,15 +115,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     /**
-     * Measures the current element and sets up the effects added via
-     * the `effects` property.
-     *
-     * @abstract
-     * @method setup
-     */
-    setup: function() {},
-
-    /**
      * List of effects handlers that will take place during scroll.
      *
      * @type {Array<Function>}
@@ -155,20 +141,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       this._effects = [];
     },
 
-    attached: function() {
-      this.debounce('_setup', this.setup, 1);
-    },
-
     detached: function() {
       this._tearDownEffects();
     },
 
     /**
-     * Allows to run effects programmatically.
+     * Creates an effect object from an effect name and configuration that can be used to run
+     * effects programmatically.
      *
-     * @method effect
-     * @param {string} effectName The name of an effect defined in `Polymer.AppScrollEffects`
-     * @param {Object=} effectConfig The effect config object if the effect accepts config values. (Optional)
+     * @method createEffect
+     * @param {string} effectName The name of an effect defined in `Polymer.AppLayout.scrollEffects`
+     * @param {Object=} effectConfig The effect config object if the effect accepts config
+     *   values. (Optional)
      * @return {Object} The effect object. This object has the following interface:
      *
      *  * `obj.setUp()`, Sets up the requirements for the effect.
@@ -178,19 +162,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      *
      * Example:
      * ```js
-     * var parallax = obj.effect('parallax-background');
+     * var parallax = obj.createEffect('parallax-background');
      * // runs the effect
      * parallax.run(0.5, 0);
      * ```
      */
-    effect: function(effectName, effectConfig) {
-      if (!Polymer.AppScrollEffects) {
-        throw new ReferenceError('undefined Polymer.AppScrollEffects');
-        return;
-      }
-      var effectDef = Polymer.AppScrollEffects[effectName];
+    createEffect: function(effectName, effectConfig) {
+      var effectDef = Polymer.AppLayout.scrollEffects[effectName];
       if (!effectDef) {
-        throw new ReferenceError('undefined effect `' + effectName + '`');
+        throw new ReferenceError('Scroll effect `' + effectName + '` is undefined');
         return;
       }
       var prop = this._boundEffect(effectDef, effectConfig || {});
@@ -210,7 +190,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       effects.split(' ').forEach(function(effectName) {
         var effectDef;
         if (effectName !== '') {
-          if ((effectDef = Polymer.AppScrollEffects[effectName])) {
+          if ((effectDef = Polymer.AppLayout.scrollEffects[effectName])) {
             this._effects.push(this._boundEffect(effectDef, effectsConfig[effectName]));
           } else {
             this._warn(this._logf('_effectsChanged', 'undefined effect `', effectName, '`'));
@@ -292,22 +272,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     /**
-     * Handles `iron-resize`.
-     */
-    _resizeHandler: function(e) {
-      this.debounce('_resize', this.setup, 100);
-    },
-
-    /**
      * Overrides the `_scrollHandler`.
      */
     _scrollHandler: function() {
-      this._updateScrollState(this._clampedScrollTop);
+      if (!this.disabled) {
+        this._updateScrollState(this._clampedScrollTop);
+      }
     }
   }];
 
-  /**
-   * Defines the namespace for the effects
-   */
-  Polymer.AppScrollEffects = Polymer.AppScrollEffects || {};
 </script>

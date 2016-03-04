@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
     <title>semafloor-room-page Demo</title>
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../../lodash/lodash.min.js" charset="utf-8"></script>
+    <script src="../../lodash/dist/lodash.min.js" charset="utf-8"></script>
 
     <link rel="import" href="../semafloor-room-page.html">
     <link rel="import" href="../../semafloor-icons/semafloor-icons.html">
@@ -22,11 +22,20 @@
       }
 
       app-header {
-        background-color: #fff;
         color: #009688;
+        --app-header-background-front-layer: {
+          background-color: #fff;
+        };
+        --app-header-background-rear-layer: {
+          background-color: #009688;
+        };
+      }
+      app-header.condensed,
+      app-header.condensed .title {
+        color: #fff;
       }
 
-      [title] {
+      .title {
         color: #009688;
         font-size: 20px;
         font-weight: 300;
@@ -35,14 +44,16 @@
     </style>
   </head>
   <body>
-    <app-drawer-layout>
-      <app-header-layout drawer></app-header-layout>
+    <app-drawer-layout force-narrow>
+      <app-drawer swipe-open></app-drawer>
 
-      <app-header-layout main>
-        <app-header condenses fixed effects="waterfall">
+      <app-header-layout>
+        <app-header condenses fixed effects="waterfall fade-background">
           <app-toolbar>
             <paper-icon-button icon="icons:menu" drawer-toggle></paper-icon-button>
-            <span title>Room Information</span>
+            <span condensed-title hidden></span>
+            <span title hidden></span>
+            <span class="title">Room Information</span>
           </app-toolbar>
         </app-header>
 
@@ -60,12 +71,25 @@
         <!-- 107 nodes element on CH/ OP after optimization -->
         <!-- 112 nodes element on FF after optimization -->
 
+        <!-- <semafloor-room-page view=vertical no-animation></semafloor-room-page> -->
+        <!-- <semafloor-room-page view=horizontal></semafloor-room-page> -->
         <semafloor-room-page></semafloor-room-page>
       </app-header-layout>
     </app-drawer-layout>
 
     <script>
-      var seedElement = document.querySelector('semafloor-room-page');
+      var _header = document.querySelector('app-header');
+
+      _header.addEventListener('app-header-transform', function(ev) {
+        _header.toggleClass('condensed', ev.detail.progress > 0.5);
+      });
+
+      window.addEventListener('room-page-attached', function() {
+        var _app = document.querySelector('semafloor-room-page');
+        var _tel = _app.getElementsByTagName('*').length;
+        console.log('Total element nodes with Lazy-Loading: ', _tel);
+      });
+
     </script>
 
   </body>

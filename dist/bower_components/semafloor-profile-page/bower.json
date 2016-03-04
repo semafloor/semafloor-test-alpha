@@ -1,12 +1,11 @@
 {
   "name": "semafloor-profile-page",
-  "version": "0.1.18",
+  "version": "0.1.23",
   "authors": [
     "semafloor <semafloor@semafloor.com>"
   ],
   "description": "An element providing a solution to no problem in particular.",
   "keywords": [
-    "web-component",
     "polymer",
     "seed",
     "semafloor"
@@ -27,7 +26,8 @@
     "paper-radio-button": "PolymerElements/paper-radio-button#^1.0.11",
     "paper-dialog-scrollable": "PolymerElements/paper-dialog-scrollable#~1.1.0",
     "semafloor-icons": "semafloor/semafloor-icons#~0.1.1",
-    "productionizer": "semafloor/productionizer#~0.2.5"
+    "productionizer": "semafloor/productionizer#~0.2.5",
+    "firebase-element": "GoogleWebComponents/firebase-element#^1.0.11"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
     <title>semafloor-search-page Demo</title>
     <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
-    <script src="../../lodash/lodash.min.js" charset="utf-8"></script>
+    <script src="../../lodash/dist/lodash.min.js" charset="utf-8"></script>
 
     <link rel="import" href="../semafloor-search-page.html">
     <link rel="import" href="../../semafloor-icons/semafloor-icons.html">
@@ -35,12 +35,9 @@
   <body>
 
     <app-drawer-layout>
-      <!-- nav panel -->
-      <app-header-layout drawer has-scrolling-region>
-      </app-header-layout>
+      <app-drawer swipe-open></app-drawer>
 
-      <!-- main panel -->
-      <app-header-layout main>
+      <app-header-layout>
         <app-header condenses reveals effects="waterfall">
           <app-toolbar>
             <paper-icon-button id="button" icon="icons:menu" drawer-toggle></paper-icon-button>

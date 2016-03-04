@@ -1,6 +1,6 @@
-<!-- <link rel="import" href="../polymer/polymer.html"> -->
+<link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="semafloor-profile-page-theme.html">
-<!--
+
 <link rel="import" href="../paper-ripple/paper-ripple.html">
 <link rel="import" href="../paper-dialog/paper-dialog.html">
 <link rel="import" href="../paper-dialog-scrollable/paper-dialog-scrollable.html">
@@ -9,7 +9,8 @@
 <link rel="import" href="../paper-toast/paper-toast.html">
 <link rel="import" href="../paper-radio-group/paper-radio-group.html">
 <link rel="import" href="../paper-radio-button/paper-radio-button.html">
--->
+
+<link rel="import" href="../firebase-element/firebase-collection.html">
 <!--
 An element providing a solution to no problem in particular.
 
@@ -25,6 +26,8 @@ Example:
 <dom-module id="semafloor-profile-page">
   <template strip-whitespace>
     <style include="semafloor-profile-page-theme"></style>
+
+    <firebase-collection id="firebaseProfile" location="[[_profileURL]]" on-firebase-value="_onFirebaseValue"></firebase-collection>
 
     <div class="profile-list" ripple="uname" on-down="_onDown" on-up="_onUp">
       User Name
@@ -76,7 +79,7 @@ Example:
       <h2>[[_changeTitle]]</h2>
       <paper-dialog-scrollable>
         <div hidden$="[[!_isEmail(_changeDialog)]]">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Velit, numquam! Tempore voluptatum praesentium atque ipsum voluptatibus quis dolore, mutatio inscriptio.
+          Enter new email
           <span>[[_changeEmail]]</span>
           <paper-input id="changeEmail" class="profile-change-email"
             label="Change email"
@@ -89,7 +92,6 @@ Example:
         </div>
 
         <div hidden$="[[_isEmail(_changeDialog)]]">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Modi, ipsum.
           <paper-radio-group selected="{{_timezone::paper-radio-group-changed}}">
             <paper-radio-button name="eight" label="GMT +8">GMT +8</paper-radio-button>
             <paper-radio-button name="nine" label="GMT +9">GMT +9</paper-radio-button>

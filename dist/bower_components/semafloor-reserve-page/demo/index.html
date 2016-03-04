@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
     <title>semafloor-reserve-page Demo</title>
     <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
-    <script src="../../lodash/lodash.min.js"></script>
+    <script src="../../lodash/dist/lodash.min.js"></script>
     <link rel="import" href="../semafloor-reserve-page.html">
     <link rel="import" href="../../semafloor-icons/semafloor-icons.html">
+    <link rel="import" href="../../iron-icons/iron-icons.html">
 
     <link rel="import" href="../../app-layout/app-layout.html">
     <link rel="import" href="../../app-layout/app-scroll-effects/app-scroll-effects.html">
@@ -30,6 +31,9 @@
         margin-right: 8px;
       }
 
+      app-toolbar+app-toolbar {
+        background-color: #009688;
+      }
       paper-tabs {
         background-color: #009688;
         color: #fff;
@@ -40,14 +44,16 @@
         };
       }
       paper-tab {
-        --paper-tab-ink: rgba(255, 255, 141, 0.5);
+        /*--paper-tab-ink: rgba(255, 255, 141, 0.5);*/
         text-transform: uppercase;
       }
       paper-tab.iron-selected {
         color: #FFFF8D;
       }
       paper-badge {
-        --paper-badge-margin-left: -6px;
+        /* workaround: due to unknown bug in Firefox */
+        left: initial !important;
+        /*--paper-badge-margin-left: -6px;*/
         --paper-badge-background: #FFFF8D;
         --paper-badge-text-color: #004D40;
       }
@@ -55,15 +61,28 @@
         --paper-badge-margin-bottom: 16px;
       }
 
+      /* @media */
+      @media all and (min-width: 376px) {
+        paper-tabs {
+          width: calc(100% / 3);
+          min-width: 376px;
+        }
+
+        paper-tabs[bottom-item] {
+          position: initial;
+          bottom: initial;
+          left: initial;
+          right: initial;
+        }
+      }
     </style>
   </head>
   <body>
     <template is="dom-bind" strip-whitespace>
-      <app-drawer-layout>
-        <app-header-layout drawer>
-        </app-header-layout>
+      <app-drawer-layout force-narrow>
+        <app-drawer swipe-open></app-drawer>
 
-        <app-header-layout main>
+        <app-header-layout>
           <app-header condenses reveals effects="waterfall">
             <app-toolbar>
               <paper-icon-button id="menu" icon="icons:menu" drawer-toggle></paper-icon-button>
@@ -109,7 +128,16 @@
       var demo = document.querySelector('template[is=dom-bind]');
       var page = 'reserve';
 
-      demo.tab = 'today';
+      window.addEventListener('reserve-page-attached', function() {
+        window.setTimeout(function() {
+          var _app = document.querySelector('semafloor-reserve-page');
+          var _tel = _app.getElementsByTagName('*').length;
+          _app.uid = 'google:103450531185198654718';
+          console.log('Total element nodes with Lazy-Loading: ', _tel);
+        }, 1000);
+      });
+
+      demo.tab = 'thisweek';
 
       demo._onTransitionend = function(ev) {
         if (ev.target.tagName !== 'PAPER-RIPPLE') {

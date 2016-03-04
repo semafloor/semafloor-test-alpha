@@ -24,6 +24,12 @@ Polymer({
       value: 99,
       notify: true
     },
+    uid: {
+      type: String,
+      // TODO: For testing purpose...
+      google:103450531185198654718
+      // value: 'google:9999'
+    },
 
     _page: {
       type: Number,
@@ -40,6 +46,11 @@ Polymer({
     _dataReady: {
       type: Boolean,
       value: false
+    },
+
+    _isLoading: {
+      type: Boolean,
+      value: !0
     },
 
   },
@@ -95,10 +106,20 @@ Polymer({
     // https://youtu.be/iIV1xPFXmBs?list=PLNYkxOF6rcICcHeQY02XLvoGL34rZFWZn;
     // showSpinner if failed to meet that 100ms.
     spinnerTimeout = this.async(function() {
-      this.set('_page', 'waiting');
+      if (!this._isSpinnerOpened) {
+        this.set('_isSpinnerOpened', !0);
+        this.async(function() {
+          this.set('_page', 'waiting');
+          // reset _tabTransitionEnd on every new select starts.
+          this.set('_tabTransitionEnd', false);
+        }, 1);
+      }else {
+        this.set('_page', 'waiting');
+        // reset _tabTransitionEnd on every new select starts.
+        this.set('_tabTransitionEnd', false);
+      }
     }, 100);
-    // reset _tabTransitionEnd on every new select starts.
-    this.set('_tabTransitionEnd', false);
+
   },
   onTransitionend: function(ev) {
     // return when tab not yet trensition end OR tab not tap.
@@ -115,6 +136,7 @@ Polymer({
       // when data fetched from Firebase, set _dataReady then switch to page.
       // if data still pending from Firebase, pass it on to _onDataReady then.
       if (this._dataReady) {
+        console.log(this.selectedTab);
         this.set('_page', this.selectedTab);
       }
     }
@@ -122,12 +144,18 @@ Polymer({
   _onDataReady: function(ev) {
     // For the first fetch from Firebase, this will run for only once.
     // switch to page when data is fetched from Firebase.
+    console.log(this.selectedTab);
     this.set('_page', this.selectedTab);
     // set _dataReady to indicate data already fetched and just switch to page
     // for the future new select.
     this.set('_dataReady', true);
-    // update iron-list after switching to new page.
-    this.$[this.selectedTab + 'List'].updateList();
+    // update iron-list after switching to new page ASYNC-ly.
+    // asyncly as iron-list now inside dom-if, wait until iron-list being rendered.
+    this.async(function() {
+      this.$[this.selectedTab + 'List'].updateList();
+
+      this.set('_isLoading', !1);
+    }, 1);
   },
 
   // importHref workaround.
@@ -138,4 +166,10 @@ Polymer({
     this.$.reservePages.notifyResize();
   },
 
+  _computeLoadingCls: function(_isLoading) {
+    console.log(_isLoading);
+    return _isLoading ? '' : 'finish-loading';
+  },
+
+  // TODO: Just realised this element is so broken.
 });

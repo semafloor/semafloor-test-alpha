@@ -22,6 +22,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../../app-header-layout/app-header-layout.html">
 <link rel="import" href="../../../app-header/app-header.html">
+<link rel="import" href="../../../app-scroll-effects/app-scroll-effects.html">
 <link rel="import" href="../../../app-toolbar/app-toolbar.html">
 
 <dom-module id="recipe-detail">
@@ -30,19 +31,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <style>
 
-    #bgHeader {
-      height: 100vh;
+    :host {
+      display: block;
+      background-attachment: fixed;
+      background-size: 100% auto;
+      background-repeat: no-repeat;
     }
 
     #header {
       color: white;
 
-      --app-header-back-background: {
+      --app-header-background-rear-layer: {
         background-color: #00AA8D;
       };
     }
 
-    .content-container {
+    paper-icon-button {
+      color: white;
+      --paper-icon-button-ink-color: white;
+    }
+
+    .card-container {
       position: relative;
       width: 720px;
       margin: 300px auto 40px;
@@ -52,6 +61,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       position: absolute;
       top: -28px;
       right: 40px;
+
+      --paper-fab-background: #EF5458;
+      --paper-fab-keyboard-focus-background: #DF4448;
     }
 
     paper-card {
@@ -88,7 +100,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     @media (max-width: 720px) {
 
-      .content-container {
+      .card-container {
         width: 100%;
         margin: 150px 0 0;
       }
@@ -100,18 +112,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <!-- main panel -->
     <app-header-layout>
 
-      <app-header underlay-content id="bgHeader" scroller="window" effects="parallax-background"
-        effects-config='{"parallax-background": {"scalar": 0.5}}'>
-      </app-header>
-
       <app-header id="header" effects="waterfall fade-background" reveals>
 
         <!-- top toolbar -->
         <app-toolbar>
           <!-- back button -->
-          <paper-icon-button icon="app:arrow-back" on-tap="__backButtonTapHandler"></paper-icon-button>
+          <a href="#/home" tabindex="-1">
+            <paper-icon-button icon="app:arrow-back"></paper-icon-button>
+          </a>
 
-          <span class="flex"></span>
+          <div title></div>
 
           <paper-menu-button horizontal-align="right">
             <paper-icon-button icon="app:more-vert" class="dropdown-trigger" alt="menu"></paper-icon-button>
@@ -138,9 +148,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       </app-header>
 
-      <div class="content-container">
+      <div class="card-container">
 
-        <paper-card heading="{{recipe.title}}">
+        <paper-card heading="{{recipe.name}}">
           <div class="card-content">
 
             <p>{{recipe.description}}</p>
@@ -150,13 +160,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <template is="dom-repeat" items="{{recipe.ingredients}}">
               <div class="ingredient-item">
                 <div class="ingredient-amount">{{item.amount}}</div>
-                <div class="ingredient-name">{{item.name}}</div>
+                <div class="ingredient-name">{{item.description}}</div>
               </div>
             </template>
 
-            <h4>Directions</h4>
+            <h4>Steps</h4>
 
-            <template is="dom-repeat" items="{{recipe.directions}}">
+            <template is="dom-repeat" items="{{recipe.steps}}">
               <div class="ingredient-item">
                 <div class="ingredient-amount">{{item.duration}}</div>
                 <div class="ingredient-name">{{item.description}}</div>
@@ -193,15 +203,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     },
 
-    __backButtonTapHandler: function(event, detail) {
-      this.fire('recipe-close');
-    },
-
-    __recipeChanged: function(newValue, oldValue) {
-      if (newValue) {
-        this.$.bgHeader.updateStyles({
-          '--app-header-front-background': 'background-image: url(' + newValue.imageUrl + ');'
-        });
+    __recipeChanged: function(recipe) {
+      if (recipe) {
+        this.style.backgroundImage = 'url(' + recipe.imageUrl + ')';
       }
     },
 

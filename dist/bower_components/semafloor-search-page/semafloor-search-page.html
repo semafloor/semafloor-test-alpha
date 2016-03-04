@@ -1,16 +1,9 @@
-<!-- <link rel="import" href="../polymer/polymer.html"> -->
+<link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="semafloor-search-page-theme.html">
 
-<!-- <link rel="import" href="../compound-datepicker/compound-datepicker-dialog.html">
-<link rel="import" href="../compound-timepicker/compound-timepicker-dialog.html"> -->
+<link rel="import" href="../jv-datepicker/jv-datepicker-dialog.html">
+<link rel="import" href="../compound-timepicker/compound-timepicker-dialog.html">
 
-<!-- <link rel="import" href="../iron-ajax/iron-ajax.html">
-<link rel="import" href="../paper-item/paper-item.html">
-<link rel="import" href="../paper-item/paper-icon-item.html">
-<link rel="import" href="../paper-listbox/paper-listbox.html">
-<link rel="import" href="../paper-toggle-button/paper-toggle-button.html">
-<link rel="import" href="../neon-animation/animations/transform-animation.html"> -->
-<!--
 <link rel="import" href="../iron-icon/iron-icon.html">
 <link rel="import" href="../iron-ajax/iron-ajax.html">
 <link rel="import" href="../iron-list/iron-list.html">
@@ -33,8 +26,10 @@
 <link rel="import" href="../paper-radio-button/paper-radio-button.html">
 <link rel="import" href="../paper-radio-group/paper-radio-group.html">
 
+<link rel="import" href="../firebase-element/firebase-collection.html">
+
 <link rel="import" href="../neon-animation/animations/transform-animation.html">
- -->
+
 <!--
 An element providing a solution to no problem in particular.
 
@@ -58,6 +53,8 @@ Example:
       handle-as="json"
       last-response="{{_emptyRoomResult}}"
       on-response="_onResponse"></iron-ajax>
+
+    <firebase-collection id="firebaseSearch" location="[[_searchUrl]]" on-firebase-value="_onFirebaseValue"></firebase-collection>
 
     <div class="date-container search-item">
       <iron-icon class="date-icon" icon="icons:query-builder"></iron-icon>
@@ -144,8 +141,8 @@ Example:
     </paper-dialog>
 
     <!-- pickers dialog -->
-    <compound-datepicker-dialog id="fromDate" with-backdrop disable-days="[0,6]" date="{{_fromDate}}"></compound-datepicker-dialog>
-    <compound-datepicker-dialog id="toDate" with-backdrop disable-days="[0,6]" date="{{_toDate}}" min-date="[[_fromDate]]"></compound-datepicker-dialog>
+    <jv-datepicker-dialog id="fromDate" with-backdrop disable-days="[0,6]" date="{{_fromDate}}"></jv-datepicker-dialog>
+    <jv-datepicker-dialog id="toDate" with-backdrop disable-days="[0,6]" date="{{_toDate}}" min-date="[[_fromDate]]"></jv-datepicker-dialog>
     <compound-timepicker-dialog id="fromTime" with-backdrop time="{{_fromTime}}" time-format="24"></compound-timepicker-dialog>
     <compound-timepicker-dialog id="toTime" with-backdrop time="{{_toTime}}" time-format="24"></compound-timepicker-dialog>
 
@@ -197,31 +194,42 @@ Example:
     </paper-dialog>
 
     <!-- room info from search result -->
-    <paper-dialog id="roomDialog" with-backdrop auto-fit-on-attach on-iron-overlay-opened="_onIronOverlayOpened" no-auto-focuse>
-      <h2>[[_selectedRoomInfo.room]]</h2>
-        <div class="room-info-container">
-            <div class="room-info">
-              <iron-icon icon="icons:room"></iron-icon>[[_decodeSite(_selectedRoomInfo.site)]]
-            </div>
-            <div class="room-info">
-              <iron-icon icon="social:location-city"></iron-icon>[[_decodeFloor(_selectedRoomInfo.floor)]]
-            </div>
-            <div class="room-info">
-              <iron-icon icon="social:person-add"></iron-icon>[[_selectedRoomInfo.capacity]]
-            </div>
-            <div class="room-info room-info-types-col">
-              <iron-icon icon="icons:create"></iron-icon>
-              <div class="room-info-types" id="checkboxesInRoomDialog">
-                <template is="dom-repeat" items="[[_decodeTypes(_selectedRoomInfo.types)]]" index-as="index" strip-whitespace>
-                  <paper-checkbox checked>[[item]]</paper-checkbox>
-                </template>
-              </div>
-            </div>
+    <paper-dialog id="roomDialog" with-backdrop modal="[[_isLoading]]" auto-fit-on-attach on-iron-overlay-opened="_onIronOverlayOpened" no-auto-focuse>
+      <template is="dom-if" if="[[_isLoading]]" restamp="true">
+        <h2>Reserve Room</h2>
+        <div class="loading-content">
+          <paper-spinner-lite active="[[_isLoading]]"></paper-spinner-lite>
+          Processing request...
         </div>
-      <div class="buttons">
-        <paper-button dialog-dismiss>Cancel</paper-button>
-        <paper-button dialog-confirm on-tap="_reserveRoom">Reserve</paper-button>
-      </div>
+      </template>
+
+      <template is="dom-if" if="[[!_isLoading]]" restamp="true">
+        <h2>[[_selectedRoomInfo.room]]</h2>
+        <div class="room-info-container">
+          <div class="room-info">
+            <iron-icon icon="icons:room"></iron-icon>[[_selectedRoomInfo.site]]
+          </div>
+          <div class="room-info">
+            <iron-icon icon="social:location-city"></iron-icon>[[_selectedRoomInfo.floor]]
+          </div>
+          <div class="room-info">
+            <iron-icon icon="social:person-add"></iron-icon>[[_selectedRoomInfo.capacity]]
+          </div>
+          <div class="room-info room-info-types-col">
+            <iron-icon icon="icons:create"></iron-icon>
+            <div class="room-info-types" id="checkboxesInRoomDialog">
+              <template is="dom-repeat" items="[[_decodeTypes(_selectedRoomInfo.types)]]" index-as="index" strip-whitespace>
+                <paper-checkbox checked>[[item]]</paper-checkbox>
+              </template>
+            </div>
+          </div>
+        </div>
+        <div class="buttons">
+          <paper-button dialog-dismiss>Cancel</paper-button>
+          <paper-button on-tap="_reserveRoom">Reserve</paper-button>
+          <!-- <paper-button dialog-confirm on-tap="_reserveRoom">Reserve</paper-button> -->
+        </div>
+      </template>
     </paper-dialog>
 
     <!-- options dialog of room info -->
