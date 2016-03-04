@@ -8,6 +8,13 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
+<<<<<<< HEAD
+=======
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-styles/typography.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+
+>>>>>>> upstream/master
 <style is="custom-style">
 
   /*
@@ -22,6 +29,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   /* Application theme */
 
   :root {
+<<<<<<< HEAD
     --dark-primary-color: #303F9F;
     --default-primary-color: #3F51B5;
     --light-primary-color: #C5CAE9;
@@ -32,6 +40,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     --secondary-text-color: #727272;
     --disabled-text-color: #bdbdbd;
     --divider-color: #B6B6B6;
+=======
+    --primary-text-color: var(--paper-grey-900);
+    --primary-background-color: #ffffff;
+    --secondary-text-color: #737373;
+    --disabled-text-color: #9b9b9b;
+    --divider-color: #dbdbdb;
+    --primary-color: var(--paper-indigo-500);
+    --light-primary-color: var(--paper-indigo-100);
+    --dark-primary-color: var(--paper-indigo-700);
+    --accent-color: var(--paper-pink-a200);
+    --light-accent-color: var(--paper-pink-a100);
+    --dark-accent-color: var(--paper-pink-a400);
+>>>>>>> upstream/master
 
     /* Components */
 
@@ -47,16 +68,36 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   /* General styles */
 
+<<<<<<< HEAD
+=======
+  body {
+    @apply(--layout-fullbleed);
+    @apply(--layout-vertical);
+  }
+
+  .space {
+    @apply(--layout-flex);
+  }
+
+>>>>>>> upstream/master
   #drawerToolbar {
     color: var(--secondary-text-color);
     background-color: var(--drawer-menu-color);
     border-bottom: var(--drawer-toolbar-border-color);
   }
 
+<<<<<<< HEAD
+=======
+  #drawerToolbar .menu-name {
+    @apply(--paper-font-title);
+  }
+
+>>>>>>> upstream/master
   paper-scroll-header-panel {
     height: 100%;
   }
 
+<<<<<<< HEAD
   paper-material {
     border-radius: 2px;
     height: 100%;
@@ -64,6 +105,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     width: calc(98.66% - 16px);
     margin: 16px auto;
     background: white;
+=======
+  paper-menu {
+    --paper-menu-selected-item: {
+      color: var(--primary-color);
+    }
+
+    --paper-menu-focused-item-after: {
+      background: var(--primary-color);
+    }
+>>>>>>> upstream/master
   }
 
   paper-menu iron-icon {
@@ -71,6 +122,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     opacity: 0.54;
   }
 
+<<<<<<< HEAD
   .paper-menu > .iron-selected {
     color: var(--default-primary-color);
   }
@@ -78,6 +130,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   paper-menu a {
     @apply(--layout-horizontal);
     @apply(--layout-center);
+=======
+  paper-menu a {
+    @apply(--layout-horizontal);
+    @apply(--layout-center);
+
+>>>>>>> upstream/master
     text-decoration: none;
     color: var(--menu-link-color);
     font-family: 'Roboto', 'Noto', sans-serif;
@@ -90,7 +148,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     padding: 0 16px;
   }
 
+<<<<<<< HEAD
   paper-toolbar.tall .app-name {
+=======
+  #mainToolbar.tall .app-name {
+>>>>>>> upstream/master
     font-size: 40px;
     font-weight: 300;
     /* Required for main area's paper-scroll-header-panel custom condensing transformation */
@@ -98,17 +160,36 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     transform-origin: left center;
   }
 
+<<<<<<< HEAD
+=======
+  #mainToolbar .middle-container,
+  #mainToolbar .bottom-container {
+    @apply(--layout-horizontal);
+    @apply(--layout-center);
+  }
+
+>>>>>>> upstream/master
   #mainToolbar .middle-container  {
     height: 100%;
     margin-left: 48px;
   }
 
+<<<<<<< HEAD
   #mainToolbar:not(.tall) .middle {
+=======
+  #mainToolbar:not(.tall) .middle-container {
+>>>>>>> upstream/master
     font-size: 18px;
     padding-bottom: 0;
   }
 
+<<<<<<< HEAD
   #mainToolbar .bottom {
+=======
+  #mainToolbar .bottom-container {
+    @apply(--paper-font-subhead);
+
+>>>>>>> upstream/master
     margin-left: 48px;
     /* Required for main area's paper-scroll-header-panel custom condensing transformation */
     -webkit-transform-origin: left center;
@@ -120,16 +201,42 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     height: 900px;
   }
 
+<<<<<<< HEAD
+=======
+  section[data-route="home"] paper-material {
+    @apply(--paper-font-body2);
+  }
+
+  section[data-route="home"] paper-material .subhead {
+    @apply(--paper-font-subhead);
+  }
+
+  paper-material {
+    border-radius: 2px;
+    height: 100%;
+    padding: 16px 0 16px 0;
+    width: calc(98.66% - 16px);
+    margin: 16px auto;
+    background: white;
+  }
+
+>>>>>>> upstream/master
   #toast .toast-hide-button {
     color: #eeff41;
     margin: 10px;
   }
 
+<<<<<<< HEAD
+=======
+  section[tabindex="-1"]:focus { outline: none; }
+
+>>>>>>> upstream/master
   /* Breakpoints */
 
   /* Small */
   @media (max-width: 600px) {
 
+<<<<<<< HEAD
     paper-material {
       --menu-container-display: none;
       width: calc(97.33% - 32px);
@@ -138,12 +245,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
     paper-toolbar.tall .app-name {
+=======
+    #drawer .paper-toolbar {
+      margin-left: 16px;
+    }
+
+    #mainToolbar.tall .app-name {
+>>>>>>> upstream/master
       font-size: 24px;
       font-weight: 400;
     }
 
+<<<<<<< HEAD
     #drawer .paper-toolbar {
       margin-left: 16px;
+=======
+    paper-material {
+      --menu-container-display: none;
+      width: calc(97.33% - 32px);
+      padding-left: 16px;
+      padding-right: 16px;
+>>>>>>> upstream/master
     }
 
   }
@@ -151,6 +273,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   /* Tablet+ */
   @media (min-width: 601px) {
 
+<<<<<<< HEAD
     paper-material {
       width: calc(98% - 46px);
       margin-bottom: 32px;
@@ -158,6 +281,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       padding-right: 30px;
     }
 
+=======
+>>>>>>> upstream/master
     #drawer.paper-drawer-panel > [drawer] {
       border-right: 1px solid rgba(0, 0, 0, 0.14);
     }
@@ -166,6 +291,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       padding: 48px 62px;
     }
 
+<<<<<<< HEAD
+=======
+    paper-material {
+      width: calc(98% - 46px);
+      margin-bottom: 32px;
+      padding-left: 30px;
+      padding-right: 30px;
+    }
+
+>>>>>>> upstream/master
   }
 
   /* Material Design Adaptive Breakpoints */
