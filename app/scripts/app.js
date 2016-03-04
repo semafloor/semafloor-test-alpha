@@ -57,8 +57,16 @@
     function setData() {
       // remove skeleton when page is attached.
       if (skeleton !== null) {
-        skeleton.remove();
-        skeleton = null;
+        // Fade out skeleton.
+        skeleton.classList.add('finish-loading');
+        // Fade in main app.
+        semafloor.classList.add('finish-loading');
+
+        // Set timer to remove skeleton after 1000ms.
+        window.setTimeout(function() {
+          skeleton.remove();
+          skeleton = null;
+        }, 1000);
       }
 
       semafloor.category = _category;
@@ -75,7 +83,7 @@
 
   page('*', function() {
     console.log('Cant\'t find: ' + window.location.href +
-      '. Redirected you to Home Page.');
+    '. Redirected you to Home Page.');
     page.redirect('/home/view');
   });
 

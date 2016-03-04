@@ -1,6 +1,6 @@
 {
   "name": "semafloor-test-alpha",
-  "version": "0.1.30",
+  "version": "0.1.31",
   "private": true,
   "dependencies": {
     "iron-elements": "PolymerElements/iron-elements#^1.0.0",
@@ -10,19 +10,21 @@
     "page": "visionmedia/page.js#~1.6.4",
     "polymer": "Polymer/polymer#^1.2.0",
     "semafloor-profile-page": "semafloor/semafloor-profile-page#~0.1.14",
-    "app-layout": "PolymerLabs/app-layout#~0.0.6",
+    "app-layout": "polymerlabs/app-layout#^0.0.12",
     "semafloor-reserve-page": "semafloor/semafloor-reserve-page#~0.3.4",
     "semafloor-search-page": "semafloor/semafloor-search-page#~0.2.9",
     "semafloor-current-page": "semafloor/semafloor-current-page#~0.3.0",
-    "semafloor-room-page": "semafloor/semafloor-room-page#~0.4.4",
+    "semafloor-room-page": "semafloor/semafloor-room-page#^0.6.8",
     "paper-tabs": "PolymerElements/paper-tabs#~1.2.4",
     "paper-badge": "PolymerElements/paper-badge#~1.1.1",
     "iron-icon": "PolymerElements/iron-icon#~1.0.7",
     "iron-iconset-svg": "PolymerElements/iron-iconset-svg#~1.0.9",
     "iron-selector": "PolymerElements/iron-selector#~1.0.8",
-    "semafloor-icons": "semafloor/semafloor-icons#~0.1.1",
+    "semafloor-icons": "semafloor/semafloor-icons#^0.1.3",
     "iron-image": "PolymerElements/iron-image#~1.2.1",
-    "paper-toast": "PolymerElements/paper-toast#~1.1.3"
+    "paper-toast": "PolymerElements/paper-toast#~1.1.3",
+    "jv-datepicker": "motss/jv-datepicker#^2.1.12",
+    "lodash": "lodash/lodash#^4.6.1"
   },
   "devDependencies": {
     "web-component-tester": "~4.1.0"

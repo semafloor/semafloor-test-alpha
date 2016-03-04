@@ -31,7 +31,7 @@
     "gulp-useref": "^2.1.0",
     "gulp-vulcanize": "^6.0.0",
     "jshint-stylish": "^2.0.0",
-    "loadsh": "^4.0.0",
+    "lodash": "^4.5.1",
     "merge-stream": "^1.0.0",
     "require-dir": "^0.3.0",
     "run-sequence": "^1.1.5",
@@ -50,7 +50,6 @@
   "description": "![](https://cloud.githubusercontent.com/assets/110953/7877439/6a69d03e-0590-11e5-9fac-c614246606de.png) ## Polymer Starter Kit",
   "version": "0.3.8",
   "main": "gulpfile.js",
-  "dependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/semafloor/semafloor-test-alpha.git"

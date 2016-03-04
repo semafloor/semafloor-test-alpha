@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<!-- <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/semafloor-icons/semafloor-icons.html">
 
 <link rel="import" href="../../bower_components/app-layout/app-layout.html">
@@ -9,7 +9,7 @@
 
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
-<link rel="import" href="../../bower_components/paper-badge/paper-badge.html">
+<link rel="import" href="../../bower_components/paper-badge/paper-badge.html"> -->
 <!--
 -->
 <!-- <link rel="import" href="../../bower_components/semafloor-profile-page/semafloor-profile-page.html">
@@ -24,23 +24,23 @@
 
 <!-- search -->
 
-<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<!-- <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
-<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html"> -->
 
 <!-- current page -->
 
 <!-- room -->
-<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<!-- <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
 
 <link rel="import" href="../../bower_components/iron-media-query/iron-media-query.html">
-<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-menu/paper-menu.html"> -->
 
 <!-- duplicated -->
-<link rel="import" href="../../bower_components/paper-ripple/paper-ripple.html">
+<!-- <link rel="import" href="../../bower_components/paper-ripple/paper-ripple.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
@@ -55,10 +55,11 @@
 <link rel="import" href="../../bower_components/firebase-element/firebase-collection.html">
 <link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/transform-animation.html">
-<link rel="import" href="../../bower_components/compound-datepicker/compound-datepicker-dialog.html">
-<link rel="import" href="../../bower_components/compound-timepicker/compound-timepicker-dialog.html">
 
-<script src="../../bower_components/lodash/dist/lodash.min.js"></script>
+<link rel="import" href="../../bower_components/compound-timepicker/compound-timepicker-dialog.html">
+<link rel="import" href="../../bower_components/jv-datepicker/jv-datepicker-dialog.html"> -->
+
+<!-- <script src="../../bower_components/lodash/dist/lodash.min.js"></script> -->
 
 <dom-module id="semafloor-test">
   <template>
@@ -71,29 +72,29 @@
       }
 
       /* app-header */
-      [main] > app-header {
-        /*--app-header-front-background: {
+      app-header-layout > app-header {
+        /*--app-header-background-front-layer: {
           background-color: #fff;
-        };
-        --app-header-back-background: {
+        };*/
+        /*--app-header-background-rear-layer: {
           background-color: #009688;
         };*/
-        color: #fff;
-        background-color: #009688;
+        color: #009688;
+        background-color: rgba(255, 255, 255, 0.7);
       }
-      app-toolbar {
-      }
+      /*app-toolbar {
+      }*/
       [title] {
-        color: #fff;
+        /*color: #009688;*/
         font-size: 20px;
         margin-left: 8px;
       }
-      [drawer] > app-header {
+      app-drawer app-header {
         height: calc(144px + 8px);
         /*background-color: rgba(0, 150, 136, 0.5);*/
         /*border-bottom: 1px solid #ddd;*/
       }
-      [drawer] > app-header.need-login {
+      app-drawer app-header.need-login {
         height: 48px;
         background-color: #00796B;
       }
@@ -107,7 +108,8 @@
         background-blend-mode: overlay;
         background-repeat: no-repeat;
         background-size: cover;
-        background-color: #616161;
+        /*background-color: #616161;*/
+        background-color: #555;
       }
       .account-pic {
         height: 64px;
@@ -224,8 +226,8 @@
 
     <firebase-auth id="firebaseAuth" location="[[authURL]]" provider="[[authProvider]]" redirect status-known="{{authStatus}}" user="{{authUser}}" on-error="{{onError}}" params='{"scope": "email"}'></firebase-auth>
 
-    <app-drawer-layout>
-      <app-header-layout id="dhl" drawer has-scrolling-region>
+    <app-drawer-layout force-narrow>
+      <app-drawer id="dhl" swipe-open>
         <app-header class$="[[_computeAuthHidden(authStatus, authUser)]]">
           <template is="dom-if" if="[[!isAuthed(authStatus, authUser)]]" restamp="true">
             <div class="account-image">
@@ -244,7 +246,7 @@
           </template>
         </app-header>
 
-        <iron-selector class="nav-menu" selected="[[category]]" attr-for-selected="name">
+        <iron-selector class="nav-menu" selected="[[category]]" attr-for-selected="name" on-tap="_closeDrawer">
           <a href="/home/view" name="home">Home</a>
           <a href="/profile/view" name="profile" hidden$="[[isAuthed(authStatus, authUser)]]">My Profile</a>
           <a href="/reserve/view" name="reserve" hidden$="[[isAuthed(authStatus, authUser)]]">My Reservations</a>
@@ -253,10 +255,10 @@
           <a href="/room/view" name="room">Room Information</a>
           <!-- <a href="/settings" name="settings"></a> -->
         </iron-selector>
-      </app-header-layout>
+      </app-drawer>
 
-      <app-header-layout main>
-        <app-header id="mainHeader" condenses reveals effects="waterfall">
+      <app-header-layout>
+        <app-header id="mainHeader" fixed condenses reveals effects="material">
           <app-toolbar>
             <paper-icon-button icon="icons:menu" drawer-toggle></paper-icon-button>
             <span title>[[title]]</span>

@@ -211,7 +211,7 @@
       this.async(function() {
         // console.log('4) room-page-notify-resize');
         this.$.mainHeader.notifyResize();
-        this.$.room.updateIronImageWidth(this.getBoundingClientRect().width);
+        // this.$.room.updateIronImageWidth(this.getBoundingClientRect().width);
         // after 10ms.
         // this.fire('room-upgraded', 'profile');
       }, 1);
@@ -239,7 +239,7 @@
         this.set('authMessage', _authMessage);
         this.$.authToast.open();
         // notifyResize drawerHeaderLayout after logged in.
-        this.$.dhl.notifyResize();
+        // this.$.dhl.notifyResize();
       }, 1);
       // if user exists, access to its database, else create new user database.
       this.async(function() {
@@ -286,8 +286,7 @@
         var _isUser = snapshot.child(_authUser.uid).exists();
         if (_isUser) {
           // access data directly from the user.
-          console.log('allow profile page to read2
-           data from the user.');
+          console.log('allow profile page to read data from the user.');
           // _that.$.profile.uid = _authUser.uid;
           _that.set('uid', _authUser.uid);
         }else {
@@ -351,6 +350,11 @@
       }
     },
 
+    // TODO: new app-layout no longer closes app-drawer when tap on anchor tags!
+    _closeDrawer: function() {
+      this.$.dhl.close();
+    },
+
     // dynamically import subsequent href.
     // importAnotherHref: function(ev) {
     //   // when it's room page OR when the requested page has been ready no import is needed.
@@ -368,5 +372,7 @@
     //   });
     // },
 
+    // TODO: I have no idea what this element is doing things so complicated.
+    // TODO: Update to new self crafted spinner.
   });
 })();
