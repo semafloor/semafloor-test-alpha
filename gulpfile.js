@@ -163,9 +163,7 @@ gulp.task('html', function() {
 
 // Vulcanize granular configuration
 gulp.task('vulcanize', function() {
-<<<<<<< HEAD
-  var DEST_DIR = dist('elements');
-  return gulp.src(dist('elements/elements.vulcanized.html'))
+  return gulp.src('app/elements/elements.html')
     .pipe($.vulcanize({
       stripComments: true,
       inlineCss: true,

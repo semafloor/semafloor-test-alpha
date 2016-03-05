@@ -34,7 +34,7 @@
   <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
 
   <!-- will be replaced with elements/elements.vulcanized.html -->
-  <link rel="import" id="bundle" href="elements/elements.html" async>
+  <link rel="import" id="bundle" href="/elements/elements.html" async>
   <!-- endreplace-->
 
   <style>
@@ -43,6 +43,7 @@
       color: #333;
       font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
       margin: 0;
+      padding: 0;
     }
 
     #skeleton .drawer {
@@ -99,32 +100,15 @@
       font-weight: 800;
     }*/
 
-    @media (max-width: 1280px) {
-      #skeleton .drawer {
-        display: none;
-      }
-
-      #skeleton .main > .app-header {
-        left: 0;
-      }
-    }
-
-    @media (max-width: 580px) {
-      #skeleton .site-title {
-        font-size: 40px;
-        padding-bottom: 16px;
-      }
-    }
-
     /* the new spinner */
     .loading {
       position: absolute;
-      top: calc(64px + 8px + 16px + 16px);
+      top: calc(64px + 15px + 16px + 8px);
       left: 50%;
       margin: -15px 0 0 -15px;
       height: 32px;
       width: 32px;
-      border: 2px solid #ddd;
+      border: 3px solid #ddd;
       border-radius: 50%;
       border-left-color: #009688;
       /*border-right-color: #1ddbd8;
@@ -138,7 +122,7 @@
       transition: opacity ease-in .2s;
     }
 
-    @-webkit-keyframse animation-rotate {
+    @-webkit-keyframes animation-rotate {
       100% {
         -webkit-transform: rotate(360deg);
       }
@@ -146,20 +130,40 @@
     @keyframes animation-rotate {
       100% {
         -webkit-transform: rotate(360deg);
-                transform: rotate(360deg);
+        transform: rotate(360deg);
       }
     }
     #skeleton.finish-loading {
       opacity: 0;
     }
 
-    semafloor-test {
+    semafloor-main {
       opacity: 0;
       will-change: opacity;
       transition: opacity ease-in .4s .1s;
     }
-    semafloor-test.finish-loading {
+    semafloor-main.finish-loading {
       opacity: 1;
+    }
+
+    /* @media - large desktop */
+    @media (max-width: 1280px) {
+      #skeleton .drawer {
+        display: none;
+      }
+
+      #skeleton .main > .app-header {
+        left: 0;
+      }
+
+    }
+
+    /* @media - tablet */
+    @media (max-width: 580px) {
+      #skeleton .site-title {
+        font-size: 40px;
+        padding-bottom: 16px;
+      }
     }
 
   </style>
@@ -174,13 +178,27 @@
         <div class="app-toolbar">
           Semafloor
         </div>
-      </div>
 
-      <div class="loading"></div>
+        <div class="loading"></div>
+      </div>
     </div>
   </div>
 
-  <semafloor-test></semafloor-test>
+  <!-- <semafloor-test></semafloor-test> -->
+  <semafloor-main></semafloor-main>
+  <!-- <app-drawer-layout force-narrow>
+    <app-drawer swipe-open></app-drawer>
+
+    <app-header-layout>
+      <app-header>
+        <app-toolbar>Title</app-toolbar>
+      </app-header>
+
+      <iron-pages selected="0">
+        <semafloor-room-page></semafloor-room-page>
+      </iron-pages>
+    </app-header-layout>
+  </app-drawer-layout> -->
 
   <!-- Uncomment next block to enable Service Worker support (1/2) -->
 
@@ -196,7 +214,7 @@
 
   <!-- build:js scripts/app.js -->
   <script src="/bower_components/lodash/dist/lodash.min.js" async></script>
-  <script page src="/bower_components/page/page.js"></script>
+  <script src="/bower_components/page/page.js"></script>
   <script src="/scripts/app.js" async></script>
   <!-- endbuild-->
 </body>

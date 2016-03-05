@@ -35,22 +35,5 @@
   },
   "engines": {
     "node": ">=0.10.0"
-  },
-  "name": "semafloor-test-alpha",
-  "description": "![](https://cloud.githubusercontent.com/assets/110953/7877439/6a69d03e-0590-11e5-9fac-c614246606de.png) ## Polymer Starter Kit",
-  "version": "0.3.8",
-  "main": "gulpfile.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/semafloor/semafloor-test-alpha.git"
-  },
-  "keywords": [
-    "compound-timepicker"
-  ],
-  "author": "motss <wes_ngrongsen@hotmail.com> (https://github.com/semafloor/productionizer)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/semafloor/semafloor-test-alpha/issues"
-  },
-  "homepage": "https://github.com/semafloor/semafloor-test-alpha#readme"
+  }
 }
