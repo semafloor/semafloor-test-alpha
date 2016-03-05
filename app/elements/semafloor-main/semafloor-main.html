@@ -1,0 +1,439 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="semafloor-main">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      app-header-layout app-header {
+        color: #009688;
+        --app-header-background-front-layer: {
+          background-color: #fff;
+        };
+        --app-header-background-rear-layer: {
+          background-color: #009688;
+        };
+      }
+      app-header-layout [shadow],
+      [shadow] .title {
+        color: #fff;
+      }
+
+      .title {
+        font-size: 20px;
+        margin-left: 8px;
+      }
+
+      app-drawer app-header {
+        height: calc(144px + 8px);
+      }
+      app-drawer app-header.sign-in {
+        height: 48px;
+        background-color: #007968;
+      }
+      .account-image {
+        height: 144px;
+        padding: 0 16px;
+        margin-bottom: 8px;
+        /*background-image: url(https://lh4.googleusercontent.com/-3BKYx2qTLAs/VGdNZNGmjlI/AAAAAAAADXA/dAKtKgPQyMo/w515-h348-no/Ultimate%2BMaterial%2BLollipop%2BCollection%2B-%2B65);*/
+        background-image: url(https://lh3.googleusercontent.com/-S0NlQSizDuM/VSHcZNxiJqI/AAAAAAAAIio/MfI3_-S54B8/w640-h361-n-no/20150402_192344.jpg);
+        background-blend-mode: overlay;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-color: #555;
+      }
+      iron-image.account-pic {
+        position: absolute;
+        height: 64px;
+        width: 64px;
+        border: 1px solid #757575;
+        border-radius: 50%;
+        background-color: #e0e0e0;
+        top: 16px;
+        --iron-image-placeholder: {
+          border-radius: 50%;
+        };
+      }
+      .account-menu {
+        position: absolute;
+        bottom: 8px;
+        color: #fff;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+        height: 48px;
+      }
+      .account-name {
+        font-weight: 700;
+      }
+      .account-sign-in {
+        padding-left: 16px;
+        color: #fff;
+        cursor: pointer;
+        height: 48px;
+        font-size: 20px;
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+      }
+
+      /* anchor tags */
+      a {
+        text-decoration: none;
+        color: inherit;
+        font-size: inherit;
+      }
+      .nav-menu {
+        margin-top: 8px;
+      }
+      .nav-menu > a {
+        display: block;
+        padding: 12px 16px;
+        font-size: 14px;
+        /*color: #616161;*/
+        font-weight: 500;
+        /* According to Google Play Store, the height should be 48px. */
+        height: 48px;
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+      }
+      .nav-menu > a.iron-selected {
+        font-weight: 400;
+        background-color: #eee;
+      }
+      .nav-menu > a[name=profile] > iron-icon{
+        color: #3F51B5;
+      }
+      .nav-menu > a[name=reserve] > iron-icon{
+        color: #795548;
+      }
+      .nav-menu > a[name=search] > iron-icon{
+        color: #FF5722;
+      }
+      .nav-menu > a[name=current] > iron-icon{
+        color: #607D8B;
+      }
+      .nav-menu > a[name=room] > iron-icon{
+        color: #F44336;
+      }
+
+      .home {
+        padding: 24px 16px 16px;
+      }
+
+      /* toast */
+      paper-toast {
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+    </style>
+
+    <firebase-auth id="semafloorAuth"
+      location="[[authURL]]"
+      provider="[[authProvider]]"
+      redirect="[[authRedirect]]"
+      status-known="{{authStatus}}"
+      user="{{authUser}}"
+      on-login="_onLogin"
+      on-logout="_onLogout"
+      on-error="{{_onError}}"
+      params='{"scope": "email"}'></firebase-auth>
+
+    <app-drawer-layout force-narrow>
+      <app-drawer swipe-open>
+        <app-header class$="[[_computeLoginCls(authStatus, authUser)]]">
+          <template is="dom-if" if="[[_computeLoggedIn(authStatus, authUser)]]" restamp="true" strip-whitespace>
+            <div class="account-image">
+              <!-- <div class="account-pic" id="accountPic"></div> -->
+              <iron-image class="account-pic" src$="[[authUser.google.profileImageURL]]" sizing="contain" preload fade></iron-image>
+              <div class="account-menu" on-tap="_logout">
+                <div class="account-name">[[authUser.google.displayName]]</div>
+                <div class="account-email">[[authUser.google.email]]</div>
+              </div>
+            </div>
+          </template>
+          <template is="dom-if" if="[[!_computeLoggedIn(authStatus, authUser)]]" restamp="true" strip-whitespace>
+            <div class="account-sign-in" on-tap="_loginWithGoogle">
+              Sign in
+            </div>
+          </template>
+        </app-header>
+
+        <iron-selector class="nav-menu" selected="[[category]]" attr-for-selected="name" on-tap="_closeDrawer">
+          <a href="/home/view" name="home">Home</a>
+          <a href="/profile/view" name="profile" hidden$="[[!_computeLoggedIn(authStatus, authUser)]]">My Profile</a>
+          <a href="/reserve/view" name="reserve" hidden$="[[!_computeLoggedIn(authStatus, authUser)]]">My Reservations</a>
+          <a href="/search/view" name="search" hidden$="[[!_computeLoggedIn(authStatus, authUser)]]">Search &amp; Reserve</a>
+          <a href="/current/view" name="current">Current Reservations</a>
+          <a href="/room/view" name="room">Room Information</a>
+          <!-- <a href="/settings" name="settings"></a> -->
+        </iron-selector>
+      </app-drawer>
+
+      <app-header-layout>
+        <app-header fixed condenses reveals effects="material fade-background">
+          <app-toolbar>
+            <paper-icon-button icon="icons:menu" drawer-toggle></paper-icon-button>
+            <span condensed-title hidden></span>
+            <span title hidden></span>
+            <span class="title">[[pageTitle]]</span>
+          </app-toolbar>
+        </app-header>
+
+        <iron-pages selected="[[page]]" attr-for-selected="page">
+          <div class="home" page="home">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quibusdam, minima!
+          </div>
+
+          <template is="dom-if" if="[[_isProfilePageOpened]]" restamp="true" strip-whitespace>
+            <semafloor-profile-page page="profile" uid="[[uid]]" on-profile-page-attached="_onPageAttached"></semafloor-profile-page>
+          </template>
+          <template is="dom-if" if="[[_isReservePageOpened]]" restamp="true" strip-whitespace>
+            <semafloor-reserve-page page="reserve" uid="[[uid]]" on-reserve-page-attached="_onPageAttached"></semafloor-reserve-page>
+          </template>
+          <template is="dom-if" if="[[_isSearchPageOpened]]" restamp="true" strip-whitespace>
+            <semafloor-search-page page="search" uid="[[uid]]" on-search-page-attached="_onPageAttached"></semafloor-search-page>
+          </template>
+          <template is="dom-if" if="[[_isCurrentPageOpened]]" restamp="true" strip-whitespace>
+            <semafloor-current-page page="current" uid="[[uid]]" on-current-page-attached="_onPageAttached"></semafloor-current-page>
+          </template>
+          <template is="dom-if" if="[[_isRoomPageOpened]]" restamp="true" strip-whitespace>
+            <semafloor-room-page page="room" uid=[[uid]] on-room-page-attached="_onPageAttached"></semafloor-room-page>
+          </template>
+        </iron-pages>
+      </app-header-layout>
+    </app-drawer-layout>
+
+    <paper-toast id="authToast" text="[[authMsg]]"></paper-toast>
+  </template>
+  <script>
+  (function() {
+    'use strict';
+
+    Polymer({
+      is: 'semafloor-main',
+
+      _pageCodes: ['home', 'profile', 'reserve', 'search', 'current', 'room'],
+      _pageNames: ['Home', 'My Profile', 'My Reservations', 'Search & Reserve',
+        'Current Reservations', 'Room Information'],
+
+      properties: {
+        category: String,
+        page: String,
+        uid: String,
+        pageTitle: String,
+
+        authURL: {
+          type: String,
+          value: 'https://semafloor-webapp.firebaseio.com'
+        },
+        authProvider: {
+          type: String,
+          value: 'google'
+        },
+        authMsg: String,
+        authRedirect: Boolean,
+
+        _isRoomPageOpened: Boolean,
+        _isRoomPageAttached: Boolean,
+
+        authStatus: Boolean,
+        authUser: Object,
+
+      },
+
+      observers: [
+        '_computePageTitle(category)',
+        '_checkIfUserExists(authUser)'
+      ],
+
+      ready: function() {
+        this.fire('upgraded');
+        this.set('upgraded', !0);
+      },
+      attached: function() {
+        var _isMobileThenRedirect = window.navigator.MaxTouchPoints > 0 && window.outerWidth < 1367;
+        this.set('authRedirect', _isMobileThenRedirect);
+
+        this.fire('main-page-attached');
+      },
+
+      _computePageTitle: function(_category) {
+        console.time('_computePageTitle');
+        var _isPageOpened = '_is' + _.capitalize(_category) + 'PageOpened';
+        var _pageIdx = this._pageCodes.indexOf(_category);
+        var _pageTitle = this._pageNames[_pageIdx];
+        if (!this[_isPageOpened]) {
+          this.set(_isPageOpened, !0);
+        }
+
+        this.set('pageTitle', _pageTitle);
+
+        console.timeEnd('_computePageTitle');
+        console.log(_category);
+      },
+      _computeLoggedIn: function(_authStatus, _authUser) {
+        console.time('_computeLoggedIn');
+        var _isLoggedIn = !_authStatus || !!_authUser;
+        return _isLoggedIn;
+        console.timeEnd('_computeLoggedIn');
+        console.log(_authStatus, _authUser);
+      },
+      _computeLoginCls: function(_authStatus, _authUser) {
+        console.time('_computeLoginCls');
+        var _isLoggedIn = !_authStatus || !!_authUser;
+        return _isLoggedIn ? '' : 'sign-in';
+        console.timeEnd('_computeLoginCls');
+      },
+
+      _loginWithGoogle: function() {
+        console.time('_loginWithGoogle');
+        if (!!this.authUser) {
+          return;
+        }
+
+        this.$.semafloorAuth.login();
+        console.timeEnd('_loginWithGoogle');
+      },
+      _logout: function() {
+        console.time('_logout');
+        this.$.semafloorAuth.logout();
+        console.timeEnd('_logout');
+      },
+      _onLogin: function() {
+        console.time('_onLogin');
+        var _authMsg = 'Logged in';
+        var _authToast = this.$.authToast;
+        var _authUser = this.authUser;
+
+        _authMsg += !!_authUser ? ' as ' + _authUser.google.displayName + '.' : '!';
+
+        if (_authToast.opened) {
+          _authToast.close();
+        }
+
+        this.set('authMsg', _authMsg);
+        this.async(function() {
+          _authToast.open();
+        }, 1);
+        // this._checkIfUserExists(_authUser);
+        console.timeEnd('_onLogin');
+      },
+      _onLogout: function() {
+        console.time('_onLogout');
+        var _authMsg = 'Logged out!';
+        var _authToast = this.$.authToast;
+
+        if (_authToast.opened) {
+          _authToast.close();
+        }
+        this.set('authMsg', _authMsg);
+        this.async(function() {
+          _authToast.open();
+        }, 1);
+        console.timeEnd('_onLogout');
+      },
+      _onError: function(ev) {
+        console.time('_onError');
+        console.timeEnd('_onError');
+        console.error('_onError:', ev.detail.message);
+      },
+
+      _onPageAttached: function(ev) {
+        console.time('_onPageAttached');
+        var _isPageAttached = '_' + _.camelCase('is ' + ev.type);
+        if (!this[_isPageAttached]) {
+          this.set(_isPageAttached, !0);
+        }
+        console.timeEnd('_onPageAttached');
+        console.log(ev);
+      },
+
+      _closeDrawer: function() {
+        console.time('_closeDrawer');
+        var _drawer = Polymer.dom(this.root).querySelector('app-drawer');
+        _drawer.close();
+        console.timeEnd('_closeDrawer');
+      },
+
+      _checkIfUserExists: function(_authUser) {
+        if (!_authUser) {
+          return;
+        }
+
+        var _ref = this.$.semafloorAuth.ref;
+        var _that = this;
+        _ref.child('users/' + _authUser.provider).once('value').then(function(snapshot) {
+          var _isUser = snapshot.child(_authUser.uid).exists();
+          if (_isUser) {
+            // Access data directly from the user.
+            console.warn('Existing user! Allow profile to read data from the user...');
+            _that.set('uid', _authUser.uid);
+          }else {
+            console.warn('Creating Firebase for new user...');
+            _ref.child('users/' + _authUser.provider + '/' + _authUser.uid)
+              .transaction(function(data) {
+                if (data == null) {
+                  var _newUserData = {
+                    displayName: _authUser.google.displayName,
+                    email: _authUser.google.email,
+                    id: _authUser.google.id,
+                    profileImageURL: _authUser.google.profileImageURL,
+                    provider: _authUser.provider,
+                    uid: _authUser.uid,
+                    cachedUserProfile: _authUser.google.cachedUserProfile,
+                    profile: {
+                      username: _authUser.google.displayName,
+                      uid: _authUser.google.cachedUserProfile.given_name.slice(0, 1).toLowerCase() +
+                        _authUser.google.cachedUserProfile.family_name.slice(0, 1).toLowerCase() +
+                        String.fromCharCode(_.random(97, 122)) +
+                        String.fromCharCode(_.random(97, 122)) +
+                        String.fromCharCode(_.random(97, 122)),
+                      group: _.random(99),
+                      email: _authUser.google.email,
+                      role: _.sample(['normal', 'vip', 'boss', 'janitor', 'elite', 'principal']),
+                      room: String.fromCharCode(_.random(65, 90)) +
+                        ('000' + _.random(999)).slice(-3),
+                      floor: String.fromCharCode(_.random(65, 90)) +
+                        ('000' + _.random(999)).slice(-3),
+                      tzone: 'GMT +8',
+                      tout: 1440
+                    },
+                    reservations: {
+                      createdTime: Firebase.ServerValue.TIMESTAMP
+                    }
+                  };
+                  return _newUserData;
+                }else {
+                  console.error('User already exists?!');
+                  return;
+                }
+              }).then(function(committed, snapshot) {
+                // TODO: Not quite sure if this is the correct way since updated to Promise.
+                if (!committed) {
+                  console.warn('Aborted!');
+                }else {
+                  console.log(snapshot.val());
+                }
+              }).catch(function(error) {
+                console.error(error);
+              });
+          }
+        });
+      },
+
+      // TODO: Dialogs not able to have correct z-index.
+      // TODO: Reserve page not working.
+      // TODO: Spinner is needed when changes to new page.
+    });
+  })();
+  </script>
+</dom-module>

@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <base href="/">
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="Semafloor">
+  <title>Semafloor</title>
+
+  <!-- Place favicon.ico in the `app/` directory -->
+
+  <!-- Chrome for Android theme color -->
+  <meta name="theme-color" content="#009688">
+
+  <!-- Web Application Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Tile color for Win8 -->
+  <meta name="msapplication-TileColor" content="#009688">
+
+  <!-- Add to homescreen for Chrome on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="PSK">
+  <link rel="icon" sizes="192x192" href="images/touch/chrome-touch-icon-192x192.png">
+
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Semafloor">
+  <link rel="apple-touch-icon" href="images/touch/apple-touch-icon.png">
+
+  <!-- Tile icon for Win8 (144x144) -->
+  <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+
+  <!-- Because this project uses vulcanize this should be your only html import
+       in this file. All other imports should go in elements.html -->
+  <link id="bundle" rel="import" href="elements/elements.html">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #fff;
+      color: #333;
+      font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+
+    #skeleton .drawer {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: auto;
+      background-color: #fff;
+      width: 256px;
+    }
+
+    #skeleton .main > .app-header {
+      display: block;
+      position: fixed;
+      top: 0;
+      right: 0;
+      z-index: 1;
+      border-bottom: 1px solid #ddd;
+      font-size: 20px;
+      font-weight: 400;
+      background-color: #fff;
+      color: #009688;
+      -webkit-transform: translate3d(0, 0, 0);
+              transform: translate3d(0, 0, 0);
+      left: 256px;
+    }
+
+    #skeleton .app-toolbar {
+      height: 64px;
+      padding: 0 16px;
+      position: relative;
+      pointer-events: none;
+      font-size: 20px;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: normal;
+      -webkit-flex-direction: row;
+          -ms-flex-direction: row;
+              flex-direction: row;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+          -ms-flex-align: center;
+              align-items: center;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+          -ms-flex-pack: center;
+              justify-content: center;
+    }
+
+    /* the new spinnner */
+    .loading {
+      position: absolute;
+      top: calc(64px + 15px + 16px + 8px);
+      left: 50%;
+      margin: -15px 0 0 -15px;
+      height: 32px;
+      width: 32px;
+      border-radius: 50%;
+      border: 3px solid #ddd;
+      border-left-color: #009688;
+      -webkit-animation: animation-rotate 950ms cubic-bezier(.64, 2, .56, .6) infinite;
+              animation: animation-rotate 950ms cubic-bezier(.64, 2, .56, .6) infinite;
+    }
+    #skeleton {
+      opacity: 1;
+      will-change: opacity;
+      -webkit-transition: opacity ease-in .2s;
+      transition: opacity ease-in .2s;
+    }
+
+    @-webkit-keyframes animation-rotate {
+      100% {
+        -webkit-transform: rotate(360deg);
+      }
+    }
+    @keyframes animation-rotate {
+      100% {
+        -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+      }
+    }
+
+    semafloor-main {
+      opacity: 0;
+      will-change: opacity;
+      -webkit-transition: opacity ease-in .4s .1s;
+      transition: opacity ease-in .4s .1s;
+    }
+    semafloor-main.finish-loading {
+      opacity: 1;
+    }
+
+    /* @media - large desktop */
+    @media all and (max-width: 1280px) {
+      #skeleton .drawer {
+        display: none;
+      }
+
+      #skeleton .main > .app-header {
+        left: 0;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <!-- <span id="browser-sync-binding"></span> -->
+
+  <div id="skeleton">
+    <div class="drawer"></div>
+
+    <div class="main">
+      <div class="app-header">
+        <div class="app-toolbar">
+          Semafloor
+        </div>
+
+        <div class="loading"></div>
+      </div>
+    </div>
+  </div>
+
+  <semafloor-main></semafloor-main>
+
+  <!-- Uncomment next block to enable Service Worker support (1/2) -->
+  <platinum-sw-register auto-register
+                        clients-claim
+                        skip-waiting
+                        base-uri="bower_components/platinum-sw/bootstrap">
+    <platinum-sw-cache default-cache-strategy="fastest"
+                       cache-config-file="cache-config.json">
+    </platinum-sw-cache>
+  </platinum-sw-register>
+  </template>
+
+  <!-- build:js scripts/app.js -->
+
+  <script src="bower_components/page/page.js" async></script>
+  <script src="bower_components/lodash/dist/lodash.min.js" async></script>
+  <script src="scripts/app.js" async></script>
+  <!-- endbuild-->
+</body>
+
+</html>
