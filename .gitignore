@@ -1,5 +1,4 @@
 node_modules
-<<<<<<< HEAD
 bower_components
 dist
 .tmp
@@ -7,9 +6,3 @@ dist
 firebase.json
 firebase-debug.log
 gulpfile.babel.js
-=======
-dist
-bower_components
-.tmp
-.publish/
->>>>>>> upstream/master

@@ -1,25 +1,17 @@
 /*
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-<<<<<<< HEAD
-The compvare set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The compvare set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-=======
 The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
->>>>>>> upstream/master
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
 'use strict';
 
-<<<<<<< HEAD
-=======
 // Include promise polyfill for node 0.10 compatibility
 require('es6-promise').polyfill();
 
->>>>>>> upstream/master
 // Include Gulp & tools we'll use
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
@@ -34,16 +26,9 @@ var glob = require('glob-all');
 var historyApiFallback = require('connect-history-api-fallback');
 var packageJson = require('./package.json');
 var crypto = require('crypto');
-<<<<<<< HEAD
-// var ghPages = require('gulp-gh-pages');
-var htmlmin = require('gulp-htmlmin');
-var cssnano = require('gulp-cssnano');
-var replace = require('gulp-replace');
-=======
 var ensureFiles = require('./tasks/ensure-files.js');
 
 // var ghPages = require('gulp-gh-pages');
->>>>>>> upstream/master
 
 var AUTOPREFIXER_BROWSERS = [
   'ie >= 10',
@@ -63,11 +48,7 @@ var dist = function(subpath) {
   return !subpath ? DIST : path.join(DIST, subpath);
 };
 
-<<<<<<< HEAD
-var styvarask = function(stylesPath, srcs) {
-=======
 var styleTask = function(stylesPath, srcs) {
->>>>>>> upstream/master
   return gulp.src(srcs.map(function(src) {
       return path.join('app', stylesPath, src);
     }))
@@ -91,19 +72,10 @@ var imageOptimizeTask = function(src, dest) {
 
 var optimizeHtmlTask = function(src, dest) {
   var assets = $.useref.assets({
-<<<<<<< HEAD
-    searchPath: ['.tmp', 'app', dist()]
-  });
-
-  return gulp.src(src)
-    // Replace path for vulcanized assets
-    .pipe($.if('*.html', $.replace('elements/elements.html', 'elements/elements.vulcanized.html')))
-=======
     searchPath: ['.tmp', 'app']
   });
 
   return gulp.src(src)
->>>>>>> upstream/master
     .pipe(assets)
     // Concatenate and minify JavaScript
     .pipe($.if('*.js', $.uglify({
@@ -129,35 +101,6 @@ var optimizeHtmlTask = function(src, dest) {
 
 // Compile and automatically prefix stylesheets
 gulp.task('styles', function() {
-<<<<<<< HEAD
-  return styvarask('styles', ['**/*.css']);
-});
-
-gulp.task('elements', function() {
-  return styvarask('elements', ['**/*.css']);
-});
-
-// Lint JavaScript
-gulp.task('lint', function() {
-  return gulp.src([
-      'app/scripts/**/*.js',
-      'app/elements/**/*.js',
-      'app/elements/**/*.html',
-      'gulpfile.js'
-    ])
-    .pipe(reload({
-      stream: true,
-      once: true
-    }))
-
-  // JSCS has not yet a extract option
-  .pipe($.if('*.html', $.htmlExtract()))
-  .pipe($.jshint())
-  .pipe($.jscs())
-  .pipe($.jscsStylish.combineWithHintResults())
-  .pipe($.jshint.reporter('jshint-stylish'))
-  .pipe($.if(!browserSync.active, $.jshint.reporter('fail')));
-=======
   return styleTask('styles', ['**/*.css']);
 });
 
@@ -170,7 +113,6 @@ gulp.task('ensureFiles', function(cb) {
   ensureFiles(requiredFiles.map(function(p) {
     return path.join(__dirname, p);
   }), cb);
->>>>>>> upstream/master
 });
 
 // Optimize images
@@ -182,44 +124,15 @@ gulp.task('images', function() {
 gulp.task('copy', function() {
   var app = gulp.src([
     'app/*',
-<<<<<<< HEAD
-    'app/**/*.json', // workaround to copy json/
-    '!app/test',
-    '!app/cache-config.json'
-=======
     '!app/test',
     '!app/elements',
     '!app/bower_components',
     '!app/cache-config.json',
     '!**/.DS_Store'
->>>>>>> upstream/master
   ], {
     dot: true
   }).pipe(gulp.dest(dist()));
 
-<<<<<<< HEAD
-  var bower = gulp.src([
-    'bower_components/**/*'
-  ]).pipe(gulp.dest(dist('bower_components')));
-
-  var elements = gulp.src(['app/elements/**/*.html',
-      'app/elements/**/*.css',
-      'app/elements/**/*.js'
-    ])
-    .pipe(gulp.dest(dist('elements')));
-
-  var swBootstrap = gulp.src(['bower_components/platinum-sw/bootstrap/*.js'])
-    .pipe(gulp.dest(dist('elements/bootstrap')));
-
-  var swToolbox = gulp.src(['bower_components/sw-toolbox/*.js'])
-    .pipe(gulp.dest(dist('sw-toolbox')));
-
-  var vulcanized = gulp.src(['app/elements/elements.html'])
-    .pipe($.rename('elements.vulcanized.html'))
-    .pipe(gulp.dest(dist('elements')));
-
-  return merge(app, bower, elements, vulcanized, swBootstrap, swToolbox)
-=======
   // Copy over only the bower_components we need
   // These are things which cannot be vulcanized
   var bower = gulp.src([
@@ -227,7 +140,6 @@ gulp.task('copy', function() {
   ]).pipe(gulp.dest(dist('bower_components')));
 
   return merge(app, bower)
->>>>>>> upstream/master
     .pipe($.size({
       title: 'copy'
     }));
@@ -245,11 +157,7 @@ gulp.task('fonts', function() {
 // Scan your HTML for assets & optimize them
 gulp.task('html', function() {
   return optimizeHtmlTask(
-<<<<<<< HEAD
-    ['app/**/*.html', '!app/{elements,test}/**/*.html'],
-=======
     ['app/**/*.html', '!app/{elements,test,bower_components}/**/*.html'],
->>>>>>> upstream/master
     dist());
 });
 
@@ -258,19 +166,12 @@ gulp.task('vulcanize', function() {
 <<<<<<< HEAD
   var DEST_DIR = dist('elements');
   return gulp.src(dist('elements/elements.vulcanized.html'))
-=======
-  return gulp.src('app/elements/elements.html')
->>>>>>> upstream/master
     .pipe($.vulcanize({
       stripComments: true,
       inlineCss: true,
       inlineScripts: true
     }))
-<<<<<<< HEAD
-    .pipe(gulp.dest(DEST_DIR))
-=======
     .pipe(gulp.dest(dist('elements')))
->>>>>>> upstream/master
     .pipe($.size({title: 'vulcanize'}));
 });
 
@@ -315,11 +216,7 @@ gulp.task('clean', function() {
 });
 
 // Watch files for changes & reload
-<<<<<<< HEAD
-gulp.task('serve', ['styles', 'elements', 'images'], function() {
-=======
 gulp.task('serve', ['styles'], function() {
->>>>>>> upstream/master
   browserSync({
     port: 5000,
     notify: false,
@@ -338,19 +235,6 @@ gulp.task('serve', ['styles'], function() {
     // https: true,
     server: {
       baseDir: ['.tmp', 'app'],
-<<<<<<< HEAD
-      middleware: [historyApiFallback()],
-      routes: {
-        '/bower_components': 'bower_components'
-      }
-    }
-  });
-
-  gulp.watch(['app/**/*.html'], reload);
-  gulp.watch(['app/styles/**/*.css'], ['styles', reload]);
-  gulp.watch(['app/elements/**/*.css'], ['elements', reload]);
-  gulp.watch(['app/{scripts,elements}/**/{*.js,*.html}'], ['lint']);
-=======
       middleware: [historyApiFallback()]
     }
   });
@@ -358,7 +242,6 @@ gulp.task('serve', ['styles'], function() {
   gulp.watch(['app/**/*.html', '!app/bower_components/**/*.html'], reload);
   gulp.watch(['app/styles/**/*.css'], ['styles', reload]);
   gulp.watch(['app/scripts/**/*.js'], reload);
->>>>>>> upstream/master
   gulp.watch(['app/images/**/*'], reload);
 });
 
@@ -389,226 +272,12 @@ gulp.task('serve:dist', ['default'], function() {
 gulp.task('default', ['clean'], function(cb) {
   // Uncomment 'cache-config' if you are going to use service workers.
   runSequence(
-<<<<<<< HEAD
-    ['copy', 'styles'],
-    'elements',
-    ['lint', 'images', 'fonts', 'html'],
-    // 'vulcanize',
-    'cache-config',
-    cb);
-});
-
-// TODO: Everything can be reinstalled using Bower and Bower is fast!
-// backup all dependencies inside bower_components.
-// gulp.task('backup', function() {
-// 	return gulp.src([
-// 		'bower_components/**/*'
-// 	])
-// 		.pipe(gulp.dest('backup'));
-// });
-
-// minifying all dependencies inside bower_components.
-gulp.task('mindep', function() {
-  return gulp.src([
-		'bower_components/@(app-|iron-|paper-|google-|firebase-|gold-|platinum-|neon-|font-|polymer)' +
-		'*/**/*.html',
-		// 'bower_components/@(app-|iron-|paper-|google-|firebase-|gold-|platinum-|neon-)*/**/*.js',
-		'!bower_components/@(app-|iron-|paper-|google-|firebase-|gold-|platinum-|neon-|font-)' +
-		'*/@(demo|test)/**/*',
-		'!bower_components/@(app-|iron-|paper-|google-|firebase-|gold-|platinum-|neon-|font-)' +
-		'*/**/@(demo|test)/**/*',
-		'!bower_components/@(app-|iron-|paper-|google-|firebase-|gold-|platinum-|neon-|font-)' +
-		'*/index.html',
-		'!bower_components/iron-flex-layout/*' // avoid iron-flex-layout.
-	])
-	.pipe($.size({
-  showFiles: true,
-  pretty: true,
-  title: 'mindep: '
-	}))
-	.pipe(htmlmin({
-  minifyCSS: true,
-  minifyJS: true,
-  collapseWhitespace: true,
-  collapseInlineTagWhitespace: true,
-  removeComments: true,
-  removeCommentsFromCDATA: true,
-  caseSensitive: true,
-  customAttrAssign: [/\$=/]
-	}))
-	.pipe(gulp.dest('backup'));
-});
-// TODO: special treatment for page.js.
-gulp.task('minpage', function() {
-  return gulp.src([
-		'bower_components/page/*.js'
-	])
-		.pipe($.uglify())
-		.pipe(gulp.dest('backup/page'));
-});
-gulp.task('cleandep', function() {
-  del([
-  'bower_components/' +
-	'@(app-|iron-|paper-|google-|firebase-|gold-|platinum-|neon-|font-|page|polymer)*'
-	]);
-});
-gulp.task('movemin', function() {
-  return gulp.src([
-		'backup/**/*'
-	])
-		.pipe(gulp.dest('bower_components'));
-});
-gulp.task('nobackup', function() {
-  del([
-		'backup',
-		'.tmp'
-	]);
-});
-// special treatment for iron-flex-layout as clean-css doesn't know how to parse Polymer's mixins.
-gulp.task('minflex', function() {
-  return gulp.src([
-		'bower_components/iron-flex-layout/**/*.html'
-	])
-  .pipe($.htmlExtract({
-    sel: 'style'
-  }))
-  .pipe(cssnano())
-  .pipe($.rename({
-    extname: '.css'
-  }))
-  .pipe(gulp.dest('.tmp'));
-});
-gulp.task('reflex', function() {
-  var allFiles = [];
-  var fileIdx = 0;
-  var flexlayout = gulp.src([
-		'bower_components/iron-flex-layout/iron-flex-layout.html'
-	], function(un, files) {
-  for (var i = 0; i < files.length; i++) {
-    var temp = files[i].slice(0, -5).split('/');
-    allFiles.push(temp.slice(temp.indexOf('bower_components'), temp.length).join('/'));
-  }
-	})
-		.pipe(replace(/<style>[\s\S]*<\/style>/, function() {
-  var style = fs.readFileSync('.tmp/' + allFiles[fileIdx] + '.css', 'utf8');
-  fileIdx++;
-  return '<style>' + style + '</style>';
-		}))
-		.pipe(htmlmin({
-  collapseWhitespace: true,
-  collapseInlineTagWhitespace: true,
-  removeComments: true,
-  removeCommentsFromCDATA: true,
-  caseSensitive: true,
-  customAttrAssign: [/\$=/]
-		}))
-		.pipe(gulp.dest('backup/iron-flex-layout/'));
-  var flexcls =  gulp.src([
-		'bower_components/iron-flex-layout/classes/iron-flex-layout.html',
-		'bower_components/iron-flex-layout/classes/iron-shadow-flex-layout.html'
-	], function(un, files) {
-  for (var i = 0; i < files.length; i++) {
-    var temp = files[i].slice(0, -5).split('/');
-    allFiles.push(temp.slice(temp.indexOf('bower_components'), temp.length).join('/'));
-  }
-	})
-		.pipe(replace(/<style>[\s\S]*<\/style>/, function() {
-  var style = fs.readFileSync('.tmp/' + allFiles[fileIdx] + '.css', 'utf8');
-  fileIdx++;
-  return '<style>' + style + '</style>';
-		}))
-		.pipe(htmlmin({
-  collapseWhitespace: true,
-  collapseInlineTagWhitespace: true,
-  removeComments: true,
-  removeCommentsFromCDATA: true,
-  caseSensitive: true,
-  customAttrAssign: [/\$=/]
-		}))
-		.pipe(gulp.dest('backup/iron-flex-layout/classes/'));
-
-  return merge(flexlayout, flexcls);
-});
-// TODO: special treatment for polymer.
-// nopolymer
-gulp.task('nopolymer', function() {
-  del('bower_components/polymer*');
-});
-// minpolymer
-gulp.task('minpolymer', function() {
-  return gulp.src([
-    // 'bower_components/polymer/polymer-mini.html',
-    // 'bower_components/polymer/polymer-micro.html',
-    // 'bower_components/polymer/polymer.html'
-    'bower_components/polymer/polymer*.html'
-  ])
-    .pipe($.htmlExtract({
-      sel: 'script'
-    }))
-    .pipe($.uglify())
-    .pipe($.rename({
-      extname: '.min.js'
-    }))
-    .pipe(gulp.dest('.tmp'));
-});
-// repolymer
-gulp.task('repolymer', function() {
-  var _polymerFile = [];
-  var _idx = 0;
-  return gulp.src([
-    'bower_components/polymer/*.html'
-  ], function(u, files) {
-    for (var i = 0, _file; i < files.length; i++) {
-      _file = files[i].split('/');
-      _polymerFile.push(_file[_file.length - 1].slice(0, -5));
-    }
-  })
-    .pipe(replace(/<script>[\s\S]*<\/script>/, function() {
-      var s = fs.readFileSync('.tmp/bower_components/polymer/' + _polymerFile[_idx] +
-        '.min.js', 'utf8');
-      _idx++;
-      return '<script>' + s + '</script>';
-    }))
-    .pipe($.minifyHtml())
-    .pipe(gulp.dest('backup/polymer'));
-});
-// movepolymer
-gulp.task('movepolymer', function() {
-  return gulp.src([
-    'backup/polymer/*'
-  ])
-    .pipe(gulp.dest('bower_components/polymer'));
-});
-// TODO: crunch
-gulp.task('crunch', function() {
-  runSequence(
-		'nobackup',
-		['mindep', 'minpage', 'minflex'],
-		'reflex',
-		'movemin'
-	);
-});
-gulp.task('crunch-polymer', function() {
-  runSequence(
-    'nobackup',
-    'minpolymer',
-    'repolymer',
-    'nopolymer',
-    'movepolymer'
-  );
-});
-gulp.task('nobower', function() {
-  del('bower_components');
-});
-
-=======
     ['ensureFiles', 'copy', 'styles'],
     ['images', 'fonts', 'html'],
     'vulcanize', // 'cache-config',
     cb);
 });
 
->>>>>>> upstream/master
 // Build then deploy to GitHub pages gh-pages branch
 gulp.task('build-deploy-gh-pages', function(cb) {
   runSequence(
@@ -620,11 +289,7 @@ gulp.task('build-deploy-gh-pages', function(cb) {
 // Deploy to GitHub pages gh-pages branch
 gulp.task('deploy-gh-pages', function() {
   return gulp.src(dist('**/*'))
-<<<<<<< HEAD
-    // Check if running task from Travis Cl, if so run using GH_TOKEN
-=======
     // Check if running task from Travis CI, if so run using GH_TOKEN
->>>>>>> upstream/master
     // otherwise run using ghPages defaults.
     .pipe($.if(process.env.TRAVIS === 'true', $.ghPages({
       remoteUrl: 'https://$GH_TOKEN@github.com/polymerelements/polymer-starter-kit.git',
@@ -640,10 +305,6 @@ require('web-component-tester').gulp.init(gulp);
 // Load custom tasks from the `tasks` directory
 try {
   require('require-dir')('tasks');
-<<<<<<< HEAD
-} catch (err) {}
-=======
 } catch (err) {
   // Do nothing
 }
->>>>>>> upstream/master
