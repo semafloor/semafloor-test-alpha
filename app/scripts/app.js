@@ -22,6 +22,10 @@
     }
   }
 
+  var webComponentsSupported = ('registeElement' in document &&
+    'import' in document.createElement('link') &&
+    'content' in document.createElement('template'));
+
   if (!webComponentsSupported) {
     var script = document.createElement('script');
     script.async = true;
@@ -76,8 +80,8 @@
     page.redirect('/home/view');
   });
 
-  page({
-    hashbang: true
-  });
-  // page();
+  // page({
+  //   hashbang: true
+  // });
+  page();
 })(document);
