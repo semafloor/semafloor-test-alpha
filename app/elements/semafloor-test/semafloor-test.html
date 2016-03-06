@@ -1,0 +1,380 @@
+<!-- <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/semafloor-icons/semafloor-icons.html">
+
+<link rel="import" href="../../bower_components/app-layout/app-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/paper-badge/paper-badge.html"> -->
+<!--
+-->
+<!-- <link rel="import" href="../../bower_components/semafloor-profile-page/semafloor-profile-page.html">
+<link rel="import" href="../../bower_components/semafloor-reserve-page/semafloor-reserve-page.html">
+<link rel="import" href="../../bower_components/semafloor-search-page/semafloor-search-page.html">
+<link rel="import" href="../../bower_components/semafloor-current-page/semafloor-current-page.html">
+<link rel="import" href="../../bower_components/semafloor-room-page/semafloor-room-page.html"> -->
+
+<!-- profile -->
+
+<!-- reserve -->
+
+<!-- search -->
+
+<!-- <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html"> -->
+
+<!-- current page -->
+
+<!-- room -->
+<!-- <link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
+
+<link rel="import" href="../../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../../bower_components/paper-menu/paper-menu.html"> -->
+
+<!-- duplicated -->
+<!-- <link rel="import" href="../../bower_components/paper-ripple/paper-ripple.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../bower_components/paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner-lite.html">
+<link rel="import" href="../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/firebase-element/firebase-collection.html">
+<link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/transform-animation.html">
+
+<link rel="import" href="../../bower_components/compound-timepicker/compound-timepicker-dialog.html">
+<link rel="import" href="../../bower_components/jv-datepicker/jv-datepicker-dialog.html"> -->
+
+<!-- <script src="../../bower_components/lodash/dist/lodash.min.js"></script> -->
+
+<dom-module id="semafloor-test">
+  <template>
+    <style>
+      :host {
+        box-sizing: border-box;
+        user-select: none;
+
+        display: block;
+      }
+
+      /* app-header */
+      app-header-layout > app-header {
+        /*--app-header-background-front-layer: {
+          background-color: #fff;
+        };*/
+        /*--app-header-background-rear-layer: {
+          background-color: #009688;
+        };*/
+        color: #009688;
+        background-color: rgba(255, 255, 255, 0.7);
+      }
+      /*app-toolbar {
+      }*/
+      [title] {
+        /*color: #009688;*/
+        font-size: 20px;
+        margin-left: 8px;
+      }
+      app-drawer app-header {
+        height: calc(144px + 8px);
+        /*background-color: rgba(0, 150, 136, 0.5);*/
+        /*border-bottom: 1px solid #ddd;*/
+      }
+      app-drawer app-header.need-login {
+        height: 48px;
+        background-color: #00796B;
+      }
+      .account-image {
+        height: 144px;
+        padding-left: 16px;
+        padding-right: 16px;
+        margin-bottom: 8px;
+        /*background-image: url(https://lh4.googleusercontent.com/-3BKYx2qTLAs/VGdNZNGmjlI/AAAAAAAADXA/dAKtKgPQyMo/w515-h348-no/Ultimate%2BMaterial%2BLollipop%2BCollection%2B-%2B65);*/
+        background-image: url(https://lh3.googleusercontent.com/-S0NlQSizDuM/VSHcZNxiJqI/AAAAAAAAIio/MfI3_-S54B8/w640-h361-n-no/20150402_192344.jpg);
+        background-blend-mode: overlay;
+        background-repeat: no-repeat;
+        background-size: cover;
+        /*background-color: #616161;*/
+        background-color: #555;
+      }
+      .account-pic {
+        height: 64px;
+        width: 64px;
+        border: 1px solid #757575;
+        border-radius: 50%;
+        background-color: #e0e0e0;
+        position: absolute;
+        top: 16px;
+        --iron-image-placeholder: {
+          border-radius: 50%;
+        };
+      }
+      .account-menu {
+        bottom: 8px;
+        color: #fff;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+        height: 48px;
+        position: absolute;
+      }
+      .account-name {
+        font-weight: 800;
+      }
+      .account-need-login {
+        padding-left: 16px;
+        color: #fff;
+        cursor: pointer;
+        height: 48px;
+        font-size: 20px;
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+      }
+
+      /* paper-tabs */
+      paper-tabs {
+        background-color: #009688;
+        color: #fff;
+        height: 64px;
+
+        --paper-tabs-selection-bar: {
+          height: 3px;
+        };
+      }
+      paper-tab {
+        --paper-tab-ink: rgba(255, 255, 141, 0.5);
+        text-transform: uppercase;
+      }
+      paper-tab.iron-selected {
+        color: #FFFF8D;
+      }
+
+      /* paper-badge */
+      paper-badge {
+        --paper-badge-margin-left: -6px;
+        --paper-badge-background: #FFFF8D;
+        --paper-badge-text-color: #004D40;
+      }
+      paper-badge[for=thisweekTab] {
+        --paper-badge-margin-bottom: 16px;
+      }
+
+      /* anchor tags */
+      a {
+        text-decoration: none;
+        color: inherit;
+        font-size: inherit;
+      }
+      .nav-menu {
+        margin-top: 8px;
+      }
+      .nav-menu > a {
+        display: block;
+        padding: 12px 16px;
+        font-size: 14px;
+        /*color: #616161;*/
+        font-weight: 500;
+        min-height: 24px;
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+      }
+      .nav-menu > a.iron-selected {
+        font-weight: 400;
+        background-color: #eee;
+      }
+      .nav-menu > a[name=profile] > iron-icon{
+        color: #3F51B5;
+      }
+      .nav-menu > a[name=reserve] > iron-icon{
+        color: #795548;
+      }
+      .nav-menu > a[name=search] > iron-icon{
+        color: #FF5722;
+      }
+      .nav-menu > a[name=current] > iron-icon{
+        color: #607D8B;
+      }
+      .nav-menu > a[name=room] > iron-icon{
+        color: #F44336;
+      }
+
+      iron-pages {
+        min-height: calc(64px + 8px + 16px);
+      }
+
+      /* toast */
+      paper-toast#authToast {
+        /* workaround for importHref pages, toast does not position correctly. */
+        height: 48px;
+        position: fixed;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+      }
+
+      /* the new spinner */
+      .loading {
+        position: absolute;
+        margin: -15px 0 0 -15px;
+        left: 50%;
+        border-radius: 50%;
+        border: 3px dotted #eee;
+        border-left-color: #009688;
+        animation: animation-rotate 1950ms cubic-bezier(.64, 2, .56, .6) infinite;
+
+        opacity: 1;
+        will-change: opacity;
+        transition: opacity ease-in .2s;
+      }
+      .loading.finish-loading {
+        opacity: 0;
+      }
+      @-webkit-keyframes animation-rotate{
+        50% {
+          -webkit-transform: rotate(90deg);
+        }
+        100% {
+          -webkit-transform: rotate(700deg);
+        }
+      }
+      @keyframes animation-rotate{
+        50% {
+          -webkit-transform: rotate(90deg);
+                  transform: rotate(90deg);
+        }
+        100% {
+          -webkit-transform: rotate(700deg);
+                  transform: rotate(700deg);
+        }
+      }
+      semafloor-room-page {
+        opacity: 0;
+        will-change: opacity;
+        transition: opacity ease-in .4s .1s;
+      }
+      semafloor-room-page.finish-loading {
+        opacity: 1;
+      }
+
+    </style>
+
+    <firebase-auth id="firebaseAuth" location="[[authURL]]" provider="[[authProvider]]" redirect status-known="{{authStatus}}" user="{{authUser}}" on-error="{{onError}}" params='{"scope": "email"}'></firebase-auth>
+
+    <app-drawer-layout force-narrow>
+      <app-drawer id="dhl" swipe-open>
+        <app-header class$="[[_computeAuthHidden(authStatus, authUser)]]">
+          <template is="dom-if" if="[[!isAuthed(authStatus, authUser)]]" restamp="true">
+            <div class="account-image">
+              <!-- <div class="account-pic" id="accountPic"></div> -->
+              <iron-image class="account-pic" src$="[[authUser.google.profileImageURL]]" sizing="contain" preload fade></iron-image>
+              <div class="account-menu" on-tap="_unAuth">
+                <div class="account-name">[[authUser.google.displayName]]</div>
+                <div class="account-email">[[authUser.google.email]]</div>
+              </div>
+            </div>
+          </template>
+          <template is="dom-if" if="[[isAuthed(authStatus, authUser)]]" restamp="true">
+            <div class="account-need-login" on-tap="_authWithGoogle">
+              Sign in
+            </div>
+          </template>
+        </app-header>
+
+        <iron-selector class="nav-menu" selected="[[category]]" attr-for-selected="name" on-tap="_closeDrawer">
+          <a href="/home/view" name="home">Home</a>
+          <a href="/profile/view" name="profile" hidden$="[[isAuthed(authStatus, authUser)]]">My Profile</a>
+          <a href="/reserve/view" name="reserve" hidden$="[[isAuthed(authStatus, authUser)]]">My Reservations</a>
+          <a href="/search/view" name="search" hidden$="[[isAuthed(authStatus, authUser)]]">Search &amp; Reserve</a>
+          <a href="/current/view" name="current">Current Reservations</a>
+          <a href="/room/view" name="room">Room Information</a>
+          <!-- <a href="/settings" name="settings"></a> -->
+        </iron-selector>
+      </app-drawer>
+
+      <app-header-layout>
+        <app-header id="mainHeader" fixed condenses reveals effects="">
+          <app-toolbar>
+            <paper-icon-button icon="icons:menu" drawer-toggle></paper-icon-button>
+            <span title>[[title]]</span>
+          </app-toolbar>
+          <app-toolbar hidden$="[[!_isReserve(category)]]">
+            <paper-tabs id="fakeTabs" selected="{{tab}}" attr-for-selected="name" on-transitionend="_onTransitionend" on-iron-select="_onIronSelect" bottom-item>
+              <paper-tab name="today">
+                <span id="todayTab">today</span>
+                <paper-badge for="todayTab" label="[[todayCount]]"></paper-badge>
+              </paper-tab>
+              <paper-tab name="thisweek">
+                <!-- according to MD's specs, split long sentence into two lines -->
+                <span>this<br><span id="thisweekTab">week</span></span>
+                <paper-badge for="thisweekTab" label="[[thisweekCount]]"></paper-badge>
+              </paper-tab>
+              <paper-tab name="upcoming">
+                <span id="upcomingTab">upcoming</span>
+                <paper-badge for="upcomingTab" label="[[upcomingCount]]"></paper-badge>
+              </paper-tab>
+            </paper-tabs>
+          </app-toolbar>
+          <!-- <div class="fake-toolbar" hidden$="[[!_isReserve(category)]]"></div> -->
+        </app-header>
+
+        <!-- 57 el index.html -->
+        <!-- 22 el shell -->
+        <!-- 93 el profile -->
+
+        <!-- 69 el index.html on FF -->
+        <!-- 25 el shell on FF -->
+        <!-- 92 el profile on FF -->
+        <!-- 261 el reserve on FF -->
+        <!-- 940 el search on FF -->
+        <!-- 88 el current on FF -->
+        <!-- 86 el room on FF -->
+        <!-- 1252 el profile + reserve + search + current on FF -->
+        <!-- 1067 el after datepicker optimiztion on cH/ OP -->
+
+        <!-- 59 el index.html on CH/ OP -->
+        <!-- 25 el shell on CH/ OP -->
+        <!-- 92 el profile on CH/ OP -->
+        <!-- 261 el reserve on CH/ OP -->
+        <!-- 938 el search on CH/ OP -->
+        <!-- 86 el current on CH/ OP -->
+        <!-- 86 el room on CH/ OP -->
+        <!-- 1250 el profile + reserve + search + current on CH/ OP -->
+        <!-- 1065 el after datepicker optimiztion on cH/ OP -->
+
+        <div id="spinner" class="loading"></div>
+
+        <iron-pages selected="[[page]]" attr-for-selected="name">
+          <div name="home">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          </div>
+          <!-- <semafloor-profile-page id="profile" name="profile"></semafloor-profile-page>
+          <semafloor-reserve-page id="reserve" selected-tab="{{tab}}" today-count="{{todayCount}}" thisweek-count="{{thisweekCount}}" upcoming-count="{{upcomingCount}}" name="reserve"></semafloor-reserve-page>
+          <semafloor-search-page id="search" name="search"></semafloor-search-page>
+          <semafloor-current-page id="current" name="current"></semafloor-current-page> -->
+
+          <template is="dom-if" if="[[_isRoomPageOpened]]" restamp="true" strip-whitespace>
+            <semafloor-room-page id="room" name="room" on-room-page-attached="_onRoomPageAttached" uid="[[uid]]"></semafloor-room-page>
+          </template>
+        </iron-pages>
+      </app-header-layout>
+    </app-drawer-layout>
+
+    <paper-toast id="authToast" text="[[authMessage]]"></paper-toast>
+  </template>
+
+  <script src="semafloor-test.js"></script>
+</dom-module>

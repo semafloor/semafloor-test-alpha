@@ -1,5 +1,8 @@
 node_modules
-dist
 bower_components
+dist
 .tmp
 .publish/
+firebase.json
+firebase-debug.log
+gulpfile.babel.js

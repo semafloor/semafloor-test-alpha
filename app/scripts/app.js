@@ -22,11 +22,7 @@
     }
   }
 
-  var webComponentSupported = ('registerElement' in document &&
-    'import' in document.createElement('link') &&
-    'content' in document.createElement('template'));
-
-  if (!webComponentSupported) {
+  if (!webComponentsSupported) {
     var script = document.createElement('script');
     script.async = true;
     script.src = '/bower_components/webcomponentsjs/webcomponents-lite.min.js';
@@ -83,4 +79,5 @@
   page({
     hashbang: true
   });
+  // page();
 })(document);
