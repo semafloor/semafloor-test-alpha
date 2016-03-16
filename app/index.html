@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <base href="/">
+  <!-- <base href="/"> -->
   <meta charset="utf-8">
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -111,7 +111,6 @@
     }
     #skeleton {
       opacity: 1;
-      will-change: opacity;
       -webkit-transition: opacity ease-in .2s;
       transition: opacity ease-in .2s;
     }
@@ -129,8 +128,7 @@
     }
 
     semafloor-main {
-      opacity: 0;
-      will-change: opacity;
+      /*opacity: 0;*/
       -webkit-transition: opacity ease-in .4s .1s;
       transition: opacity ease-in .4s .1s;
     }
@@ -181,14 +179,14 @@
   <semafloor-main></semafloor-main>
 
   <!-- Uncomment next block to enable Service Worker support (1/2) -->
-  <platinum-sw-register auto-register
+  <!-- <platinum-sw-register auto-register
                         clients-claim
                         skip-waiting
                         base-uri="bower_components/platinum-sw/bootstrap">
     <platinum-sw-cache default-cache-strategy="fastest"
                        cache-config-file="cache-config.json">
     </platinum-sw-cache>
-  </platinum-sw-register>
+  </platinum-sw-register> -->
   </template>
 
   <!-- build:js scripts/app.js -->

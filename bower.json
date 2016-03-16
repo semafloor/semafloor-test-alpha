@@ -10,22 +10,25 @@
     "page": "visionmedia/page.js#^1.6.4",
     "polymer": "polymer/polymer#^1.3.1",
     "lodash": "lodash/lodash#^4.6.1",
-    "app-layout": "polymerlabs/app-layout#^0.0.12",
-    "semafloor-icons": "semafloor/semafloor-icons#^0.1.3",
+    "app-layout": "polymerlabs/app-layout#^0.0.14",
+    "semafloor-icons": "semafloor/semafloor-icons#^0.1.5",
     "iron-image": "polymerelements/iron-image#^1.2.2",
     "iron-selector": "polymerelements/iron-selector#^1.2.4",
     "paper-icon-button": "polymerelements/paper-icon-button#^1.0.6",
     "iron-pages": "polymerelements/iron-pages#^1.0.7",
-    "semafloor-room-page": "semafloor/semafloor-room-page#^0.6.8",
-    "semafloor-current-page": "^0.5.7",
+    "semafloor-room-page": "semafloor/semafloor-room-page#^0.6.13",
+    "semafloor-current-page": "semafloor/semafloor-current-page#^0.5.10",
     "firebase-element": "GoogleWebComponents/firebase-element#^1.0.12",
     "paper-toast": "polymerelements/paper-toast#^1.2.0",
-    "semafloor-profile-page": "semafloor/semafloor-profile-page#^0.2.0",
-    "semafloor-search-page": "semafloor/semafloor-search-page#^0.4.5",
-    "semafloor-reserve-page": "semafloor/semafloor-reserve-page#^0.3.20"
+    "semafloor-profile-page": "semafloor/semafloor-profile-page#^0.2.4",
+    "semafloor-search-page": "semafloor/semafloor-search-page#^0.4.10",
+    "semafloor-reserve-page": "semafloor/semafloor-reserve-page#^0.4.1"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"
+  },
+  "resolutions": {
+    "paper-dialog-scrollable": "1.1.1"
   },
   "ignore": []
 }

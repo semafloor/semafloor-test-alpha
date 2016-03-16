@@ -4,7 +4,7 @@
   function finishLazyLoading() {
     var link = document.querySelector('#bundle');
     // TODO: Shadow DOM seems to have improved overall rendering insanely.
-    window.Polymer = window.Polymer || { dom: 'shadow' };
+    // window.Polymer = window.Polymer || { dom: 'shadow' };
 
     function onImportLoaded() {
       var skeleton = document.querySelector('#skeleton');
@@ -57,31 +57,31 @@
     console.log('Total element nodes of app-shell w/ Lazy-Loading:', _allTel - _mainTel);
   });
 
-  page('/:category/view', function(ctx) {
-    var _category = ctx.params.category;
-
-    function setData() {
-      semafloor.classList.add('finish-loading');
-
-      semafloor.category = _category;
-      semafloor.page = _category;
-      window.scrollTo(0, 0);
-    }
-
-    if (!semafloor.upgraded) {
-      once(semafloor, 'upgraded', setData);
-    }else {
-      setData();
-    }
-  });
-
-  page('*', function() {
-    console.warn('Can\'t find: ' + window.location.href + '. Redirecting to home page.');
-    page.redirect('/home/view');
-  });
-
+  // page('/:category/view', function(ctx) {
+  //   var _category = ctx.params.category;
+  //
+  //   function setData() {
+  //     semafloor.classList.add('finish-loading');
+  //
+  //     semafloor.category = _category;
+  //     semafloor.page = _category;
+  //     window.scrollTo(0, 0);
+  //   }
+  //
+  //   if (!semafloor.upgraded) {
+  //     once(semafloor, 'upgraded', setData);
+  //   }else {
+  //     setData();
+  //   }
+  // });
+  //
+  // page('*', function() {
+  //   console.warn('Can\'t find: ' + window.location.href + '. Redirecting to home page.');
+  //   page.redirect('/home/view');
+  // });
+  //
   // page({
   //   hashbang: true
   // });
-  page();
+  // page();
 })(document);
