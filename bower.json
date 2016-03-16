@@ -1,6 +1,6 @@
 {
   "name": "semafloor-test-alpha",
-  "version": "0.1.38",
+  "version": "0.1.39",
   "private": true,
   "dependencies": {
     "iron-elements": "PolymerElements/iron-elements#^1.0.0",
@@ -28,7 +28,8 @@
     "web-component-tester": "^4.0.0"
   },
   "resolutions": {
-    "paper-dialog-scrollable": "1.1.1"
+    "paper-dialog-scrollable": "1.1.1",
+    "lodash": "^4.6.1"
   },
   "ignore": []
 }
