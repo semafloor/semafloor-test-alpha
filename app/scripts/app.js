@@ -38,6 +38,16 @@
     finishLazyLoading();
   }
 
+  // Lodash dep.
+  if (typeof _ === 'undefined') {
+    var script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.6.1/lodash.min.js';
+    document.head.appendChild(script);
+  }else {
+    console.log('Using Lodash v' + _.VERSION);
+  }
+
   function once(node, event, fn, args) {
     var _self = this;
     var listener = function() {
@@ -50,6 +60,8 @@
   var semafloor = document.querySelector('semafloor-main');
 
   window.addEventListener('main-page-attached', function() {
+    console.log(typeof _ === 'undefined');
+
     var _mainTel = semafloor.getElementsByTagName('*').length;
     var _allTel = document.getElementsByTagName('*').length;
     // console.log('Total element nodes in main page w/ Lazy-Loading:', _mainTel);
