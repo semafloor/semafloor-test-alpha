@@ -10,19 +10,19 @@
       var skeleton = document.querySelector('#skeleton');
       skeleton.remove();
 
-      console.log('Elements are upgraded!');
+      // console.log('Elements are upgraded!');
     }
 
     if (link.import && link.import.readyState === 'complete') {
-      console.log('Removing skeleton...');
+      // console.log('Removing skeleton...');
       onImportLoaded();
     }else {
-      console.log('Async HTMLImport not ready!');
+      // console.log('Async HTMLImport not ready!');
       link.addEventListener('load', onImportLoaded);
     }
   }
 
-  var webComponentsSupported = ('registeElement' in document &&
+  var webComponentsSupported = ('registerElement' in document &&
     'import' in document.createElement('link') &&
     'content' in document.createElement('template'));
 
@@ -32,20 +32,10 @@
     script.src = '/bower_components/webcomponentsjs/webcomponents-lite.min.js';
     script.onload = finishLazyLoading;
     document.head.appendChild(script);
-    console.log('Async Web Componenets polyfill!');
+    console.log('Async Web Components polyfill!');
   }else {
-    console.log('Native Web Components supported!');
+    console.log('%c Native Web Components supported! ' + '%c For more info, please visit http://webcomponents.org/', 'background-color: #ff5722; color: #fff', 'background-color: inherit; color: #03a9f4');
     finishLazyLoading();
-  }
-
-  // Lodash dep.
-  if (typeof _ === 'undefined') {
-    var script = document.createElement('script');
-    script.async = true;
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.6.1/lodash.min.js';
-    document.head.appendChild(script);
-  }else {
-    console.log('Using Lodash v' + _.VERSION);
   }
 
   function once(node, event, fn, args) {
@@ -60,13 +50,13 @@
   var semafloor = document.querySelector('semafloor-main');
 
   window.addEventListener('main-page-attached', function() {
-    console.log(typeof _ === 'undefined');
-
+    console.log('%c Running on Polymer v' + Polymer.version + ' ' + '%c For more info, please visit https://www.polymer-project.org/1.0/ ', 'background-color: #E91E63; color: #fff', 'background-color: inherit; color: #03a9f4; font-sylte: italic');
+    console.log('%c Running on Lodash v' + _.VERSION + ' ' + '%c For more info, please visit https://lodash.com/', 'background-color: #3f51b5; color: #fff', 'background-color: inherit; color: #03a9f4');
     var _mainTel = semafloor.getElementsByTagName('*').length;
     var _allTel = document.getElementsByTagName('*').length;
-    // console.log('Total element nodes in main page w/ Lazy-Loading:', _mainTel);
-    // console.log('Total element nodes in document w/ Lazy-Loading:', _allTel);
-    // console.log('Total element nodes of app-shell w/ Lazy-Loading:', _allTel - _mainTel);
+    console.log('Total element nodes in main page w/ Lazy-Loading:', _mainTel);
+    console.log('Total element nodes in document w/ Lazy-Loading:', _allTel);
+    console.log('Total element nodes of app-shell w/ Lazy-Loading:', _allTel - _mainTel);
   });
 
   // page('/:category/view', function(ctx) {
