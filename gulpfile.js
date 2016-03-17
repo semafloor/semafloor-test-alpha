@@ -143,7 +143,12 @@ gulp.task('copy', function() {
     'app/bower_components/{webcomponentsjs,platinum-sw,sw-toolbox,promise-polyfill}/**/*'
   ]).pipe(gulp.dest(dist('bower_components')));
 
-  return merge(app, bower)
+  // Special copy for web-animations.
+  var webAnimations = gulp.src([
+    'app/bower_components/web-animations-js/web-animations-next-lite.min.js.map'
+  ]).pipe(gulp.dest(dist('elements')));
+
+  return merge(app, bower, webAnimations)
     .pipe($.size({
       title: 'copy'
     }));
