@@ -52,9 +52,9 @@
   window.addEventListener('main-page-attached', function() {
     var _mainTel = semafloor.getElementsByTagName('*').length;
     var _allTel = document.getElementsByTagName('*').length;
-    console.log('Total element nodes in main page w/ Lazy-Loading:', _mainTel);
-    console.log('Total element nodes in document w/ Lazy-Loading:', _allTel);
-    console.log('Total element nodes of app-shell w/ Lazy-Loading:', _allTel - _mainTel);
+    // console.log('Total element nodes in main page w/ Lazy-Loading:', _mainTel);
+    // console.log('Total element nodes in document w/ Lazy-Loading:', _allTel);
+    // console.log('Total element nodes of app-shell w/ Lazy-Loading:', _allTel - _mainTel);
   });
 
   // page('/:category/view', function(ctx) {
@@ -77,7 +77,7 @@
   //
   // page('*', function() {
   //   console.warn('Can\'t find: ' + window.location.href + '. Redirecting to home page.');
-  //   page.redirect('/home/view');
+  //   page.redirect('#home/view');
   // });
   //
   // page({
