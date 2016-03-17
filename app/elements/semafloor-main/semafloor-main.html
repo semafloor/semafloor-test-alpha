@@ -77,7 +77,7 @@
       }
 
       .title {
-        margin: 0 auto;
+        margin: 0 auto 0 36px;
         font-size: 20px;
       }
 
@@ -89,7 +89,7 @@
       }*/
 
       #tabs {
-        margin-left: -55px;
+        /*margin-left: -55px;*/
         color: #1ddbd8;
         font-size: 13px;
         --paper-tabs-selection-bar-color: #1ddbd8;
@@ -165,6 +165,32 @@
         @apply(--layout-center);
       }
 
+      .toolbar-account {
+        cursor: pointer;
+        font-size: 10px;
+        margin-right: 8px;
+        text-align: right;
+        @apply(--layout-vertical);
+      }
+      .toolbar-account-pic {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: #7c7c7c;
+        --iron-image-placeholder: {
+          border-radius: 50%;
+        };
+      }
+      /* workaround: iron-image unable to be styled round under dom-if */
+      .toolbar-account-pic > ::content > * {
+        border-radius: 50%;
+      }
+      .toolbar-account-sign-in {
+        cursor: pointer;
+        font-size: 16px;
+        margin-right: 16px;
+      }
+
       /* anchor tags */
       a {
         text-decoration: none;
@@ -221,6 +247,10 @@
           display: block;
         }
 
+        .title {
+          margin: 0 auto;
+        }
+
         .main-toolbar {
           height: 64px;
         }
@@ -274,10 +304,7 @@
 
           <div class="nav-menu">
             <template is="dom-repeat" items="[[_categories]]" index-as="index" strip-whitespace>
-              <a href="#[[item]]/view"
-                class$="[[_computeCategoryCls(item, category)]]">
-                [[_computeCategoryName(index, item)]]
-              </a>
+              <a href="#[[item]]/view" class$="[[_computeCategoryCls(item, category)]]"> [[_computeCategoryName(index, item)]] </a>
             </template>
           </div>
         </template>
@@ -290,6 +317,21 @@
             <span condensed-title hidden></span>
             <span title hidden></span>
             <span class="title">[[pageTitle]]</span>
+
+            <template is="dom-if" if="[[!smallScreen]]" restamp="true" strip-whitespace>
+              <template is="dom-if" if="[[authUser]]" restamp="true" strip-whitespace>
+                <div class="toolbar-account" on-tap="_logout">
+                  <div class="toolbar-account-name"> [[authUser.google.displayName]] </div>
+                  <div class="toolbar-account-email"> [[authUser.google.email]] </div>
+                </div>
+                <iron-image class="toolbar-account-pic" src$="[[authUser.google.profileImageURL]]" preload sizing="contain" fade></iron-image>
+              </template>
+              <template is="dom-if" if="[[!authUser]]" restamp="true" strip-whitespace>
+                <div class="toolbar-account-sign-in" on-tap="_loginWithGoogle">
+                  Sign in
+                </div>
+              </template>
+            </template>
           </app-toolbar>
 
           <!-- <template is="dom-if" if="[[_shouldShowTabs(smallScreen)]]" restamp="true" strip-whitespace> -->
@@ -298,7 +340,7 @@
             <paper-tabs id="tabs" selected="{{category}}" scrollable primary$="[[smallScreen]]" attr-for-selected="tab">
               <template is="dom-repeat" items="[[_categories]]" index-as="index" strip-whitespace>
                 <paper-tab tab="[[item]]">
-                  <a href="#[[item]]/view"> [[_computeCategoryName(index)]] </a>
+                  <a href="#[[item]]/view"> [[_computeCategoryName(index, item)]] </a>
                 </paper-tab>
               </template>
             </paper-tabs>
@@ -349,11 +391,15 @@
           type: String,
           value: 'home'
         },
-        pageTitle: String,
+        pageTitle: {
+          type: String,
+          value: 'Home'
+        },
         urlHash: {
           type: String,
           value: "home/view"
         },
+        path: String,
         smallScreen: Boolean,
 
         authURL: {
@@ -395,8 +441,9 @@
       },
 
       observers: [
-        '_hashDidChange(urlHash, path, authUser)',
+        '_hashDidChange(urlHash, authUser)',
         '_updateUid(authUser)',
+        '_closeDrawerOnLargeScreen(smallScreen)'
       ],
 
       attached: function() {
@@ -436,7 +483,7 @@
         // generated elements on the page even though the items encountered changes
         // in its value. Hence the 2nd param is to ensure everything will be updated
         // over again once.
-        // console.log('2 - _computeCategoryName', _index, this._categoryNames);
+        // console.log('2 - _computeCategoryName', _index, _item, this._categoryNames);
         return this._categoryNames[_index];
       },
       // _shouldShowTabs: function(_hashie, _smallScreen) {
@@ -492,8 +539,18 @@
         // console.log('_onLogout: start');
         var _authMsg = 'Logged out!';
         var _authToast = this.$.authToast;
+        var _urlHash = this.urlHash;
 
         this._recategorize(!1);
+        // Redirect to home if sign out from any page that only will display when signed in.
+        if (_urlHash !== 'home' || _urlHash !== 'current' || _urlHash !== 'room') {
+          window.location.hash = 'home/view';
+        }
+
+        this.debounce('reset path', function() {
+          this.set('path', '/');
+          console.log('reset path', this.path);
+        });
 
         if (_authToast.opened) {
           _authToast.close();
@@ -521,25 +578,41 @@
         // console.log('7 - _isHashCategoryView: end');
         return [_isView && _isCategory, _capturingGroup[1]];
       },
-      _hashDidChange: function(_urlHash, _path, _authUser) {
+      _hashDidChange: function(_urlHash, _authUser) {
         // console.log('5 - _hashDidChange: start', this.category);
         // Simple way to redirect * to home page.
         var _re = /(home|profile|reserve|search|current|room)\/\w+/i;
         var _m = _re.exec(_urlHash);
         // If hash is null and need re-routing to home page...
-        if (!_m && _path) {
+        // if (!_m && _path) {
+        if (!_m) {
           // console.log('haha', _urlHash, _path);
           window.location.hash = 'home/view';
           return;
         }
         // console.log(_urlHash, _path, _authUser);
 
+        // workaround: Close drawer on hash change. For some unknown reason,
+        // the drawer is not closed.
         this.debounce('_closeDrawer', function() {
           this.$.drawer.close();
         });
 
         // Update _categories and _categoryNames with _authUser.
         this._recategorize(!!_authUser);
+        // Update pathname to logged in user's username to differentiate between
+        // anonymous and logged in user.
+        if (!!_authUser && this.path === '/') {
+          this.debounce('set username to path', function() {
+            console.log('set username to pathname', this.path, _authUser);
+            var _profile = _authUser.google.cachedUserProfile;
+            var _uname = _.capitalize(_profile.family_name) + _.capitalize(_profile.given_name);
+            // this.set('path', _uname);
+            window.location.pathname = _uname;
+            // GC-ed.
+            _profile = null; _uname = null;
+          });
+        }
 
         // hash is not null...
         var _isHashCategoryView = this._isHashCategoryView(_urlHash);
@@ -711,11 +784,24 @@
       _onDrawerClosed: function(ev) {
         // console.log(ev);
       },
+      // workaround: Since drawer is not present on large screen, should close it
+      // when it is remained open small screen if landscape mode considers a large screen.
+      _closeDrawerOnLargeScreen: function(_smallScreen) {
+        if (!_smallScreen) {
+          this.debounce('_closeDrawerOnLargeScreen', function() {
+            this.$.drawer.close();
+          });
+        }
+      },
 
-      // TODO: Better hash strategy, header's resetLayout > _hashDidChange > category.
-      // TODO: Using slimmed down version of _checkIfUserExists(authUser), check _updateUid(authUser).
-      // TODO: Redirect to home page if hash is empty.
-      // TODO: Reserve page dialog not working properly, always shows under backdrop, caused by will-change: opacity;
+      // TODO: Support Shadow DOM
+      // X - TODO: Using slimmed down version of _checkIfUserExists(authUser), check _updateUid(authUser).
+      // X - TODO: Better hash strategy, header's resetLayout > _hashDidChange > category.
+      // X - TODO: Redirect to home page if hash is empty.
+      // X - TODO: Reserve page dialog not working properly, always shows under backdrop, caused by will-change: opacity;
+      // X - TODO: Modify pathname by appending user's name while logged in.
+      // X - TODO: Close drawer on large screen if the drawer is remained open when transitioning from small to large.
+      // X - TODO: Add user name and user image on large screen as well as able to sign in and out at large screen.
       // X - TODO: No longer double tabs in a page. No more disaster! Just like google search, today, thisweek and upcoming all show in one page and show horizontally if screen size is large enough.
       // X - TODO: Current page needs a new height, maybe use customProp to resolve it.
       // TODO: Fix all spinner on all pages (skip search-page, done: room, current, profile, containerised: room, profile).

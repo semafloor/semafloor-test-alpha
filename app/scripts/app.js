@@ -48,6 +48,7 @@
   }
 
   var semafloor = document.querySelector('semafloor-main');
+  var sw = document.querySelector('platinum-sw-register');
 
   window.addEventListener('main-page-attached', function() {
     console.log('%c Running on Polymer v' + Polymer.version + ' ' + '%c For more info, please visit https://www.polymer-project.org/1.0/ ', 'background-color: #E91E63; color: #fff', 'background-color: inherit; color: #03a9f4; font-sylte: italic');
@@ -57,6 +58,10 @@
     console.log('Total element nodes in main page w/ Lazy-Loading:', _mainTel);
     console.log('Total element nodes in document w/ Lazy-Loading:', _allTel);
     console.log('Total element nodes of app-shell w/ Lazy-Loading:', _allTel - _mainTel);
+  });
+
+  sw.addEventListener('service-worker-installed', function(ev) {
+    console.log('%c ' + ev.detail + ' This app can now work offline. ' + '%c For more info about Service Worker please visit https://goo.gl/BjF9w9', 'background-color: #009d81; color: #fff', 'background-color: inherit; color: #03a9f4');
   });
 
   // page('/:category/view', function(ctx) {
