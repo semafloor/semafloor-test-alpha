@@ -16,12 +16,12 @@
     "iron-selector": "polymerelements/iron-selector#^1.2.4",
     "paper-icon-button": "polymerelements/paper-icon-button#^1.0.6",
     "iron-pages": "polymerelements/iron-pages#^1.0.7",
-    "semafloor-room-page": "semafloor/semafloor-room-page#^0.6.13",
+    "semafloor-room-page": "semafloor/semafloor-room-page#^0.6.16",
     "semafloor-current-page": "semafloor/semafloor-current-page#^0.5.10",
     "firebase-element": "GoogleWebComponents/firebase-element#^1.0.12",
     "paper-toast": "polymerelements/paper-toast#^1.2.0",
-    "semafloor-profile-page": "semafloor/semafloor-profile-page#^0.2.4",
-    "semafloor-search-page": "semafloor/semafloor-search-page#^0.4.10",
+    "semafloor-profile-page": "semafloor/semafloor-profile-page#^0.2.5",
+    "semafloor-search-page": "semafloor/semafloor-search-page#^0.4.11",
     "semafloor-reserve-page": "semafloor/semafloor-reserve-page#^0.4.1"
   },
   "devDependencies": {

@@ -1,11 +1,12 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../semafloor-room/semafloor-room.html">
 <link rel="import" href="../../bower_components/semafloor-icons/semafloor-icons.html">
 
 <link rel="import" href="../../bower_components/semafloor-profile-page/semafloor-profile-page.html">
 <link rel="import" href="../../bower_components/semafloor-reserve-page/semafloor-reserve-page.html">
 <link rel="import" href="../../bower_components/semafloor-search-page/semafloor-search-page.html">
 <link rel="import" href="../../bower_components/semafloor-current-page/semafloor-current-page.html">
-<link rel="import" href="../../bower_components/semafloor-room-page/semafloor-room-page.html">
+<!-- <link rel="import" href="../../bower_components/semafloor-room-page/semafloor-room-page.html"> -->
 
 <link rel="import" href="../../bower_components/app-layout/app-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
@@ -361,19 +362,20 @@
               post-y="[[_postY]]"
               on-reserve-page-attached="_onPageAttached"></semafloor-reserve-page>
           </template>
-          <template is="dom-if" if="[[_isCurrentPageOpened]]" restamp="true" strip-whitespace>
-            <semafloor-current-page page="current" uid="[[uid]]"
-              on-current-page-attached="_onPageAttached"></semafloor-current-page>
-          </template>
-          <template is="dom-if" if="[[_isRoomPageOpened]]" restamp="true" strip-whitespace>
-            <semafloor-room-page page="room" uid="[[uid]]"
-              on-room-page-attached="_onPageAttached"></semafloor-room-page>
-          </template>
-
           <template is="dom-if" if="[[_isSearchPageOpened]]" restamp="true" strip-whitespace>
             <semafloor-search-page id="searchPage" page="search" uid="[[uid]]"
             on-search-page-attached="_onPageAttached"></semafloor-search-page>
           </template>
+          <template is="dom-if" if="[[_isCurrentPageOpened]]" restamp="true" strip-whitespace>
+            <semafloor-current-page page="current"
+              on-current-page-attached="_onPageAttached"></semafloor-current-page>
+          </template>
+          <template is="dom-if" if="[[_isRoomPageOpened]]" restamp="true" strip-whitespace>
+            <!-- <semafloor-room-page page="room"
+              on-room-page-attached="_onPageAttached"></semafloor-room-page> -->
+            <semafloor-room page="room" on-room-page-attached="_onPageAttached"></semafloor-room>
+          </template>
+
         </iron-pages>
       </app-header-layout>
 
@@ -612,6 +614,9 @@
             // GC-ed.
             _profile = null; _uname = null;
           });
+        }else if (!!!_authUser && this.path !== '/'){
+          window.location.pathname = '/';
+          console.log(!!_authUser, this.path);
         }
 
         // hash is not null...
@@ -795,6 +800,10 @@
       },
 
       // TODO: Support Shadow DOM
+      // TODO: dialog not able to be opened on profile page.
+      // TODO: iron-image inside dom-if not able to have round edges on Shadow DOM.
+      // TODO: Rever all changes in room page now caused a lot of janks.
+      // X - TODO: Fixed search page's search result when dialog is closed. Eg. floor level is not cleared.
       // X - TODO: Using slimmed down version of _checkIfUserExists(authUser), check _updateUid(authUser).
       // X - TODO: Better hash strategy, header's resetLayout > _hashDidChange > category.
       // X - TODO: Redirect to home page if hash is empty.

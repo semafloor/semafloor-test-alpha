@@ -4,7 +4,7 @@
   function finishLazyLoading() {
     var link = document.querySelector('#bundle');
     // TODO: Shadow DOM seems to have improved overall rendering insanely.
-    // window.Polymer = window.Polymer || { dom: 'shadow' };
+    window.Polymer = window.Polymer || { dom: 'shadow' };
 
     function onImportLoaded() {
       var skeleton = document.querySelector('#skeleton');
@@ -32,10 +32,10 @@
     script.src = '/bower_components/webcomponentsjs/webcomponents-lite.min.js';
     script.onload = finishLazyLoading;
     document.head.appendChild(script);
-    console.log('Async Web Components polyfill!');
+    console.log('%c Async Web Components polyfill! ' + '%c For more info please visit https://goo.gl/oO0XyS', 'background-color: #616161; color: #fff;', 'background-color: inherit; color: #03a9f4');
   }else {
-    console.log('%c Native Web Components supported! ' + '%c For more info, please visit http://webcomponents.org/', 'background-color: #ff5722; color: #fff', 'background-color: inherit; color: #03a9f4');
     finishLazyLoading();
+    console.log('%c Native Web Components supported! ' + '%c For more info please visit http://webcomponents.org/', 'background-color: #ff5722; color: #fff', 'background-color: inherit; color: #03a9f4');
   }
 
   function once(node, event, fn, args) {

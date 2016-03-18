@@ -1,0 +1,642 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/iron-collapse/iron-collapse.html">
+
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+
+<link rel="import" href="../../bower_components/firebase-element/firebase-collection.html">
+
+<link rel="import" href="../../bower_components/neon-animation/animations/slide-from-bottom-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/slide-down-animation.html">
+
+<dom-module id="semafloor-room">
+  <template strip-whitespace>
+    <style>
+      :host {
+        display: block;
+        user-select: none;
+        box-sizing: border-box;
+
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .room-page-container {
+        position: relative;
+      }
+
+      /* room page cards */
+      .room-page-container > paper-card,
+      paper-dialog#floorInfo paper-card {
+        max-width: 360px;
+        margin: 8px;
+        @apply(--layout-horizontal-reverse);
+        /*---header: {
+          @apply(--layout-flex);
+        };*/
+        --paper-card-content: {
+          padding: 0;
+          text-transform: capitalize;
+          @apply(--layout-vertical);
+          @apply(--layout-flex-2);
+        };
+        /*---actions: {
+        };*/
+      }
+      .card-content {
+      }
+      .card-content-title {
+        padding: 16px;
+      }
+      .card-content-title > iron-icon {
+        background-color: #ffeb3b;
+        border-radius: 50%;
+        height: 32px;
+        width: 32px;
+        margin-right: 8px;
+      }
+      .card-content-title > iron-icon.language {
+        background-color: #3f51b5;
+        color: #fff;
+      }
+      .card-content-title > iron-icon.trending-up {
+        background-color: #e91e63;
+        color: #fff;
+      }
+      .card-actions {
+        @apply(--layout-horizontal);
+      }
+
+      .card-img {
+        background-color: #ffecb3;
+        width: 100%;
+        @apply(--layout-flex);
+      }
+      .card-img.language {
+        background-color: #c5cae9;
+      }
+      .card-img.trending-up {
+        background-color: #f8bbd0;
+      }
+
+      /* dialog */
+      paper-dialog {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        box-shadow: none;
+      }
+      paper-dialog#floorInfo > .fake-toolbar {
+        margin-top: 0;
+        padding: 0 16px;
+        height: 64px;
+        background-color: #ffeb3b;
+        text-transform: capitalize;
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+      }
+      paper-dialog#floorInfo > .fake-toolbar.language {
+        background-color: #3f51b5;
+        color: #fff;
+      }
+      paper-dialog#floorInfo > .fake-toolbar.trending-up {
+        background-color: #e91e63;
+        color: #fff;
+      }
+      paper-dialog#floorInfo > .fake-toolbar > paper-icon-button {
+        margin-right: 8px;
+      }
+
+      /* cards inside dialog */
+      paper-dialog#floorInfo  iron-icon {
+        background-color: #ffecb3;
+      }
+      paper-dialog#floorInfo  iron-icon.language {
+        background-color: #c5cae9;
+      }
+      paper-dialog#floorInfo  iron-icon.trending-up {
+        background-color: #f8bbd0;
+      }
+      paper-dialog#floorInfo > .floor-info-card-container {
+        height: 100%;
+        max-height: calc(100% - 64px);
+        margin: 0;
+        padding: 8px 0 0;
+        @apply(--layout-scroll);
+        opacity: 1;
+        transition: opacity ease-in .2s;
+        -webkit-transition: opacity ease-in .2s;
+      }
+      paper-dialog#floorInfo > .floor-info-card-container.lazy {
+        opacity: 0;
+      }
+      paper-dialog#floorInfo > .floor-info-card-container > .is-room {
+        @apply(--layout-vertical);
+      }
+      paper-dialog#floorInfo > .floor-info-card-container > .is-room > iron-image {
+        height: calc(360px / 16 * 9);
+        @apply(--layout-flex-auto);
+      }
+      paper-dialog#floorInfo > .floor-info-card-container > .is-room paper-icon-button {
+        border-radius: 50%;
+        margin-left: auto;
+        margin-right: 0;
+        -webkit-transition: -webkit-transform .4s ease-out;
+                transition: -webkit-transform .4s ease-out;
+                transition: transform .4s ease-out;
+                transition: transform .4s ease-out, -webkit-transform .4s ease-out;
+      }
+
+      /* collapse */
+      paper-dialog#floorInfo iron-collapse {
+        border-top: 1px solid #ddd;
+        padding: 16px;
+      }
+      .each-card-info {
+        min-height: 44px;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 24px;
+        margin-bottom: 8px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        @apply(--layout-vertical);
+      }
+      .each-card-info:first-of-type {
+        margin-top: 8px;
+      }
+      .each-card-info > span {
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+        color: #737373;
+      }
+      .each-card-info > paper-checkbox {
+        margin-bottom: 8px;
+        --paper-checkbox-checked-color: #ffeb3b;
+        --paper-checkbox-checked-ink-color: #ffeb3b;
+        --paper-checkbox-unchecked-color: #ffeb3b;
+        --paper-checkbox-unchecked-ink-color: #ffeb3b;
+        --paper-checkbox-checkmark-color: #000;
+        --paper-checkbox-label-color: #737373;
+      }
+      iron-collapse.language > .each-card-info > paper-checkbox {
+        --paper-checkbox-checked-color: #3f51b5;
+        --paper-checkbox-checked-ink-color: #3f51b5;
+        --paper-checkbox-unchecked-color: #3f51b5;
+        --paper-checkbox-unchecked-ink-color: #3f51b5;
+        --paper-checkbox-checkmark-color: #fff;
+      }
+      iron-collapse.trending-up > .each-card-info > paper-checkbox {
+        --paper-checkbox-checked-color: #e91e63;
+        --paper-checkbox-checked-ink-color: #e91e63;
+        --paper-checkbox-unchecked-color: #e91e63;
+        --paper-checkbox-unchecked-ink-color: #e91e63;
+        --paper-checkbox-checkmark-color: #fff;
+      }
+      .each-card-info > paper-checkbox:first-of-type {
+        margin-top: 3px;
+      }
+
+      [hidden] {
+        display: none;
+      }
+
+    </style>
+
+    <firebase-collection id="roomBase" location="[[url]]" on-firebase-value="_onFirebaseValue"></firebase-collection>
+
+    <div class="room-page-container">
+      <template is="dom-repeat" items="[[_siteNames]]" index-as="index" strip-whitespace>
+        <paper-card>
+          <iron-image class$="card-img [[_computeSiteIcon(index)]]" alt="[[item]]" src="[[_computeSiteImage(_imagesList, index)]]" sizing="cover" fade preload></iron-image>
+          <div class="card-content">
+            <div class="card-content-title">
+              <iron-icon class$="[[_computeSiteIcon(index)]]" icon="icons:[[_computeSiteIcon(index)]]"></iron-icon>
+              [[item]]
+            </div>
+            <div class="card-actions">
+              <paper-button on-tap="_rollThumbnail">roll</paper-button>
+              <paper-button on-tap="_exploreSite" on-transitionend="_exploreSite">explore</paper-button>
+            </div>
+          </div>
+        <paper-card/>
+      </template>
+    </div>
+
+    <template is="dom-if" if="[[_isDialogOpened]]" restamp="true" strip-whitespace on-dom-change="_openFloorInfo">
+      <paper-dialog id="floorInfo" entry-animation="[[entryAnimation]]" exit-animation="[[exitAnimation]]" no-auto-focus on-iron-overlay-opened="_floorInfoOpened" on-iron-overlay-closed="_floorInfoClosed">
+        <div class$="fake-toolbar [[_computeSiteIcon(_selectedSiteIdx)]]">
+          <paper-icon-button icon="icons:[[_computeFloorInfoIcon(_floorTitle)]]" on-tap="_iconActionify" on-transitionend="_iconActionify"></paper-icon-button>
+          [[_floorTitle]]
+        </div>
+
+        <div id="floorInfoCardContainer" class="floor-info-card-container lazy">
+          <template is="dom-repeat" items="[[_allFloorCards]]" index-as="index" on-dom-change="_itemPopulated" strip-whitespace>
+            <paper-card class$="no-padding [[_isRoomCls(_isRoom)]]">
+              <iron-image class$="card-img [[_computeSiteIcon(_selectedSiteIdx)]]" alt="[[item]]" src="" sizing="cover" fade preload></iron-image>
+              <div class="card-content">
+                <div class="card-content-title">
+                  <iron-icon class$="[[_computeSiteIcon(_selectedSiteIdx)]]" icon=""></iron-icon>
+                  <template is="dom-if" if="[[!_isRoom]]" restamp="true" strip-whitespace>
+                    [[item]]
+                  </template>
+                  <template is="dom-if" if="[[_isRoom]]" restamp="true" strip-whitespace>
+                    [[item.name]]
+                  </template>
+                </div>
+                <div class="card-actions">
+                  <paper-button hidden$="[[!_isRoom]]">Reserve</paper-button>
+                  <paper-button hidden$="[[_isRoom]]" on-tap="_exploreFloor" on-transitionend="_exploreFloor">explore</paper-button>
+                  <paper-icon-button id="collapseMe" icon="hardware:keyboard-arrow-down" hidden$="[[!_isRoom]]" on-tap="_exploreRoom"></paper-icon-button>
+                </div>
+
+                <template is="dom-if" if="[[_isRoom]]" restamp="true" strip-whitespace on-dom-change="_toggleCollapse">
+                  <iron-collapse id="infoCollapse" class$="[[_computeSiteIcon(_selectedSiteIdx)]]" on-transitionend="_collapseOpened">
+                    <div class="each-card-info">
+                      Site
+                      <span>[[item.site]]</span>
+                    </div>
+                    <div class="each-card-info">
+                      Floor
+                      <span>[[item.floor]]</span>
+                    </div>
+                    <div class="each-card-info">
+                      Access
+                      <span>[[_isRestricted(item.access)]]</span>
+                    </div>
+                    <div class="each-card-info">
+                      Capacity
+                      <span>[[item.capacity]]</span>
+                    </div>
+                    <div class="each-card-info">
+                      Remarks
+                      <span>[[item.remarks]]</span>
+                    </div>
+                    <div class="each-card-info">
+                      Types
+                      <template is="dom-repeat" items="[[_decodeTypes(item.types)]]" index-as="index" strip-whitespace>
+                        <paper-checkbox checked>[[item]]</paper-checkbox>
+                      </template>
+                    </div>
+                  </iron-collapse>
+                </template>
+              </div>
+            </paper-card>
+          </template>
+        </div>
+      </paper-dialog>
+    </template>
+  </template>
+
+  <script>
+  (function() {
+    'use strict';
+
+    Polymer({
+      is: 'semafloor-room',
+
+      properties: {
+        url: {
+          type: String,
+          value: '//polymer-semaphore.firebaseio.com/mockMessages/2016/01february/week07/17/site'
+        },
+        noAnimation: Boolean,
+        entryAnimation: String,
+        exitAnimation: String,
+
+        _siteNames: {
+          type: Array,
+          value: function() {
+            return [ 'KLB - Tower 5', 'KLB - Tower 2A', 'SUITE' ];
+          }
+        },
+        _siteIndexes: {
+          type: Array,
+          value: function() {
+            return [ 'alpha', 'beta', 'gamma' ];
+          }
+        },
+        _alphaFloors: {
+          type: Array,
+          value: function() {
+            return [
+              'level 1','level 2','level 3','level 3A','level 5','level 6',
+              'level 7','level 8','level 9','level 10','level 11','level 12'
+            ];
+          }
+        },
+        _alphaFloorCodes: {
+          type: Array,
+          value: function() {
+            return [
+              '01level','02level','03level','04level','05level','06level',
+              '07level','08level','09level','10level','11level','12level'
+            ];
+          }
+        },
+        _imagesList: {
+          type: Array,
+          value: function() {
+            var _images = [
+              'https://c4.staticflickr.com/8/7209/6891647325_29b124ebe4_b.jpg',
+              'https://wallpaperscraft.com/image/dubai_uae_buildings_skyscrapers_night_96720_2560x1440.jpg',
+              'https://wallpaperscraft.com/image/kln_germany_bridge_weser_reflection_architecture_hdr_47748_2560x1440.jpg',
+              'https://wallpaperscraft.com/image/twin_towers_new_york_world_trade_center_skyscrapers_river_bridge_night_city_manhattan_59434_1920x1080.jpg',
+              'https://wallpaperscraft.com/image/skyscrapers_city_night_lights_91888_1920x1080.jpg',
+              'https://wallpaperscraft.com/image/london_england_city_night_lights_river_thames_uk_tower_bridge_lantern_58386_1920x1080.jpg',
+              'https://wallpaperscraft.com/image/tokyo_japan_city_night_lights_63139_1920x1080.jpg'
+            ];
+            return _images;
+          }
+        },
+
+        _readyToExploreSite: Boolean,
+        _readyToIconAction: Boolean,
+        _readyToExploreFloor: Boolean,
+
+        _selectedSiteIdx: String,
+        _floorTitle: String,
+        _allFloorCards: Array,
+        _allRoomCards: Array,
+
+        _isRoom: {
+          type: Boolean,
+          value: !1
+        },
+        _floors: Array,
+
+        _lazyMe: Boolean,
+
+      },
+
+      ready: function() {
+        if (!this.noAnimation) {
+          this.set('entryAnimation', 'slide-from-bottom-animation');
+          this.set('exitAnimation', 'slide-down-animation');
+        }
+      },
+
+      attached: function() {
+        this.fire('room-page-attached');
+      },
+
+      _onFirebaseValue: function(ev) {
+        this.set('_roomInfo', ev.detail.val());
+        this.fire('room-info-ready');
+      },
+      _floorInfoOpened: function(ev) {
+        this._manipulateDocumentScrolling('hidden');
+        this.set('_allFloorCards', this._floors);
+      },
+      _itemPopulated: function(ev) {
+        this.$$('#floorInfo .floor-info-card-container').classList.remove('lazy');
+      },
+      _floorInfoClosed: function(ev) {
+        this.set('_allFloorCards', null);
+        this._manipulateDocumentScrolling('');
+        this.debounce('_floorInfoClosed', function() {
+          this.$$('#floorInfo .floor-info-card-container').classList.add('lazy');
+        });
+      },
+
+      _computeSiteIcon: function(_index) {
+        var _iconNames = ['language', 'trending-up', 'group-work'];
+        return _iconNames[_index];
+      },
+      _computeSiteImage: function(_imagesList) {
+        var _imagesListLen = _imagesList.length - 1;
+        var _randomIdx = _.random(0, _imagesListLen);
+        var _removed = this.splice('_imagesList', _randomIdx, 1);
+        return _removed;
+      },
+      _computeFloorInfoIcon: function(_floorTitle) {
+        if (_floorTitle.indexOf('KLB') >= 0 || _floorTitle.indexOf('SUITE') >= 0) {
+          return 'close';
+        }
+        return 'arrow-back';
+      },
+      _computeFloorInfoCardCls: function(_selectedSiteIdx, _isRoom) {
+        var _cls = ['language', 'trending-up', 'group-work'][_selectedSiteIdx];
+
+        if (_isRoom) {
+          _cls += ' is-room';
+        }
+
+        return _cls;
+      },
+      _decodeTypes: function(_types) {
+        var _hexTypes = _.padStart(parseInt(_types, 16).toString(2), 12, 0);
+        var _str2arr = _hexTypes.split('').map(Number);
+        var _filtered = [];
+
+        _.forEach(_str2arr, function(el, idx) {
+          if (el === 1) {
+            _filtered.push(_roomTypes[idx]);
+          }
+        });
+        _hexTypes = null; _str2arr = null;
+        return _filtered;
+      },
+      _isRestricted: function(_access) {
+        return _access ? 'PUBLIC' : 'RESTRICTED';
+      },
+      _isRoomCls: function(_isRoom) {
+        return _isRoom ? 'is-room' : '';
+      },
+
+      _rollThumbnail: function(ev) {
+        var _target = Polymer.dom(ev).rootTarget;
+
+        while (_target && _target.tagName !== '') {
+          _target = _target.parentElement;
+        }
+
+        if (_target) {
+          var _ironImg = Polymer.dom(_target).querySelector('iron-image');
+          var _oldRandomImg = _ironImg.src;
+          var _newRandomImg = this._computeSiteImage(this._imagesList);
+
+          _ironImg.src = _newRandomImg;
+          this.push('_imagesList', _oldRandomImg);
+          _ironImg = null; _oldRandomImg = null; _newRandomImg = null;
+        }
+      },
+      _exploreSite: function(ev) {
+        this.debounce('_exploreSite', function() {
+          var _type = ev.type;
+
+          if (_type === 'tap') {
+            this.set('_readyToExploreSite', !0);
+          }else {
+            if (this._readyToExploreSite) {
+              var _selectedSite = ev.model.item;
+              var _siteIdx = this._siteNames.indexOf(_selectedSite);
+              var _siteCode = this._siteIndexes[_siteIdx];
+              var _floors = this._alphaFloors;
+
+              if (_siteCode === 'beta') {
+                _floors = ['level 3'];
+              }else if (_siteCode === 'gamma') {
+                _floors = ['level 1'];
+              }
+
+              this.set('_floorTitle', _selectedSite);
+              this.set('_selectedSiteIdx', _siteIdx);
+              this.set('_floors', _floors);
+              this.set('_readyToExploreSite', !1);
+              if (!this._isDialogOpened) {
+                this.set('_isDialogOpened', !0);
+              }else {
+                this.debounce('_openFloorInfo', function() {
+                  this.$$('#floorInfo').open();
+                });
+              }
+            }
+          }
+        }, 1);
+      },
+      _exploreFloor: function(ev) {
+        this.debounce('_exploreFloor', function() {
+          var _type = ev.type;
+
+          if (_type === 'tap') {
+            this.set('_readyToExploreFloor', !0);
+          }else {
+            if (this._readyToExploreFloor) {
+              // At floor level...
+              var _selectedFloor = ev.model.item;
+              if (this._floorTitle.indexOf('level') >= 0) {
+                var _roomInfo = this._allRoomCards[0][_selectedFloor];
+                _roomInfo['name'] = _selectedFloor;
+
+                this.set('_isRoom', !0);
+                this.set('_allFloorCards', [_roomInfo]);
+              }else {
+                // At room level...
+                var _floorIdx = this._alphaFloors.indexOf(_selectedFloor);
+                var _floorCode = this._alphaFloorCodes[_floorIdx];
+                var _roomInfo = this._roomInfo;
+                var _selectedSiteIdx = ev.model._selectedSiteIdx;
+                var _siteCode = ['alpha', 'beta', 'gamma'][_selectedSiteIdx];
+                var _rooms = _roomInfo[_siteCode][_floorCode];
+
+                this.set('_allRoomCards', [_rooms, _selectedFloor]);
+                this.set('_allFloorCards', _.keys(_rooms));
+              }
+
+              this.set('_floorTitle', _selectedFloor);
+            }
+            this.set('_readyToExploreFloor', !1);
+          }
+        }, 1);
+      },
+      _exploreRoom: function(ev) {
+        this._toggleCollapse(!this.$$('#infoCollapse').opened);
+      },
+      _toggleCollapse: function(_open) {
+        var _infoCollapse = this.$$('#infoCollapse');
+        var _collapseMe = this.$$('#collapseMe');
+        var _rotation = typeof _open === 'object' ? !0 : !_open;
+        var _collapseOp = ['hide', 'show'][+_open];
+
+        this._rotateArrowDown(_rotation, _collapseMe);
+        _infoCollapse[_collapseOp]();
+      },
+      _rotateArrowDown: function(_opened, _node) {
+        var _transformation = _opened ? 'rotateZ(0deg)' : 'rotateZ(-180deg)';
+        this.transform(_transformation, _node);
+      },
+      _openFloorInfo: function(ev) {
+        if (ev.target.if) {
+          this.debounce('_openFloorInfo', function() {
+            this.$$('#floorInfo').open();
+          });
+        }
+      },
+      _iconActionify: function(ev) {
+        // If dialog is closed, no op.
+        if (!this.$$('#floorInfo').opened) {
+          return;
+        }
+
+        this.debounce('_iconActionify', function() {
+          var _type = ev.type;
+
+          if (_type === 'tap') {
+            this.set('_readyToIconAction', !0);
+          }else {
+            if (this._readyToIconAction) {
+              var _target = Polymer.dom(ev).rootTarget;
+
+              if (_target) {
+                var _icon = _target.domHost.icon;
+
+                if (_icon.indexOf('close') >= 0) {
+                  this.$$('#floorInfo').close();
+                }else {
+                  var _items = this._alphaFloors;
+                  var _title = 'KLB - Tower 5';
+
+                  // At floor level...
+                  if (this._floorTitle.indexOf('level') >= 0) {
+                    var _selectedSiteIdx = this._selectedSiteIdx;
+
+                    if (_selectedSiteIdx > 1) {
+                      _title = 'SUITE';
+                      _items = ['level 1'];
+                    }else if (_selectedSiteIdx > 0) {
+                      _title = 'KLB - Tower 2A';
+                      _items = ['level 3'];
+                    }
+
+                    this.set('_allRoomCards', null);
+                    this.set('_floorTitle', _title);
+                    this.set('_allFloorCards', _items);
+                  }else {
+                    // At room level...
+                    var _allRoomCards = this._allRoomCards;
+                    _items = _.keys(_allRoomCards[0]);
+                    _title = _allRoomCards[1];
+
+                    this.set('_isRoom', !1);
+                    this.set('_floorTitle', _title);
+                    this.set('_allFloorCards', _items);
+                    // Rotate the arrow down icon button to its initial state.
+                    this._toggleCollapse(!1);
+                  }
+                }
+                // Reset _readyToIconAction.
+                this.set('_readyToIconAction', !1);
+              }
+            }
+          }
+        }, 1);
+      },
+      _manipulateDocumentScrolling: function(_state) {
+        var _overflow = typeof _state === 'object' ? '' : _state || '';
+        document.body.style.overflow = _overflow;
+      },
+      _collapseOpened: function(ev) {
+        var _target = Polymer.dom(ev).rootTarget;
+
+        if (_target.opened) {
+          var _floorInfoCardContainer = this.$$('#floorInfoCardContainer');
+
+          this.debounce('_collapseOpened', function() {
+            _floorInfoCardContainer.scrollTop = _floorInfoCardContainer.scrollHeight - _floorInfoCardContainer.getBoundingClientRect().height;
+          });
+        }
+      },
+
+    });
+  })();
+  </script>
+</dom-module>
