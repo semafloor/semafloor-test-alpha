@@ -258,7 +258,7 @@
                   <paper-icon-button id="collapseMe" icon="hardware:keyboard-arrow-down" hidden$="[[!_isRoom]]" on-tap="_exploreRoom"></paper-icon-button>
                 </div>
 
-                <template is="dom-if" if="[[_isRoom]]" restamp="true" strip-whitespace on-dom-change="_toggleCollapse">
+                <template is="dom-if" if="[[_isRoom]]" restamp="true" strip-whitespace>
                   <iron-collapse id="infoCollapse" class$="[[_computeSiteIcon(_selectedSiteIdx)]]" on-transitionend="_collapseOpened">
                     <div class="each-card-info">
                       Site
@@ -519,6 +519,10 @@
 
                 this.set('_isRoom', !0);
                 this.set('_allFloorCards', [_roomInfo]);
+
+                this.async(function() {
+                  this._toggleCollapse(!0);
+                }, 300);
               }else {
                 // At room level...
                 var _floorIdx = this._alphaFloors.indexOf(_selectedFloor);
@@ -553,6 +557,20 @@
       _rotateArrowDown: function(_opened, _node) {
         var _transformation = _opened ? 'rotateZ(0deg)' : 'rotateZ(-180deg)';
         this.transform(_transformation, _node);
+      },
+      _collapseOpened: function(ev) {
+        var _target = Polymer.dom(ev).rootTarget;
+
+        if (_target.opened) {
+          this.debounce('_collapseOpened', function() {
+            this._resetScroll(!1);
+          });
+        }
+      },
+      _resetScroll: function(_reset) {
+        var _floorInfoCardContainer = this.$$('#floorInfoCardContainer');
+        var _pos = _reset ? 0 : _floorInfoCardContainer.scrollHeight - _floorInfoCardContainer.getBoundingClientRect().height;
+        _floorInfoCardContainer.scrollTop = _pos;
       },
       _openFloorInfo: function(ev) {
         if (ev.target.if) {
@@ -623,17 +641,6 @@
       _manipulateDocumentScrolling: function(_state) {
         var _overflow = typeof _state === 'object' ? '' : _state || '';
         document.body.style.overflow = _overflow;
-      },
-      _collapseOpened: function(ev) {
-        var _target = Polymer.dom(ev).rootTarget;
-
-        if (_target.opened) {
-          var _floorInfoCardContainer = this.$$('#floorInfoCardContainer');
-
-          this.debounce('_collapseOpened', function() {
-            _floorInfoCardContainer.scrollTop = _floorInfoCardContainer.scrollHeight - _floorInfoCardContainer.getBoundingClientRect().height;
-          });
-        }
       },
 
     });
