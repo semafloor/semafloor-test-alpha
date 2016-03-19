@@ -373,6 +373,8 @@
         },
         _floors: Array,
 
+        _roomInfo: Array,
+
         _lazyMe: Boolean,
 
       },
@@ -514,8 +516,8 @@
             this.set('_readyToExploreFloor', !0);
           }else {
             if (this._readyToExploreFloor) {
-              // At floor level...
               var _selectedFloor = ev.model.item;
+              // At floor level...
               if (this._floorTitle.indexOf('level') >= 0) {
                 var _roomInfo = this._allRoomCards[0][_selectedFloor];
                 _roomInfo['name'] = _selectedFloor;
@@ -527,7 +529,7 @@
                   this._toggleCollapse(!0);
                 }, 300);
               }else {
-                // At room level...
+                // At site level...
                 var _floorIdx = this._alphaFloors.indexOf(_selectedFloor);
                 var _floorCode = this._alphaFloorCodes[_floorIdx];
                 var _roomInfo = this._roomInfo;
