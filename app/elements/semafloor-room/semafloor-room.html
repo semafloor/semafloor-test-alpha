@@ -388,6 +388,7 @@
         this.fire('room-page-attached');
       },
 
+      // on-* type methods
       _onFirebaseValue: function(ev) {
         this.set('_roomInfo', ev.detail.val());
         this.fire('room-info-ready');
@@ -407,6 +408,7 @@
         });
       },
 
+      // compute-* type methods
       _computeSiteIcon: function(_index) {
         var _iconNames = ['language', 'trending-up', 'group-work'];
         return _iconNames[_index];
@@ -452,10 +454,11 @@
         return _isRoom ? 'is-room' : '';
       },
 
+      // methods that produce a whole new result.
       _rollThumbnail: function(ev) {
         var _target = Polymer.dom(ev).rootTarget;
 
-        while (_target && _target.tagName !== '') {
+        while (_target && _target.tagName !== 'PAPER-CARD') {
           _target = _target.parentElement;
         }
 

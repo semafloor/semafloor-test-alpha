@@ -1,0 +1,355 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="../../bower_components/neon-animation/neon-animatable.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/slide-from-bottom-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/slide-down-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
+
+
+<dom-module id="semafloor-animated-room">
+  <template strip-whitespace>
+    <style>
+      :host {
+        display: block;
+        user-select: none;
+        box-sizing: border-box;
+
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .animated-room-page-container {
+        position: relative;
+      }
+
+      .animated-room-page-container > paper-card,
+      paper-dialog#floorInfo paper-card {
+        max-width: 360px;
+        margin: 8px;
+        @apply(--layout-horizontal-reverse);
+        --paper-card-content: {
+          padding: 0;
+          text-transform: capitalize;
+          @apply(--layout-vertical);
+          @apply(--layout-flex-2);
+        };
+      }
+      .card-content {
+      }
+      .card-content-title {
+        padding: 16px;
+      }
+      .card-content-title > iron-icon {
+        background-color: #ffeb3b;
+        border-radius: 50%;
+        height: 32px;
+        width: 32px;
+        margin-right: 8px;
+      }
+      .card-content-title > iron-icon.language {
+        background-color: #3f51b5;
+        color: #fff;
+      }
+      .card-content-title > iron-icon.trending-up {
+        background-color: #e91e63;
+        color: #fff;
+      }
+      .card-actions {
+        @apply(--layout-horizontal);
+      }
+
+      .card-img {
+        background-color: #ffecb3;
+        width: 100%;
+        @apply(--layout-flex);
+      }
+      .card-img.language {
+        background-color: #c5cae9;
+      }
+      .card-img.trending-up {
+        background-color: #f8bbd0;
+      }
+
+      neon-animated-pages {
+        height: 100%
+      }
+
+      /* dialog */
+      paper-dialog#floorInfo {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        box-shadow: none;
+      }
+      paper-dialog#floorInfo > .fake-toolbar {
+        margin-top: 0;
+        padding: 0 16px;
+        height: 64px;
+        background-color: #ffeb3b;
+        text-transform: capitalize;
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+      }
+      paper-dialog#floorInfo > .fake-toolbar.language {
+        background-color: #3f51b5;
+        color: #fff;
+      }
+      paper-dialog#floorInfo > .fake-toolbar.trending-up {
+        background-color: #e91e63;
+        color: #fff;
+      }
+      paper-dialog#floorInfo > .fake-toolbar > paper-icon-button {
+        margin-right: 8px;
+      }
+
+    </style>
+
+    <div class="animated-room-page-container">
+      <template is="dom-repeat" items="[[_siteNames]]" index-as="index" strip-whitespace>
+        <paper-card>
+          <iron-image class$="card-img [[_computeSiteIcon(index)]]" alt="[[item]]" src="[[_computeSiteImage(_imagesList, index)]]" sizing="cover" fade preload></iron-image>
+          <div class="card-content">
+            <div class="card-content-title">
+              <iron-icon class$="[[_computeSiteIcon(index)]]" icon="icons:[[_computeSiteIcon(index)]]"></iron-icon>
+              [[item]]
+            </div>
+            <div class="card-actions">
+              <paper-button on-tap="_rollThumbnail" on-transitionend="_rollThumbnail">roll</paper-button>
+              <paper-button on-tap="_exploreSite" on-transitionend="_exploreSite">explore</paper-button>
+            </div>
+          </div>
+        <paper-card/>
+      </template>
+
+      <div class="">
+        Execution time: [[_execTime]]
+      </div>
+
+      <template is="dom-if" if="[[_isDialogOpened]]" restamp="true" strip-whitespace is-dialog on-dom-change="_onDomChange">
+        <paper-dialog id="floorInfo" animation-config="[[dialogAnimationConfig]]">
+          <h2>Dialog Title</h2>
+
+        </paper-dialog>
+      </template>
+      <!-- <neon-animated-pages id="pages" entry-animation="[[entryAnimation]]" exit-animation="[[exitAnimation]]" selected="{{_selectedPage}}" attr-for-selected="page">
+        <neon-animatable page="site">
+          <div class="">
+            Site
+          </div>
+        </neon-animatable>
+
+        <neon-animatable page="floor">
+          Floor
+        </neon-animatable>
+
+        <neon-animatable page="room">
+          Room
+        </neon-animatable>
+
+        <neon-animatable page="info">
+          Info
+        </neon-animatable>
+      </neon-animated-pages> -->
+    </div>
+  </template>
+  <script>
+  (function() {
+    'use strict';
+
+    var _start, _end;
+
+    Polymer({
+      is: 'semafloor-animated-room',
+
+      properties: {
+        url: {
+          type: String,
+          value: '//polymer-semaphore.firebaseio.com/mockMessages/2016/01february/week07/17/site'
+        },
+        noAnimation: Boolean,
+        entryAnimation: String,
+        exitAnimation: String,
+        dialogAnimationConfig: Object,
+
+        _siteNames: {
+          type: Array,
+          value: function() {
+            return [ 'KLB - Tower 5', 'KLB - Tower 2A', 'SUITE' ];
+          }
+        },
+        _siteIndexes: {
+          type: Array,
+          value: function() {
+            return [ 'alpha', 'beta', 'gamma' ];
+          }
+        },
+        _alphaFloors: {
+          type: Array,
+          value: function() {
+            return [
+              'level 1','level 2','level 3','level 3A','level 5','level 6',
+              'level 7','level 8','level 9','level 10','level 11','level 12'
+            ];
+          }
+        },
+        _alphaFloorCodes: {
+          type: Array,
+          value: function() {
+            return [
+              '01level','02level','03level','04level','05level','06level',
+              '07level','08level','09level','10level','11level','12level'
+            ];
+          }
+        },
+        _imagesList: {
+          type: Array,
+          value: function() {
+            var _images = [
+              'https://c4.staticflickr.com/8/7209/6891647325_29b124ebe4_b.jpg',
+              'https://wallpaperscraft.com/image/dubai_uae_buildings_skyscrapers_night_96720_2560x1440.jpg',
+              'https://wallpaperscraft.com/image/kln_germany_bridge_weser_reflection_architecture_hdr_47748_2560x1440.jpg',
+              'https://wallpaperscraft.com/image/twin_towers_new_york_world_trade_center_skyscrapers_river_bridge_night_city_manhattan_59434_1920x1080.jpg',
+              'https://wallpaperscraft.com/image/skyscrapers_city_night_lights_91888_1920x1080.jpg',
+              'https://wallpaperscraft.com/image/london_england_city_night_lights_river_thames_uk_tower_bridge_lantern_58386_1920x1080.jpg',
+              'https://wallpaperscraft.com/image/tokyo_japan_city_night_lights_63139_1920x1080.jpg'
+            ];
+            return _images;
+          }
+        },
+
+        _selectedPage: {
+          type: String,
+          value: 'site'
+        },
+        _manualChange: {
+          type: Boolean,
+          value: !1
+        },
+
+        _readyToSetImage: Boolean,
+        _readyToExploreSite: Boolean,
+        _isDialogOpened: Boolean,
+
+        _execTime: Number,
+
+      },
+
+      attached: function() {
+        this.fire('room-page-attached');
+      },
+
+      // compute-* type methods
+      _computeSiteIcon: function(_index) {
+        var _iconNames = ['language', 'trending-up', 'group-work'];
+        return _iconNames[_index];
+      },
+      _computeSiteImage: function(_imagesList, _index) {
+        var _imagesListLen = _imagesList.length - 1;
+        var _randomIdx = _.random(0, _imagesListLen);
+        var _removed = this.splice('_imagesList', _randomIdx, 1);
+        return _removed;
+      },
+
+      // methods that produce whole new results.
+      _rollThumbnail: function(ev) {
+        this.debounce('_rollThumbnail', function() {
+          var _type = ev.type;
+
+          if (_type === 'tap') {
+            this.set('_readyToSetImage', !0);
+          }else {
+            if (this._readyToSetImage) {
+              var _target = Polymer.dom(ev).rootTarget.domHost;
+
+              while (_target && _target.tagName !== 'PAPER-CARD') {
+                _target = _target.parentElement;
+              }
+
+              if (_target) {
+                var _ironImg = Polymer.dom(_target).querySelector('iron-image');
+                var _oldRandomImg = _ironImg.src;
+                var _newRandomImg = this._computeSiteImage(this._imagesList);
+
+                _ironImg.src = _newRandomImg;
+                this.push('_imagesList', _oldRandomImg);
+                this.set('_readyToSetImage', !1);
+                _ironImg = null; _oldRandomImg = null; _newRandomImg = null;
+              }
+            }
+          }
+        }, 1);
+      },
+
+      _exploreSite: function(ev) {
+        this.debounce('_exploreSite', function() {
+          var _type = ev.type;
+
+          if (_type === 'tap') {
+            _start = window.performance.now();
+            this.set('_readyToExploreSite', !0);
+          }else {
+            if (this._readyToExploreSite) {
+              var _isDialogOpened = this._isDialogOpened;
+
+              if (!_isDialogOpened) {
+                this.set('_isDialogOpened', !0);
+              }else {
+                this.$$('#floorInfo').open();
+              }
+
+              this.set('_readyToExploreSite', !1);
+              _end = window.performance.now() - _start;
+              this.set('_execTime', _end);
+              console.log('_end');
+            }
+          }
+        }, 1);
+      },
+
+      _onDomChange: function(ev) {
+        var _target = Polymer.dom(ev).rootTarget;
+
+        if (_target.if && _target.hasAttribute('is-dialog')) {
+          var _dialog = this.$$('#floorInfo');
+
+          if (_dialog) {
+            if (!this.noAnimation) {
+              this.set('dialogAnimationConfig', {
+                'entry': [{
+                  name: 'slide-from-bottom-animation',
+                  node: _dialog,
+                  timing: {
+                    duration: 250
+                  }
+                }, {
+                  name: 'fade-in-animation',
+                  node: _dialog,
+                  timing: {
+                    delay: 125,
+                    duration: 125
+                  }
+                }]
+              });
+            }
+
+
+            _dialog.open();
+            console.log(_target);
+          }
+        }
+      },
+
+    });
+  })();
+  </script>
+</dom-module>

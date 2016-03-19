@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../semafloor-room/semafloor-room.html">
+<!-- <link rel="import" href="../semafloor-room/semafloor-room.html"> -->
+<link rel="import" href="../semafloor-animated-room/semafloor-animated-room.html">
 <link rel="import" href="../../bower_components/semafloor-icons/semafloor-icons.html">
 
 <link rel="import" href="../../bower_components/semafloor-profile-page/semafloor-profile-page.html">
@@ -373,7 +374,8 @@
           <template is="dom-if" if="[[_isRoomPageOpened]]" restamp="true" strip-whitespace>
             <!-- <semafloor-room-page page="room"
               on-room-page-attached="_onPageAttached"></semafloor-room-page> -->
-            <semafloor-room page="room" on-room-page-attached="_onPageAttached"></semafloor-room>
+            <!-- <semafloor-room page="room" on-room-page-attached="_onPageAttached"></semafloor-room> -->
+            <semafloor-animated-room page="room" on-room-page-attached="_onPageAttached"></semafloor-animated-room>
           </template>
 
         </iron-pages>
