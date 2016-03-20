@@ -16,6 +16,7 @@
 <link rel="import" href="../../bower_components/neon-animation/animations/slide-down-animation.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
 
 
 <dom-module id="semafloor-animated-room">
@@ -39,7 +40,6 @@
 
       .animated-room-page-container > paper-card,
       paper-dialog#floorInfo paper-card {
-        max-width: 360px;
         margin: 8px;
         @apply(--layout-horizontal-reverse);
         --paper-card-content: {
@@ -122,6 +122,11 @@
       }
       neon-animatable {
         padding-top: 8px;
+        opacity: 1;
+        transition: opacity ease-in .4s;
+      }
+      neon-animatable.hide-first {
+        opacity: 0;
       }
 
       /* cards inside dialog */
@@ -237,6 +242,7 @@
       @media all and (min-width: 600px) {
         .animated-room-page-container > paper-card,
         paper-dialog#floorInfo paper-card {
+          max-width: 360px;
           margin-left: auto;
           margin-right: auto;
           @apply(--layout-vertical);
@@ -301,8 +307,8 @@
           </div>
 
           <neon-animated-pages id="pages" class="no-padding" entry-animation="[[entryAnimation]]" exit-animation="[[exitAnimation]]" selected="{{_selectedPage}}" attr-for-selected="page">
-            <neon-animatable page="site">
-              <template is="dom-repeat" items="[[_allFloorCards]]" index-as="index" on-dom-change="_itemPopulated" strip-whitespace>
+            <neon-animatable id="sitePage" page="site" class="hide-first">
+              <template is="dom-repeat" items="[[_allFloorCards]]" index-as="index" target-framerate="60" is-site on-dom-change="_onCardsReady" strip-whitespace>
                 <paper-card>
                   <iron-image class$="card-img [[_computeSiteIcon(_selectedSiteIdx)]]" alt="[[item]]" src="" sizing="cover" fade preload></iron-image>
                   <div class="card-content">
@@ -319,7 +325,7 @@
             </neon-animatable>
 
             <neon-animatable page="floor">
-              <template is="dom-repeat" items="[[_allRoomCards]]" index-as="index" on-dom-change="_itemPopulated" strip-whitespace>
+              <template is="dom-repeat" items="[[_allRoomCards]]" index-as="index" target-framerate="60" is-floor on-dom-change="_onCardsReady" strip-whitespace>
                 <paper-card>
                   <iron-image class$="card-img [[_computeSiteIcon(_selectedSiteIdx)]]" alt="[[item]]" src="" sizing="cover" fade preload></iron-image>
                   <div class="card-content">
@@ -497,8 +503,8 @@
       },
 
       attached: function() {
-        this.set('entryAnimation', 'fade-in-animation');
-        this.set('exitAnimation', 'fade-out-animation');
+        this.set('entryAnimation', 'slide-from-bottom-animation');
+        this.set('exitAnimation', 'slide-down-animation');
 
         this.fire('room-page-attached');
       },
@@ -521,7 +527,6 @@
       // on-* type methods
       _onFirebaseValue: function(ev) {
         var _roomInfo = ev.detail.val();
-        console.log('haha2', this._selectedPage);
         if (this._selectedPage === 'loading') {
           var _selectedFloor = this._selectedFloor;
           var _selectedSiteIdx = this._selectedSiteIdx;
@@ -529,13 +534,12 @@
           var _selectedFloorCode = this._alphaFloorCodes[_selectedFloorIdx];
           var _selectedSiteCode = this._siteIndexes[_selectedSiteIdx];
           var _rooms = _roomInfo[_selectedSiteCode][_selectedFloorCode];
-          console.log('haha', _selectedFloor, _rooms);
 
           this.set('_floorInfo', [_rooms, _selectedFloor]);
           this.set('_allRoomCards', _.keys(_rooms));
           this.set('_floorTitle', _selectedFloor);
           this._resetScroll(!0);
-          this.set('_selectedPage', 'floor');
+          // this.set('_selectedPage', 'floor');
         }
 
         this.set('_roomInfo', _roomInfo);
@@ -580,16 +584,18 @@
                   }
                 }]
               });
+
             }
+
             this.set('_isSite', !0);
 
             this._manipulateDocumentScrolling('hidden');
             _dialog.open();
           }
         }else if (_target.if && _target.hasAttribute('is-collapse')) {
-          this.async(function() {
-            this._toggleCollapse(!0);
-          }, 300);
+          this._toggleCollapse(!0);
+          // this.async(function() {
+          // }, 300);
         }
       },
       _rollThumbnail: function(ev) {
@@ -669,6 +675,7 @@
             if (this._readyToExploreFloor) {
               var _floorTitle;
               var _selectedPage = 'floor';
+
               if (typeof this._roomInfo === 'undefined') {
                 _floorTitle = 'Loading...';
                 _selectedPage = 'loading';
@@ -688,7 +695,11 @@
 
               this.set('_isSite', !1);
               this.set('_floorTitle', _floorTitle);
-              this.set('_selectedPage', _selectedPage);
+              // Only set _selectedPage if it's going to loading page.
+              // Only when are all data loaded completely on the page, switch to floor page.
+              if (_selectedPage === 'loading') {
+                this.set('_selectedPage', _selectedPage);
+              }
               this._resetScroll(!0);
               this.set('_readyToExploreFloor', !1);
             }
@@ -734,9 +745,11 @@
                   this._manipulateDocumentScrolling();
 
                   this.$$('#pages').playAnimation('exit');
-                  this.set('_allFloorCards', null);
                   this.async(function() {
                     this.$$('#floorInfo').close();
+                    // Restore hide-first class on site page and clear _allFloorCards.
+                    this.$$('#sitePage').classList.add('hide-first');
+                    this.set('_allFloorCards', null);
                   }, 100);
                 }
               }else if (this._isRoom) {
@@ -759,6 +772,18 @@
       },
       _onDialogOpened: function(ev) {
         this.set('_allFloorCards', this._floors);
+      },
+      _onCardsReady: function(ev) {
+        var _target = Polymer.dom(ev).rootTarget;
+        if (!!_target.items && _target.hasAttribute('is-site')) {
+          _target.parentElement.classList.remove('hide-first');
+        }else if (!!_target.items && _target.hasAttribute('is-floor')) {
+          this.async(function() {
+            this.set('_selectedPage', 'floor');
+            // _target.parentElement.classList.remove('hide-first');
+          }, 500);
+          // this.set('_allFloorCards', null);
+        }
       },
 
       // methods that produce whole new results.
@@ -798,13 +823,18 @@
         if (_target.opened) {
           this.debounce('_collapseOpened', function() {
             this._resetScroll(!1);
-          });
+          }, 300);
         }
       },
       _resetScroll: function(_reset) {
         var _neonAnimatedPages = this.$$('#pages');
-        var _pos = _reset ? 0 : _neonAnimatedPages.scrollHeight - _neonAnimatedPages.getBoundingClientRect().height;
-        _neonAnimatedPages.scrollTop = _pos;
+        var _scrollToBottom = _neonAnimatedPages.scrollHeight > _neonAnimatedPages.clientHeight;
+
+        if (_scrollToBottom) {
+          var _pos = _reset ? 0 : _neonAnimatedPages.scrollHeight - _neonAnimatedPages.getBoundingClientRect().height;
+          _neonAnimatedPages.scrollTop = _pos;
+        }
+        _neonAnimatedPages = null; _scrollToBottom = null;
       },
 
     });
