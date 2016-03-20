@@ -799,6 +799,8 @@
             this.$.drawer.close();
           });
         }
+        this.$.header._scrollTop = 0;
+        this.$.header.resetLayout();
       },
 
       // TODO: Support Shadow DOM
