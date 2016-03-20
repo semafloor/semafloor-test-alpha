@@ -822,7 +822,11 @@
         var _target = Polymer.dom(ev).rootTarget;
 
         if (_target.opened) {
-          this._resetScroll(!1);
+          // Debounce as it is needed to get the final scrollHeight
+          // after neon-animation.
+          this.debounce('_resetScroll', function() {
+            this._resetScroll(!1);
+          }, 300);
         }
       },
       _resetScroll: function(_reset) {
