@@ -278,7 +278,7 @@
     <firebase-collection id="roomBase" location="[[url]]" on-firebase-value="_onFirebaseValue"></firebase-collection>
 
     <div class="animated-room-page-container">
-      <template is="dom-repeat" items="[[_siteNames]]" index-as="index" strip-whitespace>
+      <template is="dom-repeat" target-framerate="60" initial-count="3" items="[[_siteNames]]" index-as="index" strip-whitespace>
         <paper-card>
           <iron-image class$="card-img [[_computeSiteIcon(index)]]" alt="[[item]]" src="[[_computeSiteImage(_imagesList, index)]]" sizing="cover" fade preload></iron-image>
           <div class="card-content">
@@ -294,9 +294,9 @@
         <paper-card/>
       </template>
 
-      <div class="">
+      <!-- <div class="">
         Execution time: [[_execTime]]
-      </div>
+      </div> -->
 
       <template is="dom-if" if="[[_isDialogOpened]]" restamp="true" strip-whitespace is-dialog on-dom-change="_onDomChange">
         <paper-dialog id="floorInfo" animation-config="[[dialogAnimationConfig]]" on-iron-overlay-opened="_onDialogOpened">
@@ -308,7 +308,7 @@
 
           <neon-animated-pages id="pages" class="no-padding" entry-animation="[[entryAnimation]]" exit-animation="[[exitAnimation]]" selected="{{_selectedPage}}" attr-for-selected="page">
             <neon-animatable id="sitePage" page="site" class="hide-first">
-              <template is="dom-repeat" items="[[_allFloorCards]]" index-as="index" target-framerate="60" is-site on-dom-change="_onCardsReady" strip-whitespace>
+              <template is="dom-repeat" target-framerate="60" initial-count="6" items="[[_allFloorCards]]" index-as="index" is-site on-dom-change="_onCardsReady" strip-whitespace>
                 <paper-card>
                   <iron-image class$="card-img [[_computeSiteIcon(_selectedSiteIdx)]]" alt="[[item]]" src="" sizing="cover" fade preload></iron-image>
                   <div class="card-content">
@@ -325,7 +325,7 @@
             </neon-animatable>
 
             <neon-animatable page="floor">
-              <template is="dom-repeat" items="[[_allRoomCards]]" index-as="index" target-framerate="60" is-floor on-dom-change="_onCardsReady" strip-whitespace>
+              <template is="dom-repeat" target-framerate="60" initial-count="6" items="[[_allRoomCards]]" index-as="index" is-floor on-dom-change="_onCardsReady" strip-whitespace>
                 <paper-card>
                   <iron-image class$="card-img [[_computeSiteIcon(_selectedSiteIdx)]]" alt="[[item]]" src="" sizing="cover" fade preload></iron-image>
                   <div class="card-content">
@@ -378,7 +378,7 @@
                       </div>
                       <div class="each-card-info">
                         Types
-                        <template is="dom-repeat" items="[[_decodeTypes(_roomCard.types)]]" index-as="index" strip-whitespace>
+                        <template is="dom-repeat" target-framerate="60" initial-count="6" items="[[_decodeTypes(_roomCard.types)]]" index-as="index" strip-whitespace>
                           <paper-checkbox checked>[[item]]</paper-checkbox>
                         </template>
                       </div>
@@ -401,7 +401,7 @@
   (function() {
     'use strict';
 
-    var _start, _end;
+    // var _start, _end;
 
     Polymer({
       is: 'semafloor-animated-room',
@@ -538,7 +538,7 @@
           this.set('_floorInfo', [_rooms, _selectedFloor]);
           this.set('_allRoomCards', _.keys(_rooms));
           this.set('_floorTitle', _selectedFloor);
-          this._resetScroll(!0);
+          // this._resetScroll(!0);
           // this.set('_selectedPage', 'floor');
         }
 
@@ -593,9 +593,9 @@
             _dialog.open();
           }
         }else if (_target.if && _target.hasAttribute('is-collapse')) {
-          this._toggleCollapse(!0);
-          // this.async(function() {
-          // }, 300);
+          this.debounce('_toggleCollapse', function() {
+            this._toggleCollapse(!0);
+          }, 500);
         }
       },
       _rollThumbnail: function(ev) {
@@ -631,7 +631,7 @@
           var _type = ev.type;
 
           if (_type === 'tap') {
-            _start = window.performance.now();
+            // _start = window.performance.now();
             this.set('_readyToExploreSite', !0);
           }else {
             if (this._readyToExploreSite) {
@@ -659,8 +659,8 @@
                 this.$$('#floorInfo').open();
               }
 
-              _end = window.performance.now() - _start;
-              this.set('_execTime', _end);
+              // _end = window.performance.now() - _start;
+              // this.set('_execTime', _end);
             }
           }
         }, 1);
@@ -697,11 +697,11 @@
               this.set('_floorTitle', _floorTitle);
               // Only set _selectedPage if it's going to loading page.
               // Only when are all data loaded completely on the page, switch to floor page.
+              this.set('_readyToExploreFloor', !1);
               if (_selectedPage === 'loading') {
                 this.set('_selectedPage', _selectedPage);
               }
-              this._resetScroll(!0);
-              this.set('_readyToExploreFloor', !1);
+              // this._resetScroll(!0);
             }
           }
         }, 1);
@@ -719,10 +719,10 @@
               _selectedRoomInfo['name'] = _selectedRoom;
 
               this.set('_isRoom', !0);
-              this.set('_roomCard', _selectedRoomInfo);
-              this.set('_selectedPage', 'room');
               this.set('_floorTitle', _selectedRoom);
+              this.set('_roomCard', _selectedRoomInfo);
               this.set('_readyToExploreRoom', !1);
+              this.set('_selectedPage', 'room');
             }
           }
         }, 1);
@@ -780,6 +780,7 @@
         }else if (!!_target.items && _target.hasAttribute('is-floor')) {
           this.async(function() {
             this.set('_selectedPage', 'floor');
+            this._resetScroll(!0);
             // _target.parentElement.classList.remove('hide-first');
           }, 500);
           // this.set('_allFloorCards', null);
@@ -821,9 +822,7 @@
         var _target = Polymer.dom(ev).rootTarget;
 
         if (_target.opened) {
-          this.debounce('_collapseOpened', function() {
-            this._resetScroll(!1);
-          }, 300);
+          this._resetScroll(!1);
         }
       },
       _resetScroll: function(_reset) {
