@@ -464,7 +464,11 @@
 
         this.set('authRedirect', _redirectIfMobile);
 
-        this.fire('main-page-attached', 'main');
+        // Vulcanize bug? main page attached before native web components logged to console.
+        this.async(function() {
+          console.log('main-page-attached');
+          this.fire('main-page-attached', 'main');
+        }, 1);
         // console.log('*Last - attached: end');
       },
 
@@ -803,11 +807,13 @@
         this.$.header.resetLayout();
       },
 
+      // TODO: Removed all console.log.
+      // TODO: app shell disrupts page while loading.
       // TODO: create more data for reserve page to demo bottomsheet and fab hide on scrolling downwards.
       // TODO: current page weekend page padding 8px 12px to center text.
       // TODO: compound-timepicker SVGs not vulcanized.
-      // TODO: iron-image inside dom-if not able to have round edges on Shadow DOM.
-      // TODO: Rever all changes in room page now caused a lot of janks.
+      // X - TODO: Rever all changes in room page now caused a lot of janks.
+      // X - TODO: iron-image inside dom-if not able to have round edges on Shadow DOM.
       // X - TODO: Support Shadow DOM as event retargeting with transitionend event.
       // X - TODO: dialog not able to be opened on profile page due to event retargeting.
       // X - TODO: Fixed search page's search result when dialog is closed. Eg. floor level is not cleared.
