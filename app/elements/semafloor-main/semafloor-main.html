@@ -23,6 +23,8 @@
 
 <link rel="import" href="../../bower_components/firebase-element/firebase-auth.html">
 
+<link rel="import" href="../../bower_components/platinum-push-messaging/platinum-push-messaging.html">
+
 <link rel="import" href="../../bower_components/jv-datepicker/datepicker-slide-from-bottom-animation.html">
 <link rel="import" href="../../bower_components/jv-datepicker/datepicker-slide-from-top-animation.html">
 <link rel="import" href="../lodash.html">
@@ -381,6 +383,8 @@
         </iron-pages>
       </app-header-layout>
 
+      <platinum-push-messaging id="push" enabled="[[_pushEnabled]]" click-url="[[_pushClickUrl]]" icon-url="../images/touch/chrome-touch-icon-192x192.png" title="[[_pushTitle]]" tag="[[_pushTag]]" message-url="[[_pushMessageUrl]]" vibrate="[[_vibratePattern]]" on-platinum-push-messaging-push="_pushNotified" on-platinum-push-messaging-click="_pushClicked" on-platinum-push-messaging-error="_pushError" on-subscription-changed="_subscriptionChanged"></platinum-push-messaging>
+
       <paper-toast id="authToast" text="[[authMsg]]"></paper-toast>
     </app-drawer-layout>
   </template>
@@ -441,6 +445,59 @@
 
         _postY: Number,
         _animateReserve: Boolean,
+
+        _pushTitle: {
+          type: String,
+          value: "Semafloor Push Notification Test"
+        },
+        _pushClickUrl: {
+          type: String,
+          value: '//localhost:5000/#reserve/view'
+        },
+        _pushTag: {
+          type: String,
+          value: "semafloor-push-notification-test-tag"
+        },
+        _pushEnabled: {
+          type: Boolean,
+          value: !0
+        },
+        _pushMessageUrl: {
+          type: String,
+          // value: '//api.motss.koding.io/notification-data.json'
+        },
+        _vibratePattern: {
+          type: Array,
+          value: function() {
+            // Morse Code vibration pattern. http://goo.gl/ncjbda
+            var _dot = 200;
+            var _dash = 500;
+            var _shortGap = 200;
+            var _mediumGap = 500;
+            var _longGap = 1000;
+            return [
+              0,
+              _dot,  _shortGap, _dot, _shortGap, _dot,
+              _mediumGap,
+              _dot,
+              _mediumGap,
+              _dash, _shortGap, _dash,
+              _mediumGap,
+              _dot, _shortGap, _dash,
+              _mediumGap,
+              _dot, _shortGap, _dot, _shortGap, _dash, _shortGap, _dot,
+              _mediumGap,
+              _dot, _shortGap, _dash, _shortGap, _dot, _shortGap, _dot,
+              _mediumGap,
+              _dash, _shortGap, _dash, _shortGap, _dash,
+              _mediumGap,
+              _dash, _shortGap, _dash, _shortGap, _dash,
+              _mediumGap,
+              _dot, _shortGap, _dash, _shortGap, _dot,
+              _longGap
+            ];
+          }
+        },
 
       },
 
@@ -805,6 +862,19 @@
         }
         this.$.header._scrollTop = 0;
         this.$.header.resetLayout();
+      },
+
+      _pushNotified: function(ev) {
+        console.log(ev);
+      },
+      _pushClicked: function(ev) {
+        console.log(ev);
+      },
+      _pushError: function(ev) {
+        console.log(error);
+      },
+      _subscriptionChanged: function(ev) {
+        console.log(ev);
       },
 
       // TODO: Removed all console.log.

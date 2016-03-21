@@ -33,5 +33,7 @@
   "start_url": "/?homescreen=1",
   "background_color": "#FFFFFF",
   "display": "standalone",
-  "theme_color": "#009688"
+  "theme_color": "#009688",
+  "gcm_sender_id": "293701003975",
+  "gcm_user_visible_only": true
 }
