@@ -20,6 +20,7 @@
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 
 <link rel="import" href="../../bower_components/firebase-element/firebase-auth.html">
 
@@ -203,6 +204,8 @@
       }
       .nav-menu {
         margin-top: 8px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #ddd;
       }
       .nav-menu > a {
         display: block;
@@ -235,6 +238,28 @@
       }
       semafloor-search-page.animate-reserve {
         opacity: 0;
+      }
+
+      /* toggle button for push notification */
+      .push-opt-in {
+        font-size: 14px;
+        padding: 12px 16px;
+        font-weight: 500;
+        margin-top: 16px;
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+      }
+      .push-label {
+        @apply(--layout-flex);
+      }
+      paper-toggle-button.push-toggle {
+        --paper-toggle-button-unchecked-bar-color: #7c7c7c;
+        --paper-toggle-button-unchecked-button-color: #7c7c7c;
+        --paper-toggle-button-unchecked-ink-color: #7c7c7c;
+
+        --paper-toggle-button-checked-bar-color: #009688;
+        --paper-toggle-button-checked-button-color: #009688;
+        --paper-toggle-button-checked-ink-color: #009688;
       }
 
       /* small desktop & tablet */
@@ -311,6 +336,13 @@
               <a href="#[[item]]/view" class$="[[_computeCategoryCls(item, category)]]"> [[_computeCategoryName(index, item)]] </a>
             </template>
           </div>
+
+          <div class="push-opt-in">
+            <div class="push-label">
+              Subscribe for reservation reminder
+            </div>
+            <paper-toggle-button class="push-toggle" checked="{{_pushEnabled}}" disabled="[[_pushSupported]]" on-change="_optForPush"></paper-toggle-button>
+          </div>
         </template>
       </app-drawer>
 
@@ -383,9 +415,9 @@
         </iron-pages>
       </app-header-layout>
 
-      <platinum-push-messaging id="push" enabled="[[_pushEnabled]]" click-url="[[_pushClickUrl]]" icon-url="../images/touch/chrome-touch-icon-192x192.png" title="[[_pushTitle]]" tag="[[_pushTag]]" message-url="[[_pushMessageUrl]]" vibrate="[[_vibratePattern]]" on-platinum-push-messaging-push="_pushNotified" on-platinum-push-messaging-click="_pushClicked" on-platinum-push-messaging-error="_pushError" on-subscription-changed="_subscriptionChanged"></platinum-push-messaging>
+      <platinum-push-messaging id="semafloorPush" enabled="[[_pushEnabled]]" supported="{{_pushSupported}}" click-url="[[_pushClickUrl]]" icon-url="../images/touch/chrome-touch-icon-192x192.png" title="[[_pushTitle]]" tag="[[_pushTag]]" message-url="[[_pushMessageUrl]]" vibrate="[[_vibratePattern]]" on-platinum-push-messaging-push="_pushNotified" on-platinum-push-messaging-click="_pushClicked" on-platinum-push-messaging-error="_pushError" on-subscription-changed="_pushSubscriptionChanged" on-enabled-changed="_pushEnabledChanged"></platinum-push-messaging>
 
-      <paper-toast id="authToast" text="[[authMsg]]"></paper-toast>
+      <paper-toast id="authToast" text="[[authMsg]]" duration="1200" on-tap="_dismissToast"></paper-toast>
     </app-drawer-layout>
   </template>
 
@@ -458,14 +490,12 @@
           type: String,
           value: "semafloor-push-notification-test-tag"
         },
-        _pushEnabled: {
-          type: Boolean,
-          value: !0
-        },
+        _pushEnabled: Boolean,
         _pushMessageUrl: {
           type: String,
           // value: '//api.motss.koding.io/notification-data.json'
         },
+        _pushSupported: Boolean,
         _vibratePattern: {
           type: Array,
           value: function() {
@@ -504,7 +534,7 @@
       observers: [
         '_hashDidChange(urlHash, authUser)',
         '_updateUid(authUser)',
-        '_closeDrawerOnLargeScreen(smallScreen)'
+        '_closeDrawerOnLargeScreen(smallScreen)',
       ],
 
       attached: function() {
@@ -518,6 +548,8 @@
           var _postY = _header.getScrollState().top;
           _thisSet('_postY', _postY);
         });
+
+        console.log(this.$.semafloorPush.enabled);
 
         this.set('authRedirect', _redirectIfMobile);
 
@@ -864,6 +896,10 @@
         this.$.header.resetLayout();
       },
 
+      _dismissToast: function() {
+        this.$.authToast.close();
+      },
+
       _pushNotified: function(ev) {
         console.log(ev);
       },
@@ -873,8 +909,28 @@
       _pushError: function(ev) {
         console.log(error);
       },
-      _subscriptionChanged: function(ev) {
+      _pushSubscriptionChanged: function(ev) {
         console.log(ev);
+      },
+      _pushEnabledChanged: function(ev) {
+        console.log(ev);
+        // Whenever the push messaging kicks off, update the toggle state
+        // as the platinum-push-messaging will have the enabled state to
+        // indicate that whether the current has opted in for push notification.
+        this.set('_pushEnabled', ev.detail.value);
+      },
+      _optForPush: function(ev) {
+        // The only way to update push messaging's enabled state from toggle button
+        // via user interaction.
+        var _target = Polymer.dom(ev).rootTarget;
+
+        if (_target.checked) {
+          console.log('You have opted in for push notification!');
+          this.$.semafloorPush.enable();
+        }else {
+          console.log('You have opted out for push notification!');
+          this.$.semafloorPush.disable();
+        }
       },
 
       // TODO: Removed all console.log.
