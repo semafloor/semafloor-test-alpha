@@ -332,7 +332,7 @@
           </template>
 
           <div class="nav-menu">
-            <template is="dom-repeat" items="[[_categories]]" index-as="index" strip-whitespace>
+            <template is="dom-repeat" initial-count="3" target-framerate="60" items="[[_categories]]" index-as="index" strip-whitespace>
               <a href="#[[item]]/view" class$="[[_computeCategoryCls(item, category)]]"> [[_computeCategoryName(index, item)]] </a>
             </template>
           </div>
@@ -374,7 +374,7 @@
           <template is="dom-if" if="[[!smallScreen]]" restamp="true" strip-whitespace>
             <!-- <paper-tabs id="tabs" selected="{{category}}" scrollable primary$="[[_shouldShowTabs(smallScreen)]]" attr-for-selected="tab"> -->
             <paper-tabs id="tabs" selected="{{category}}" scrollable primary$="[[smallScreen]]" attr-for-selected="tab">
-              <template is="dom-repeat" items="[[_categories]]" index-as="index" strip-whitespace>
+              <template is="dom-repeat" initial-count="3" target-framerate="60" items="[[_categories]]" index-as="index" strip-whitespace>
                 <paper-tab tab="[[item]]">
                   <a href="#[[item]]/view"> [[_computeCategoryName(index, item)]] </a>
                 </paper-tab>
@@ -493,7 +493,7 @@
         _pushEnabled: Boolean,
         _pushMessageUrl: {
           type: String,
-          // value: '//api.motss.koding.io/notification-data.json'
+          value: 'https://semafore.motss.koding.io/notification-data.json'
         },
         _pushSupported: Boolean,
         _vibratePattern: {
@@ -528,6 +528,7 @@
             ];
           }
         },
+        _previousSubscriptionId: String,
 
       },
 
@@ -910,14 +911,91 @@
         console.log(error);
       },
       _pushSubscriptionChanged: function(ev) {
+        // GCM always needs the subscriptionId passed separately. Note that as of M45,
+        // the subscriptionId and the endpoint have merged.
+        var _ppm = this.$.semafloorPush;
+        var _subscriptionId = _ppm.subscription ? _ppm.subscription.subscriptionId : undefined;
+        if (_ppm.subscription && !_ppm.subscription.subscriptionId) {
+          var _endpointSections = _ppm.subscription.endpoint.split('/');
+          _subscriptionId = _endpointSections[_endpointSections.length - 1];
+        }
+        if (_subscriptionId) {
+          this.set('_previousSubscriptionId', _subscriptionId);
+        }
         console.log(ev);
       },
       _pushEnabledChanged: function(ev) {
+        // For unknown reason, toggle button appears on anonymous.
+        if (!!!this.authUser) {
+          this.set('_pushEnabled', !1);
+          return;
+        }
+
+        // var _ref = this.$.semafloorAuth.ref;
+        // var _that = this;
+        // _ref.child('users/' + _authUser.provider).once('value').then(function(snapshot) {
+        //   var _isUser = snapshot.child(_authUser.uid).exists();
+        //   if (_isUser) {
+        //     // Access data directly from the user.		 +
+        //      console.warn('Existing user! Allow profile to read data from the user...');
+        //     _that.set('uid', _authUser.uid);
+        //   }else {
+        //     console.warn('Creating Firebase for new user...');
+        //     _ref.child('users/' + _authUser.provider + '/' + _authUser.uid)
+        //       .transaction(function(data) {
+        //         if (data == null) {
+        //
+        var _ref = this.$.semafloorAuth.ref;
+        var _authUser = this.authUser;
+        var _previousSubscriptionId = this._previousSubscriptionId;
         console.log(ev);
         // Whenever the push messaging kicks off, update the toggle state
         // as the platinum-push-messaging will have the enabled state to
         // indicate that whether the current has opted in for push notification.
         this.set('_pushEnabled', ev.detail.value);
+
+        // Push subscribed device/ browser to user's Firebase.
+        _ref.child('users/' + _authUser.provider + '/' + _authUser.uid).child('pushSubscription').once('value').then(function(_snapshot) {
+          // If ev.detail.value is true, add current device/ browser to push subscription;
+          if (ev.detail.value) {
+            var _isIdRegistered = !1;
+            _snapshot.forEach(function(_n) {
+              if (_n.val() === _previousSubscriptionId) {
+                _isIdRegistered = !0;
+              }
+            });
+            // If current device/ browser not yet registered, push and register.
+            if (!_isIdRegistered) {
+              console.log('push and register:', _snapshot.ref(), _previousSubscriptionId);
+              _snapshot.ref().push(_previousSubscriptionId);
+            }
+          }else {
+            // Else to remove from push subscription.
+            var _isIdRegisteredRef = '';
+            _snapshot.forEach(function(_n) {
+              if (_n.val() === _previousSubscriptionId) {
+                _isIdRegisteredRef = _n.ref();
+              }
+            });
+            // Remove subscribed device/ browser from subscription list if found.
+            if (!!_isIdRegisteredRef) {
+              console.log('remove:', _snapshot);
+              _isIdRegisteredRef.remove();
+            }
+          }
+        }).catch(function(error) {
+          console.log(error);
+        });
+
+        // var _xhr = new XMLHttpRequest();
+        // _xhr.open('POST', 'https://semafore.motss.koding.io/subscription_change', !0);
+        // _xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
+        // _xhr.setRequestHeader("Authentication", "token=" + JSON.stringify(this.authUser));
+        // // There's no response in the success case.
+        // _xhr.onerror = function() {
+        //   console.log("Couldn't send subscription to server.");
+        // };
+        // _xhr.send('enabled=' + ev.detail.value + '&id=' + this._previousSubscriptionId);
       },
       _optForPush: function(ev) {
         // The only way to update push messaging's enabled state from toggle button
