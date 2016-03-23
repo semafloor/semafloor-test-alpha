@@ -6,3 +6,4 @@ dist/
 firebase.json
 firebase-debug.log
 gulpfile.babel.js
+rough.js

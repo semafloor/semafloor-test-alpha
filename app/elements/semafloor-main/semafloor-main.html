@@ -415,7 +415,9 @@
         </iron-pages>
       </app-header-layout>
 
-      <platinum-push-messaging id="semafloorPush" enabled="[[_pushEnabled]]" supported="{{_pushSupported}}" click-url="[[_pushClickUrl]]" icon-url="../images/touch/chrome-touch-icon-192x192.png" title="[[_pushTitle]]" tag="[[_pushTag]]" message-url="[[_pushMessageUrl]]" vibrate="[[_vibratePattern]]" on-platinum-push-messaging-push="_pushNotified" on-platinum-push-messaging-click="_pushClicked" on-platinum-push-messaging-error="_pushError" on-subscription-changed="_pushSubscriptionChanged" on-enabled-changed="_pushEnabledChanged"></platinum-push-messaging>
+      <template is="dom-if" if="[[_revealPushMessaging]]" restamp="true" strip-whitespace>
+        <platinum-push-messaging id="semafloorPush" enabled="[[_pushEnabled]]" supported="{{_pushSupported}}" message-url="[[_pushMessageUrl]]" click-url="[[_pushClickUrl]]" title="[[_pushTitle]]" tag="[[_pushTag]]" vibrate="[[_vibratePattern]]" on-platinum-push-messaging-push="_pushNotified" on-platinum-push-messaging-click="_pushClicked" on-platinum-push-messaging-error="_pushError" on-subscription-changed="_pushSubscriptionChanged" on-enabled-changed="_pushEnabledChanged"></platinum-push-messaging>
+      </template>
 
       <paper-toast id="authToast" text="[[authMsg]]" duration="1200" on-tap="_dismissToast"></paper-toast>
     </app-drawer-layout>
@@ -480,7 +482,7 @@
 
         _pushTitle: {
           type: String,
-          value: "Semafloor Push Notification Test"
+          // value: "Semafloor Push Notification Test"
         },
         _pushClickUrl: {
           type: String,
@@ -488,12 +490,12 @@
         },
         _pushTag: {
           type: String,
-          value: "semafloor-push-notification-test-tag"
+          // value: "semafloor-push-notification-test-tag"
         },
         _pushEnabled: Boolean,
         _pushMessageUrl: {
           type: String,
-          value: 'https://semafore.motss.koding.io/notification-data.json'
+          // value: 'https://semafore.motss.koding.io/notification-data.json'
         },
         _pushSupported: Boolean,
         _vibratePattern: {
@@ -529,6 +531,7 @@
           }
         },
         _previousSubscriptionId: String,
+        _revealPushMessaging: Boolean,
 
       },
 
@@ -549,8 +552,6 @@
           var _postY = _header.getScrollState().top;
           _thisSet('_postY', _postY);
         });
-
-        console.log(this.$.semafloorPush.enabled);
 
         this.set('authRedirect', _redirectIfMobile);
 
@@ -827,6 +828,11 @@
           }
           // console.log('8 - _updateUid: end');
         });
+
+        // workaround: Set logged in user's email to push messaging's title.
+        this.set('_pushMessageUrl', 'https://semafore.motss.koding.io/notification-data.json/' + encodeURIComponent(_authUser.google.email));
+        // workaround: Reveal push messaging element once _pushMessageUrl is set.
+        this.set('_revealPushMessaging', !0);
       },
 
       _loginWithGoogle: function() {
@@ -913,7 +919,7 @@
       _pushSubscriptionChanged: function(ev) {
         // GCM always needs the subscriptionId passed separately. Note that as of M45,
         // the subscriptionId and the endpoint have merged.
-        var _ppm = this.$.semafloorPush;
+        var _ppm = this.$$('#semafloorPush');
         var _subscriptionId = _ppm.subscription ? _ppm.subscription.subscriptionId : undefined;
         if (_ppm.subscription && !_ppm.subscription.subscriptionId) {
           var _endpointSections = _ppm.subscription.endpoint.split('/');
@@ -931,24 +937,9 @@
           return;
         }
 
-        // var _ref = this.$.semafloorAuth.ref;
-        // var _that = this;
-        // _ref.child('users/' + _authUser.provider).once('value').then(function(snapshot) {
-        //   var _isUser = snapshot.child(_authUser.uid).exists();
-        //   if (_isUser) {
-        //     // Access data directly from the user.		 +
-        //      console.warn('Existing user! Allow profile to read data from the user...');
-        //     _that.set('uid', _authUser.uid);
-        //   }else {
-        //     console.warn('Creating Firebase for new user...');
-        //     _ref.child('users/' + _authUser.provider + '/' + _authUser.uid)
-        //       .transaction(function(data) {
-        //         if (data == null) {
-        //
         var _ref = this.$.semafloorAuth.ref;
         var _authUser = this.authUser;
         var _previousSubscriptionId = this._previousSubscriptionId;
-        console.log(ev);
         // Whenever the push messaging kicks off, update the toggle state
         // as the platinum-push-messaging will have the enabled state to
         // indicate that whether the current has opted in for push notification.
@@ -986,28 +977,19 @@
         }).catch(function(error) {
           console.log(error);
         });
-
-        // var _xhr = new XMLHttpRequest();
-        // _xhr.open('POST', 'https://semafore.motss.koding.io/subscription_change', !0);
-        // _xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
-        // _xhr.setRequestHeader("Authentication", "token=" + JSON.stringify(this.authUser));
-        // // There's no response in the success case.
-        // _xhr.onerror = function() {
-        //   console.log("Couldn't send subscription to server.");
-        // };
-        // _xhr.send('enabled=' + ev.detail.value + '&id=' + this._previousSubscriptionId);
       },
       _optForPush: function(ev) {
         // The only way to update push messaging's enabled state from toggle button
         // via user interaction.
         var _target = Polymer.dom(ev).rootTarget;
+        var _semafloorPush = this.$$('#semafloorPush');
 
         if (_target.checked) {
           console.log('You have opted in for push notification!');
-          this.$.semafloorPush.enable();
+          _semafloorPush.enable();
         }else {
           console.log('You have opted out for push notification!');
-          this.$.semafloorPush.disable();
+          _semafloorPush.disable();
         }
       },
 
