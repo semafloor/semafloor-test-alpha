@@ -90,6 +90,8 @@
       app-drawer {
         --app-drawer-content-container: {
           background-color: #fafafa;
+          will-change: transform;
+          @apply(--layout-scroll);
         };
       }
 
@@ -239,7 +241,7 @@
         height: 32px;
         width: 32px;
         border-radius: 50%;
-        border: 3px solid #ddd;
+        border: 2px solid #ddd;
         border-left-color: #009688;
         -webkit-animation: animation-rotate 950ms cubic-bezier(.64, 2, .56, .6) infinite;
                 animation: animation-rotate 950ms cubic-bezier(.64, 2, .56, .6) infinite;
@@ -458,15 +460,10 @@
         _isSearchPageOpened: Boolean,
         _categories: {
           type: Array,
-          // value: [ 'home', 'profile', 'reserve', 'search', 'current', 'room' ]
           value: [ 'home', 'current', 'room' ]
         },
         _categoryNames: {
           type: Array,
-          // value: [
-          //   'Home', 'My Profile', 'My Reservations', 'Search & Reserve',
-          //   'Current Reservations', 'Room Information'
-          // ]
           value: [ 'Home', 'Current Reservations', 'Room Information' ]
         },
 
@@ -478,23 +475,14 @@
         _postY: Number,
         _animateReserve: Boolean,
 
-        _pushTitle: {
-          type: String,
-          // value: "Semafloor Push Notification Test"
-        },
+        _pushTitle: String,
         _pushClickUrl: {
           type: String,
           value: '//localhost:5000/#reserve/view'
         },
-        _pushTag: {
-          type: String,
-          // value: "semafloor-push-notification-test-tag"
-        },
+        _pushTag: String,
         _pushEnabled: Boolean,
-        _pushMessageUrl: {
-          type: String,
-          // value: 'https://semafore.motss.koding.io/notification-data.json'
-        },
+        _pushMessageUrl: String,
         _pushSupported: Boolean,
         _vibratePattern: {
           type: Array,
@@ -576,14 +564,6 @@
         // over again once.
         return this._categoryNames[_index];
       },
-      // _shouldShowTabs: function(_hashie, _smallScreen) {
-      //   // this.debounce('_shouldShowTabs', function() {
-      //   //   this.set('_forceUpdateHash', !1);
-      //   // }, 1);
-      //
-      //   var _isHashCategoryView = this._isHashCategoryView(_hashie);
-      //   return _isHashCategoryView[0] && !_smallScreen;
-      // },
 
       _onPageAttached: function(ev) {
         var _isPageAttached = '_' + _.camelCase('is ' + ev.type);
@@ -712,7 +692,7 @@
           this.async(function() {
             this.set(_isPageOpened, !0);
             this.set('category', _categoryFromHash);
-          }, 300);
+          }, 1000);
         }else {
           this.set('category', _categoryFromHash);
           // Only run this code when user taps on the paper-fab at reserve page
@@ -941,12 +921,14 @@
         }
       },
 
-      // TODO: current page weekend page padding 8px 12px to center text.
       // TODO: compound-timepicker SVGs not vulcanized.
-      // TODO: room page broke in Shadow DOM.
       // TODO: Fix all spinner on all pages (skip search-page, done: room, current, profile, containerised: room, profile).
       // TODO: Add Semafloor logo maybe?
       // TODO: Awaiting Polymer to support native customProp (tabs' selection bar needs polyfill).
+      // TODO: Push notification should only be shown when user is logged in and find a way to integrate it on desktop mode.
+      // X - TODO: Reserve page scroll threshold not working? Always clearTriggers when it's an no-op and return.
+      // X - TODO: current page weekend page padding 8px 12px to center text.
+      // X - TODO: room page broke in Shadow DOM.
       // X - TODO: app shell disrupts page while loading.
       // X - TODO: create more data for reserve page to demo bottomsheet and fab hide on scrolling downwards.
       // X - TODO: Removed all console.log.
