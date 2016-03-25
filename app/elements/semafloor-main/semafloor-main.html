@@ -1,13 +1,13 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <!-- <link rel="import" href="../semafloor-room/semafloor-room.html"> -->
-<link rel="import" href="../semafloor-animated-room/semafloor-animated-room.html">
+<!-- <link rel="import" href="../semafloor-animated-room/semafloor-animated-room.html"> -->
 <link rel="import" href="../../bower_components/semafloor-icons/semafloor-icons.html">
 
 <link rel="import" href="../../bower_components/semafloor-profile-page/semafloor-profile-page.html">
 <link rel="import" href="../../bower_components/semafloor-reserve-page/semafloor-reserve-page.html">
 <link rel="import" href="../../bower_components/semafloor-search-page/semafloor-search-page.html">
 <link rel="import" href="../../bower_components/semafloor-current-page/semafloor-current-page.html">
-<!-- <link rel="import" href="../../bower_components/semafloor-room-page/semafloor-room-page.html"> -->
+<link rel="import" href="../../bower_components/semafloor-room-page/semafloor-room-page.html">
 
 <link rel="import" href="../../bower_components/app-layout/app-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
@@ -35,7 +35,7 @@
     <style>
       :host {
         display: block;
-
+        user-select: none;
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
       }
 
@@ -43,42 +43,13 @@
         box-sizing: border-box;
       }
 
-      /*iron-pages {
-        height: 9999px;
-      }*/
       app-header {
-        color: #1ddbd8;
-        --app-header-background-front-layer:`` {
-          background-color: #fff;
-        };
-        --app-header-background-rear-layer: {
-          background-color: #009688;
-        };
-        --app-header-shadow: {
-          box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.2);
-          height: 10px;
-          bottom: -10px;
-        };
+        background-color: #009688;
+        color: #fafafa;
       }
-      app-header:not([shadow]) {
-        border-bottom: 1px solid #ddd;
-      }
-      app-header[shadow] {
-        color: #fff;
-      }
-      app-header[shadow] #tabs,
-      app-header[shadow] #tabs ::content #selectionBar,
-      app-header[shadow] #tabs paper-tab ::content paper-ripple,
-      app-header[shadow] #tabs paper-tab a {
-        color: #ffff00;
-      }
-      app-header[shadow] #tabs ::content #selectionBar{
-        background-color: #ffff00;
-        /*--paper-tabs-selection-bar-color: #ffff00;*/
-      }
-      app-header[shadow] #tabs paper-tab ::content paper-ripple {
-        color: #ffff00;
-        /*--paper-tab-ink: #ffff00;*/
+
+      .main-toolbar {
+        height: 110px;
       }
 
       .title {
@@ -86,31 +57,28 @@
         font-size: 20px;
       }
 
-      .main-toolbar {
-        height: 110px;
-      }
-      /*.reserve-toolbar {
-        background-color: #fff;
-      }*/
-
       #tabs {
-        /*margin-left: -55px;*/
-        color: #1ddbd8;
+        color: #fafafa;
         font-size: 13px;
-        --paper-tabs-selection-bar-color: #1ddbd8;
+        --paper-tabs-selection-bar: {
+          height: 3px;
+        };
+        /*--paper-tabs-selection-bar-color: #ffff00;*/
       }
       #tabs paper-tab {
         @apply(--layout-flex-none);
         padding: 0;
-        --paper-tab-ink: #1ddbd8;
+        /*--paper-tab-ink: #ffff00;*/
+      }
+      #tabs paper-tab.iron-selected a {
+        color: #ffff8d;
       }
       #tabs paper-tab a {
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
         text-decoration: none;
         text-transform: uppercase;
-        color: #7c7c7c;
-        font-weight: 500;
+        color: #fafafa;
         padding: 0 20px;
         height: 100%;
       }
@@ -262,10 +230,40 @@
         --paper-toggle-button-checked-ink-color: #009688;
       }
 
+      /* the new spinnner */
+      .loading {
+        position: fixed;
+        top: calc(158px + 15px + 16px + 8px);
+        left: 50%;
+        margin: -15px 0 0 -15px;
+        height: 32px;
+        width: 32px;
+        border-radius: 50%;
+        border: 3px solid #ddd;
+        border-left-color: #009688;
+        -webkit-animation: animation-rotate 950ms cubic-bezier(.64, 2, .56, .6) infinite;
+                animation: animation-rotate 950ms cubic-bezier(.64, 2, .56, .6) infinite;
+      }
+      @-webkit-keyframes animation-rotate {
+        100% {
+          -webkit-transform: rotate(360deg);
+        }
+      }
+      @keyframes animation-rotate {
+        100% {
+          -webkit-transform: rotate(360deg);
+                  transform: rotate(360deg);
+        }
+      }
+
       /* small desktop & tablet */
       @media all and (max-width: 1200px) {
         .main-toolbar {
           height: 64px;
+        }
+
+        .loading {
+          top: calc(112px + 15px + 16px + 8px);
         }
       }
 
@@ -277,11 +275,7 @@
         }
 
         .title {
-          margin: 0 auto;
-        }
-
-        .main-toolbar {
-          height: 64px;
+          margin-left: 24px;
         }
 
         .reserve-tabs {
@@ -296,11 +290,14 @@
           text-transform: uppercase;
           --paper-tab-ink: #1ddbd8;
         }
+
+        .loading {
+          top: calc(64px + 15px + 16px + 8px);
+        }
       }
     </style>
 
     <iron-page-url hash="{{urlHash}}" path="{{path}}"></iron-page-url>
-    <!-- <iron-media-query query="max-width: 400px" query-matches="{{smallScreen}}"></iron-media-query> -->
     <iron-media-query query="max-width: 599px" query-matches="{{smallScreen}}"></iron-media-query>
 
     <firebase-auth id="semafloorAuth"
@@ -347,11 +344,11 @@
       </app-drawer>
 
       <app-header-layout>
-        <app-header id="header" fixed="[[!smallScreen]]" condenses="[[smallScreen]]" reveals="[[smallScreen]]" effects="waterfall blend-background fade-background">
+        <app-header id="header" fixed="[[!smallScreen]]" condenses="[[smallScreen]]" reveals="[[smallScreen]]" effects="waterfall">
           <app-toolbar class="main-toolbar">
             <paper-icon-button icon="icons:menu" drawer-toggle></paper-icon-button>
-            <span condensed-title hidden></span>
-            <span title hidden></span>
+            <!-- <span condensed-title hidden></span>
+            <span title hidden></span> -->
             <span class="title">[[pageTitle]]</span>
 
             <template is="dom-if" if="[[!smallScreen]]" restamp="true" strip-whitespace>
@@ -387,6 +384,7 @@
           <div class="home" page="home">
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quibusdam, minima!
           </div>
+          <div class="loading" page="loading"></div>
 
           <template is="dom-if" if="[[_isProfilePageOpened]]" restamp="true" strip-whitespace>
             <semafloor-profile-page page="profile" uid="[[uid]]"
@@ -406,10 +404,10 @@
               on-current-page-attached="_onPageAttached"></semafloor-current-page>
           </template>
           <template is="dom-if" if="[[_isRoomPageOpened]]" restamp="true" strip-whitespace>
-            <!-- <semafloor-room-page page="room"
-              on-room-page-attached="_onPageAttached"></semafloor-room-page> -->
+            <semafloor-room-page page="room"
+              on-room-page-attached="_onPageAttached"></semafloor-room-page>
             <!-- <semafloor-room page="room" on-room-page-attached="_onPageAttached"></semafloor-room> -->
-            <semafloor-animated-room page="room" on-room-page-attached="_onPageAttached"></semafloor-animated-room>
+            <!-- <semafloor-animated-room page="room" on-room-page-attached="_onPageAttached"></semafloor-animated-room> -->
           </template>
 
         </iron-pages>
@@ -542,7 +540,6 @@
       ],
 
       attached: function() {
-        // console.log('*Last - attached: start');
         var _redirectIfMobile = window.navigator.maxTouchPoints > 0 && window.outerWidth < 1367;
         var _header = this.$.header;
         var _thisSet = this.set.bind(this);
@@ -557,24 +554,19 @@
 
         // Vulcanize bug? main page attached before native web components logged to console.
         this.async(function() {
-          console.log('main-page-attached');
           this.fire('main-page-attached', 'main');
         }, 1);
-        // console.log('*Last - attached: end');
       },
 
       _computeLoginCls: function(_authStatus, _authUser) {
         var _isLoggedIn = !_authStatus || !!_authUser;
-        // console.log('_computeLoginCls');
         return _isLoggedIn ? 'signed-in' : '';
       },
       _computeCategoryCls: function(_item, _category) {
-        // console.log('3 - _computeCategoryCls');
         return _item === _category ? 'active' : '';
       },
 
       _computeLoggedIn: function(_authStatus, _authUser) {
-        // console.log('4 - _computeLoggedIn', _authStatus, !!_authUser);
         return !_authStatus || !!_authUser;
       },
       _computeCategoryName: function(_index, _item) {
@@ -582,23 +574,18 @@
         // generated elements on the page even though the items encountered changes
         // in its value. Hence the 2nd param is to ensure everything will be updated
         // over again once.
-        // console.log('2 - _computeCategoryName', _index, _item, this._categoryNames);
         return this._categoryNames[_index];
       },
       // _shouldShowTabs: function(_hashie, _smallScreen) {
-      //   console.log('_shouldShowTabs: start');
       //   // this.debounce('_shouldShowTabs', function() {
-      //     console.log(this.category);
       //   //   this.set('_forceUpdateHash', !1);
       //   // }, 1);
       //
       //   var _isHashCategoryView = this._isHashCategoryView(_hashie);
-      //   console.log('_shouldShowTabs: end');
       //   return _isHashCategoryView[0] && !_smallScreen;
       // },
 
       _onPageAttached: function(ev) {
-        // console.log('_onPageAttached: start');
         var _isPageAttached = '_' + _.camelCase('is ' + ev.type);
         if (this._animateReserve && ev.type.indexOf('search') >= 0) {
           var _searchPage = this.$$('#searchPage');
@@ -609,15 +596,12 @@
 
         if (!this[_isPageAttached]) {
           this.set(_isPageAttached, !0);
-          // console.log('_onPageAttached', ev.type);
         }
-        // console.log('_onPageAttached: end');
       },
       _onError: function(ev) {
-        // console.log('_onError: ', ev.detail.message);
+        console.log('_onError:', ev);
       },
       _onLogin: function() {
-        // console.log('_onLogin: start');
         var _authMsg = 'Logged in';
         var _authToast = this.$.authToast;
         var _authUser = this.authUser;
@@ -631,11 +615,9 @@
         this.set('authMsg', _authMsg);
         this.async(function() {
           _authToast.open();
-          // console.log('_onLogin: end');
         }, 1);
       },
       _onLogout: function() {
-        // console.log('_onLogout: start');
         var _authMsg = 'Logged out!';
         var _authToast = this.$.authToast;
         var _urlHash = this.urlHash;
@@ -648,7 +630,6 @@
 
         this.debounce('reset path', function() {
           this.set('path', '/');
-          console.log('reset path', this.path);
         });
 
         if (_authToast.opened) {
@@ -658,44 +639,36 @@
         this.set('authMsg', _authMsg);
         this.async(function() {
           _authToast.open();
-          // console.log('_onLogout: end');
         }, 1);
       },
 
       _intepretHash: function(_urlHash) {
-        // console.log('8 - _intepretHash: start');
         var _capturingGroup = /^([a-z]+)\/([a-z]+)/i.exec(_urlHash);
-        // console.log('8 - _intepretHash: end');
         return _capturingGroup;
       },
       _isHashCategoryView: function(_urlHash) {
-        // console.log('7 - _isHashCategoryView: start', _urlHash);
         var _capturingGroup = this._intepretHash(_urlHash);
         var _isView = _capturingGroup[2] === 'view';
         var _isCategory = this._categories.indexOf(_capturingGroup[1]) >= 0;
 
-        // console.log('7 - _isHashCategoryView: end');
         return [_isView && _isCategory, _capturingGroup[1]];
       },
       _hashDidChange: function(_urlHash, _authUser) {
-        // console.log('5 - _hashDidChange: start', this.category);
         // Simple way to redirect * to home page.
         var _re = /(home|profile|reserve|search|current|room)\/\w+/i;
         var _m = _re.exec(_urlHash);
         // If hash is null and need re-routing to home page...
         // if (!_m && _path) {
         if (!_m) {
-          // console.log('haha', _urlHash, _path);
           window.location.hash = 'home/view';
           return;
         }
-        // console.log(_urlHash, _path, _authUser);
 
         // workaround: Close drawer on hash change. For some unknown reason,
         // the drawer is not closed.
-        this.debounce('_closeDrawer', function() {
-          this.$.drawer.close();
-        });
+        // this.debounce('_closeDrawer', function() {
+        // });
+        // this.$.drawer.close();
 
         // Update _categories and _categoryNames with _authUser.
         this._recategorize(!!_authUser);
@@ -703,7 +676,6 @@
         // anonymous and logged in user.
         if (!!_authUser && this.path === '/') {
           this.debounce('set username to path', function() {
-            console.log('set username to pathname', this.path, _authUser);
             var _profile = _authUser.google.cachedUserProfile;
             var _uname = _.capitalize(_profile.family_name) + _.capitalize(_profile.given_name);
             // this.set('path', _uname);
@@ -713,7 +685,6 @@
           });
         }else if (!!!_authUser && this.path !== '/'){
           window.location.pathname = '/';
-          console.log(!!_authUser, this.path);
         }
 
         // hash is not null...
@@ -733,10 +704,17 @@
         // extracted from the location hash.
         this._rePageTitle(_categoryFromHash);
 
+        this.$.drawer.close();
+        this.set('category', 'loading');
+
         // Check if selected page has been rendered since every page is rendered lazily.
         if (!this[_isPageOpened] || !Polymer.isInstance(Polymer.dom(this.root).querySelector('semafloor-' + _categoryFromHash + '-page'))) {
-          this.set(_isPageOpened, !0);
+          this.async(function() {
+            this.set(_isPageOpened, !0);
+            this.set('category', _categoryFromHash);
+          }, 300);
         }else {
+          this.set('category', _categoryFromHash);
           // Only run this code when user taps on the paper-fab at reserve page
           // this code will give the search page a special transition.
           if (this._animateReserve && _categoryFromHash === 'search') {
@@ -747,23 +725,11 @@
             }, 300);
           }
         }
-
-        // // workaround as needed to resetlayout of app-header when transition from
-        // // no hash to URL with hash value.
-        // this.$.header._scrollTop = 0;
-        // this.$.header.resetLayout();
-        // this.$.drawer.close();
-        this.async(function() {
-          this.set('category', _categoryFromHash);
-        }, 1);
-        // console.log('5 - _hashDidChange: end', this.category);
       },
 
       // Update uid.
       _updateUid: function(_authUser) {
-        // console.log('8 - _updateUid: start');
         if (!_authUser) {
-          // console.log('8 - _updateUid: end');
           return;
         }
 
@@ -818,15 +784,11 @@
                 if (!data.committed) {
                   console.warn('Aborted!');
                 }else {
-                  // console.log(data.snapshot.val());
                 }
-                // console.log('_updateUid: end');
               }).catch(function(error) {
                 console.error(error);
-                // console.log('_updateUid: end');
               });
           }
-          // console.log('8 - _updateUid: end');
         });
 
         // workaround: Set logged in user's email to push messaging's title.
@@ -836,22 +798,17 @@
       },
 
       _loginWithGoogle: function() {
-        // console.log('_loginWithGoogle: start');
         if (!!this.authUser) {
           return;
         }
 
         this.$.semafloorAuth.login();
-        // console.log('_loginWithGoogle: end');
       },
       _logout: function() {
-        // console.log('_logout: start');
         this.$.semafloorAuth.logout();
-        // console.log('_logout: end');
       },
 
       animateReservePage: function() {
-        // console.log('animateReservePage: start');
         this.set('_animateReserve', !0);
 
         if (!this._isSearchPageOpened) {
@@ -860,12 +817,10 @@
           this.$$('#searchPage').classList.add('animate-reserve');
           window.location.hash = '#search/view';
         }
-        // console.log('animateReservePage: end');
       },
 
       // Set _categories and _categoryNames with hash change.
       _recategorize: function(_ifTrueSetNewElseReset) {
-        // console.log('6 - _recategorize: start');
         var _newCategoryNames = [ 'Home', 'Current Reservations', 'Room Information' ];
         var _newCategories = [ 'home', 'current', 'room' ];
         if (_ifTrueSetNewElseReset) {
@@ -876,20 +831,16 @@
 
         this.set('_categoryNames', _newCategoryNames);
         this.set('_categories', _newCategories);
-        // console.log('6 - _recategorize: end');
       },
       // Rename page title with hash change.
       _rePageTitle: function(_categoryFromHash) {
-        // console.log('9 - _rePageTitle: start');
         var _pageIdx = this._categories.indexOf(_categoryFromHash);
         var _pageTitle = this._categoryNames[_pageIdx];
         this.set('pageTitle', _pageTitle);
-        // console.log('9 - _rePageTitle: end');
       },
 
       // Awaiting v0.0.15 release of app-layout
       _onDrawerClosed: function(ev) {
-        // console.log(ev);
       },
       // workaround: Since drawer is not present on large screen, should close it
       // when it is remained open small screen if landscape mode considers a large screen.
@@ -908,13 +859,13 @@
       },
 
       _pushNotified: function(ev) {
-        console.log(ev);
+        console.log('_pushNotified', ev);
       },
       _pushClicked: function(ev) {
-        console.log(ev);
+        console.log('_pushClicked', ev);
       },
       _pushError: function(ev) {
-        console.log(error);
+        console.log('_pushError', ev);
       },
       _pushSubscriptionChanged: function(ev) {
         // GCM always needs the subscriptionId passed separately. Note that as of M45,
@@ -928,7 +879,6 @@
         if (_subscriptionId) {
           this.set('_previousSubscriptionId', _subscriptionId);
         }
-        console.log(ev);
       },
       _pushEnabledChanged: function(ev) {
         // For unknown reason, toggle button appears on anonymous.
@@ -957,7 +907,6 @@
             });
             // If current device/ browser not yet registered, push and register.
             if (!_isIdRegistered) {
-              console.log('push and register:', _snapshot.ref(), _previousSubscriptionId);
               _snapshot.ref().push(_previousSubscriptionId);
             }
           }else {
@@ -970,7 +919,6 @@
             });
             // Remove subscribed device/ browser from subscription list if found.
             if (!!_isIdRegisteredRef) {
-              console.log('remove:', _snapshot);
               _isIdRegisteredRef.remove();
             }
           }
@@ -993,11 +941,15 @@
         }
       },
 
-      // TODO: Removed all console.log.
-      // TODO: app shell disrupts page while loading.
-      // TODO: create more data for reserve page to demo bottomsheet and fab hide on scrolling downwards.
       // TODO: current page weekend page padding 8px 12px to center text.
       // TODO: compound-timepicker SVGs not vulcanized.
+      // TODO: room page broke in Shadow DOM.
+      // TODO: Fix all spinner on all pages (skip search-page, done: room, current, profile, containerised: room, profile).
+      // TODO: Add Semafloor logo maybe?
+      // TODO: Awaiting Polymer to support native customProp (tabs' selection bar needs polyfill).
+      // X - TODO: app shell disrupts page while loading.
+      // X - TODO: create more data for reserve page to demo bottomsheet and fab hide on scrolling downwards.
+      // X - TODO: Removed all console.log.
       // X - TODO: Rever all changes in room page now caused a lot of janks.
       // X - TODO: iron-image inside dom-if not able to have round edges on Shadow DOM.
       // X - TODO: Support Shadow DOM as event retargeting with transitionend event.
@@ -1012,10 +964,7 @@
       // X - TODO: Add user name and user image on large screen as well as able to sign in and out at large screen.
       // X - TODO: No longer double tabs in a page. No more disaster! Just like google search, today, thisweek and upcoming all show in one page and show horizontally if screen size is large enough.
       // X - TODO: Current page needs a new height, maybe use customProp to resolve it.
-      // TODO: Fix all spinner on all pages (skip search-page, done: room, current, profile, containerised: room, profile).
-      // TODO: Add Semafloor logo maybe?
-      // TODO: Awaiting Polymer to support native customProp (tabs' selection bar needs polyfill).
-      // TODO: To remove all will-change: opacity that will cause dialog to fall behind backdrop.
+      // X - TODO: To remove all will-change: opacity that will cause dialog to fall behind backdrop.
     });
   </script>
 </dom-module>

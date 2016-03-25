@@ -95,46 +95,20 @@
               justify-content: center;
     }
 
-    /* the new spinnner */
-    .loading {
-      position: absolute;
-      top: calc(64px + 15px + 16px + 8px);
-      left: 50%;
-      margin: -15px 0 0 -15px;
-      height: 32px;
-      width: 32px;
-      border-radius: 50%;
-      border: 3px solid #ddd;
-      border-left-color: #009688;
-      -webkit-animation: animation-rotate 950ms cubic-bezier(.64, 2, .56, .6) infinite;
-              animation: animation-rotate 950ms cubic-bezier(.64, 2, .56, .6) infinite;
-    }
-    #skeleton {
+    /*#skeleton {
       opacity: 1;
       -webkit-transition: opacity ease-in .2s;
       transition: opacity ease-in .2s;
-    }
+    }*/
 
-    @-webkit-keyframes animation-rotate {
-      100% {
-        -webkit-transform: rotate(360deg);
-      }
-    }
-    @keyframes animation-rotate {
-      100% {
-        -webkit-transform: rotate(360deg);
-                transform: rotate(360deg);
-      }
-    }
-
-    semafloor-main {
-      /*opacity: 0;*/
+    /*semafloor-main {
+      opacity: 0;
       -webkit-transition: opacity ease-in .4s .1s;
       transition: opacity ease-in .4s .1s;
     }
     semafloor-main.finish-loading {
       opacity: 1;
-    }
+    }*/
 
     /* @media - large desktop */
     @media all and (max-width: 1280px) {
@@ -145,7 +119,6 @@
       #skeleton .main > .app-header {
         left: 0;
       }
-
     }
 
     /* @media - tablet */
@@ -168,10 +141,8 @@
     <div class="main">
       <div class="app-header">
         <div class="app-toolbar">
-          Semafloor
+          <!-- Semafloor -->
         </div>
-
-        <div class="loading"></div>
       </div>
     </div>
   </div>

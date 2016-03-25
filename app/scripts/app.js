@@ -9,7 +9,6 @@
     function onImportLoaded() {
       var skeleton = document.querySelector('#skeleton');
       skeleton.remove();
-
       // console.log('Elements are upgraded!');
     }
 
