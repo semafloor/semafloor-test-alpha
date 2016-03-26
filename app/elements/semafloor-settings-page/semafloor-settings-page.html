@@ -1,0 +1,339 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../../bower_components/paper-ripple/paper-ripple.html">
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../bower_components/paper-radio-button/paper-radio-button.html">
+
+<link rel="import" href="../../bower_components/platinum-push-messaging/platinum-push-messaging.html">
+
+<dom-module id="semafloor-settings-page">
+  <template strip-whitespace>
+    <style>
+      :host {
+        user-select: none;
+        display: block;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .settings-page-container {
+        position: relative;
+        margin-top: 8px;
+        min-height: 64px;
+      }
+
+      .settings-category {
+        padding: 16px 16px 0;
+        color: #009688;
+        font-weight: 500;
+        font-size: 13px;
+      }
+      .settings-item {
+        position: relative;
+        padding: 12px 16px;
+        font-weight: 400;
+        min-height: 64px;
+        margin: 0;
+        cursor: pointer;
+      }
+      .settings-item-selector {
+        color: #737373;
+        display: block;
+        font-size: 14px;
+        margin-top: 4px;
+        font-weight: 400;
+        text-transform: capitalize;
+      }
+
+      /* toggle button for push notification */
+      .push-opt-in {
+        font-size: 14px;
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+      }
+      .push-label {
+        @apply(--layout-flex);
+      }
+      paper-toggle-button.push-toggle {
+        --paper-toggle-button-unchecked-bar-color: #7c7c7c;
+        --paper-toggle-button-unchecked-button-color: #7c7c7c;
+        --paper-toggle-button-unchecked-ink-color: #7c7c7c;
+
+        --paper-toggle-button-checked-bar-color: #009688;
+        --paper-toggle-button-checked-button-color: #009688;
+        --paper-toggle-button-checked-ink-color: #009688;
+      }
+
+      /* dialog and everything inside dialog */
+      paper-dialog {
+        left: 0;
+        right: 0;
+      }
+      paper-dialog-scrollable {
+        --paper-dialog-scrollable: {
+          padding: 0 16px;
+        };
+      }
+      paper-radio-group {
+        width: 100%;
+      }
+      paper-radio-button {
+        display: block;
+        --paper-radio-button-checked-color: #009688;
+        --paper-radio-button-checked-ink-color: #009688;
+        --paper-radio-button-unchecked-color: #757575;
+        --paper-radio-button-unchecked-ink-color: #757575;
+      }
+      paper-button {
+        color: #009688;
+        font-size: 12px;
+        font-weight: 500;
+        --paper-button-ink-color: #9e9e9e;
+      }
+
+      /*  dark theme */
+      :host(.dark-theme) .settings-category {
+        color: #80cbc4;
+      }
+      :host(.dark-theme) .settings-item {
+        color: #bcbcbc;
+      }
+      :host(.dark-theme) .settings-item-selector {
+        color: #9e9e9e;
+      }
+
+      :host(.dark-theme) .push-label {
+        color: #bcbcbc;
+      }
+      :host(.dark-theme) paper-toggle-button.push-toggle {
+        --paper-toggle-button-unchecked-bar-color: #bcbcbc;
+        --paper-toggle-button-unchecked-button-color: #bcbcbc;
+        --paper-toggle-button-unchecked-ink-color: #bcbcbc;
+
+        --paper-toggle-button-checked-bar-color: #80cbc4;
+        --paper-toggle-button-checked-button-color: #80cbc4;
+        --paper-toggle-button-checked-ink-color: #80cbc4;
+      }
+
+      :host(.dark-theme) paper-dialog {
+        background-color: #424242;
+      }
+      :host(.dark-theme) paper-dialog > h2 {
+        color: #bcbcbc;
+      }
+      :host(.dark-theme) paper-radio-button {
+        --paper-radio-button-label-color: #bcbcbc;
+
+        --paper-radio-button-checked-color: #80cbc4;
+        --paper-radio-button-checked-ink-color: #80cbc4;
+        --paper-radio-button-unchecked-color: #bcbcbc;
+        --paper-radio-button-unchecked-ink-color: #bcbcbc;
+      }
+      :host(.dark-theme) paper-button {
+        color: #80cbc4;
+        --paper-button-ink-color: #bcbcbc;
+      }
+
+
+    </style>
+
+    <div class="settings-page-container">
+      <div class="settings-category">
+        Appearance
+      </div>
+      <div id="themeColumn" class="settings-item" on-tap="_openThemeDialog" on-transitionend="_openThemeDialog">
+        Theme
+        <div class="settings-item-selector">
+          [[themeSelected]]
+        </div>
+        <paper-ripple id="themeRipple"></paper-ripple>
+      </div>
+
+      <div class="settings-category">
+        Push Notification
+      </div>
+      <div id="toggleColumn" class="settings-item push-opt-in" on-tap="_togglePush" on-transitionend="_togglePush">
+        <div class="push-label">
+          Subscribe for reservation reminder
+        </div>
+        <paper-toggle-button id="pushToggle" class="push-toggle" checked="{{_pushEnabled}}" disabled="[[_pushSupported]]" on-change="_optForPush"></paper-toggle-button>
+        <paper-ripple id="toggleRipple"></paper-ripple>
+      </div>
+
+    </div>
+
+    <template is="dom-if" if="[[_isThemeDialogOpened]]" restamp="true" strip-whitespace on-dom-change="_openDialog">
+      <paper-dialog id="themeDialog" with-backdrop>
+        <h2>Choose theme</h2>
+        <paper-dialog-scrollable>
+          <paper-radio-group selected="{{themeSelected}}">
+            <paper-radio-button name="light theme" dialog-confirm>Light theme</paper-radio-button>
+            <paper-radio-button name="dark theme" dialog-confirm>Dark theme</paper-radio-button>
+          </paper-radio-group>
+        </paper-dialog-scrollable>
+        <div class="buttons">
+          <paper-button dialog-dismiss>cancel</paper-button>
+        </div>
+      </paper-dialog>
+    </template>
+
+    <template is="dom-if" if="[[_revealPushMessaging]]" restamp="true" strip-whitespace>
+      <platinum-push-messaging id="semafloorPush"
+        enabled="[[_pushEnabled]]"
+        supported="{{_pushSupported}}"
+        message-url="[[_pushMessageUrl]]"
+        click-url="[[_pushClickUrl]]"
+        title="[[_pushTitle]]"
+        tag="[[_pushTag]]"
+        vibrate="[[_vibratePattern]]"
+        on-platinum-push-messaging-push="_pushNotified"
+        on-platinum-push-messaging-click="_pushClicked"
+        on-platinum-push-messaging-error="_pushError"
+        on-subscription-changed="_pushSubscriptionChanged"
+        on-enabled-changed="_pushEnabledChanged"></platinum-push-messaging>
+    </template>
+  </template>
+  <script>
+  (function() {
+    'use strict';
+
+    Polymer({
+      is: 'semafloor-settings-page',
+
+      properties: {
+        darkTheme: Boolean,
+        themeSelected: {
+          type: String,
+          value: 'light theme'
+        },
+
+        _pushEnabled: Boolean,
+        _pushSupported: Boolean,
+        _revealPushMessaging: Boolean,
+        _pushMessageUrl: String,
+        _pushClickUrl: String,
+        _pushTitle: String,
+        _pushTag: String,
+        _vibratePattern: {
+          type: Array,
+        },
+
+        _toggleRipple: HTMLElement,
+        _readyToTogglePush: Boolean,
+
+        _isThemeDialogOpened: Boolean,
+        _readyToOpenThemeDialog: Boolean,
+      },
+
+      listeners: {
+        'themeColumn.touchmove': '_endThemeRipple',
+        'toggleColumn.touchmove': '_endToggleRipple',
+      },
+
+      observers: [
+        '_updateThemeColor(themeSelected)',
+      ],
+
+      attached: function() {
+        // Get the paper-ripple from toggle button.
+        this.set('_toggleRipple', this.$.pushToggle.getRipple());
+
+        this.fire('settings-page-attached');
+      },
+
+      _optForPush: function(ev) {
+
+      },
+      _pushNotified: function(ev) {
+
+      },
+      _pushClicked: function(ev) {
+
+      },
+      _pushError: function(ev) {
+
+      },
+      _pushSubscriptionChanged: function(ev) {
+
+      },
+      _pushEnabledChanged: function(ev) {
+
+      },
+
+      _togglePush: function(ev) {
+        var _type = ev.type;
+
+        if (_type === 'tap') {
+          // If tap on toggle button, do nothing as this not for toggle button.
+          var _target = Polymer.dom(ev).rootTarget;
+          if (_target && _target.tagName === 'PAPER-TOGGLE-BUTTON') {
+            return;
+          }
+          // Trigger ripple's downAction and toggle push state.
+          this._toggleRipple.downAction();
+          this.set('_pushEnabled', !this._pushEnabled);
+          this.set('_readyToTogglePush', !0);
+        }else {
+          if (this._readyToTogglePush) {
+            // Trigger ripple's upAction to finish the effect.
+            this._toggleRipple.upAction();
+
+            this.set('_readyToTogglePush', !1);
+          }
+        }
+      },
+      _openThemeDialog: function(ev) {
+        var _type = ev.type;
+
+        if (_type === 'tap') {
+          this.set('_readyToOpenThemeDialog', !0);
+        }else {
+          if (this._readyToOpenThemeDialog) {
+            if (!this._isThemeDialogOpened) {
+              this.set('_isThemeDialogOpened', !0);
+            }else {
+              this.$$('#themeDialog').open();
+            }
+
+            this.set('_readyToOpenThemeDialog', !1);
+          }
+        }
+      },
+      _openDialog: function(ev) {
+        if (ev.target.if) {
+          this.$$('#themeDialog').open();
+        }
+      },
+      _endThemeRipple: function(ev) {
+        var _themeRipple = this.$.themeRipple;
+        if (_themeRipple.animating) {
+          _themeRipple.upAction();
+        }
+      },
+      _endToggleRipple: function(ev) {
+        var _toggleRipple = this.$.toggleRipple;
+        if (_toggleRipple.animating) {
+          _toggleRipple.upAction();
+        }
+      },
+
+      _updateThemeColor: function(_themeSelected) {
+        var _isDarkTheme = _themeSelected === 'dark theme';
+        this.toggleClass('dark-theme', _isDarkTheme, this);
+        this.updateStyles();
+        console.log(_themeSelected);
+        this.fire('update-theme-color', {theme: _themeSelected});
+      },
+
+    });
+  })();
+  </script>
+</dom-module>

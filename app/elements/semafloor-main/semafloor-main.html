@@ -2,6 +2,7 @@
 <!-- <link rel="import" href="../semafloor-room/semafloor-room.html"> -->
 <!-- <link rel="import" href="../semafloor-animated-room/semafloor-animated-room.html"> -->
 <link rel="import" href="../../bower_components/semafloor-icons/semafloor-icons.html">
+<link rel="import" href="../semafloor-settings-page/semafloor-settings-page.html">
 
 <link rel="import" href="../../bower_components/semafloor-profile-page/semafloor-profile-page.html">
 <link rel="import" href="../../bower_components/semafloor-reserve-page/semafloor-reserve-page.html">
@@ -37,6 +38,7 @@
         display: block;
         user-select: none;
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        height: 100vh;
       }
 
       * {
@@ -53,8 +55,8 @@
       }
 
       .title {
-        margin: 0 auto 0 36px;
-        font-size: 20px;
+        margin: 0 auto 0 48px;
+        font-size: 36px;
       }
 
       #tabs {
@@ -174,8 +176,8 @@
       }
       .nav-menu {
         margin-top: 8px;
-        padding-bottom: 16px;
-        border-bottom: 1px solid #ddd;
+        /*padding-bottom: 16px;*/
+        /*border-bottom: 1px solid #ddd;*/
       }
       .nav-menu > a {
         display: block;
@@ -210,28 +212,6 @@
         opacity: 0;
       }
 
-      /* toggle button for push notification */
-      .push-opt-in {
-        font-size: 14px;
-        padding: 12px 16px;
-        font-weight: 500;
-        margin-top: 16px;
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
-      }
-      .push-label {
-        @apply(--layout-flex);
-      }
-      paper-toggle-button.push-toggle {
-        --paper-toggle-button-unchecked-bar-color: #7c7c7c;
-        --paper-toggle-button-unchecked-button-color: #7c7c7c;
-        --paper-toggle-button-unchecked-ink-color: #7c7c7c;
-
-        --paper-toggle-button-checked-bar-color: #009688;
-        --paper-toggle-button-checked-button-color: #009688;
-        --paper-toggle-button-checked-ink-color: #009688;
-      }
-
       /* the new spinnner */
       .loading {
         position: fixed;
@@ -263,6 +243,13 @@
         .main-toolbar {
           height: 64px;
         }
+        .main-toolbar > paper-icon-button {
+          --paper-icon-button-ink-color: #fff;
+        }
+
+        .title {
+          font-size: 20px;
+        }
 
         .loading {
           top: calc(112px + 15px + 16px + 8px);
@@ -274,6 +261,10 @@
       @media all and (max-width: 599px) {
         app-toolbar > [icon] {
           display: block;
+        }
+
+        app-header.is-settings-page {
+          background-color: #455a64;
         }
 
         .title {
@@ -297,6 +288,25 @@
           top: calc(64px + 15px + 16px + 8px);
         }
       }
+
+      /* Dark theme */
+      :host(.dark-theme) {
+        background-color: #303030;
+      }
+
+      :host(.dark-theme) app-header:not(.is-settings-page) {
+        background-color: #212121;
+      }
+      :host(.dark-theme) app-header.is-settings-page {
+        background-color: #263238;
+      }
+
+      :host(.dark-theme) app-drawer {
+        --app-drawer-content-container: {
+          background-color: #303030;
+          color: #bcbcbc;
+        };
+      }
     </style>
 
     <iron-page-url hash="{{urlHash}}" path="{{path}}"></iron-page-url>
@@ -314,7 +324,7 @@
       params='{"scope": "email"}'></firebase-auth>
 
     <app-drawer-layout force-narrow>
-      <app-drawer id="drawer" swipe-open="[[smallScreen]]" on-app-drawer-overlay-changed="_onDrawerClosed">
+      <app-drawer id="drawer" swipe-open="[[_isSettingsPage(category, smallScreen)]]" on-app-drawer-overlay-changed="_onDrawerClosed">
         <template is="dom-if" if="[[smallScreen]]" restamp="true" strip-whitespace>
           <template is="dom-if" if="[[_computeLoggedIn(authStatus, authUser)]]" restamp="true" strip-whitespace>
             <div class="account-image">
@@ -335,20 +345,13 @@
               <a href="#[[item]]/view" class$="[[_computeCategoryCls(item, category)]]"> [[_computeCategoryName(index, item)]] </a>
             </template>
           </div>
-
-          <div class="push-opt-in">
-            <div class="push-label">
-              Subscribe for reservation reminder
-            </div>
-            <paper-toggle-button class="push-toggle" checked="{{_pushEnabled}}" disabled="[[_pushSupported]]" on-change="_optForPush"></paper-toggle-button>
-          </div>
         </template>
       </app-drawer>
 
       <app-header-layout>
-        <app-header id="header" fixed="[[!smallScreen]]" condenses="[[smallScreen]]" reveals="[[smallScreen]]" effects="waterfall">
+        <app-header id="header" class$="[[_computeSettingsCls(category)]]" shadow="[[_isSettingsPage(category)]]" fixed="[[!smallScreen]]" condenses="[[smallScreen]]" reveals="[[smallScreen]]" effects="waterfall">
           <app-toolbar class="main-toolbar">
-            <paper-icon-button icon="icons:menu" drawer-toggle></paper-icon-button>
+            <paper-icon-button icon="icons:[[_computeHeaderIcon(category)]]" on-tap="_openDrawer" on-transitionend="_openDrawer"></paper-icon-button>
             <!-- <span condensed-title hidden></span>
             <span title hidden></span> -->
             <span class="title">[[pageTitle]]</span>
@@ -387,6 +390,9 @@
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quibusdam, minima!
           </div>
           <div class="loading" page="loading"></div>
+          <template is="dom-if" if="[[_isSettingsPageOpened]]" restamp="true" strip-whitespace>
+            <semafloor-settings-page page="settings" on-settings-page-attached="_onPageAttached"></semafloor-settings-page>
+          </template>
 
           <template is="dom-if" if="[[_isProfilePageOpened]]" restamp="true" strip-whitespace>
             <semafloor-profile-page page="profile" uid="[[uid]]"
@@ -414,10 +420,6 @@
 
         </iron-pages>
       </app-header-layout>
-
-      <template is="dom-if" if="[[_revealPushMessaging]]" restamp="true" strip-whitespace>
-        <platinum-push-messaging id="semafloorPush" enabled="[[_pushEnabled]]" supported="{{_pushSupported}}" message-url="[[_pushMessageUrl]]" click-url="[[_pushClickUrl]]" title="[[_pushTitle]]" tag="[[_pushTag]]" vibrate="[[_vibratePattern]]" on-platinum-push-messaging-push="_pushNotified" on-platinum-push-messaging-click="_pushClicked" on-platinum-push-messaging-error="_pushError" on-subscription-changed="_pushSubscriptionChanged" on-enabled-changed="_pushEnabledChanged"></platinum-push-messaging>
-      </template>
 
       <paper-toast id="authToast" text="[[authMsg]]" duration="1200" on-tap="_dismissToast"></paper-toast>
     </app-drawer-layout>
@@ -460,11 +462,11 @@
         _isSearchPageOpened: Boolean,
         _categories: {
           type: Array,
-          value: [ 'home', 'current', 'room' ]
+          value: [ 'home', 'current', 'room', 'settings' ]
         },
         _categoryNames: {
           type: Array,
-          value: [ 'Home', 'Current Reservations', 'Room Information' ]
+          value: [ 'Home', 'Current Reservations', 'Room Information', 'Settings' ]
         },
 
         _reserveCategories: {
@@ -519,12 +521,19 @@
         _previousSubscriptionId: String,
         _revealPushMessaging: Boolean,
 
+        _readyToOpenDrawer: Boolean,
+        _lastCategory: String,
+
+      },
+
+      listeners: {
+        'update-theme-color': '_updateThemeColor',
       },
 
       observers: [
         '_hashDidChange(urlHash, authUser)',
         '_updateUid(authUser)',
-        '_closeDrawerOnLargeScreen(smallScreen)',
+        '_closeDrawerOnLargeScreen(smallScreen)'
       ],
 
       attached: function() {
@@ -563,6 +572,13 @@
         // in its value. Hence the 2nd param is to ensure everything will be updated
         // over again once.
         return this._categoryNames[_index];
+      },
+      _computeSettingsCls: function(_category) {
+        var _cls = _category === 'settings' ? 'is-settings-page' : '';
+        return _cls;
+      },
+      _computeHeaderIcon: function(_category) {
+        return _category === 'settings' ? 'arrow-back' : 'menu';
       },
 
       _onPageAttached: function(ev) {
@@ -635,7 +651,7 @@
       },
       _hashDidChange: function(_urlHash, _authUser) {
         // Simple way to redirect * to home page.
-        var _re = /(home|profile|reserve|search|current|room)\/\w+/i;
+        var _re = /(home|profile|reserve|search|current|room|settings)\/\w+/i;
         var _m = _re.exec(_urlHash);
         // If hash is null and need re-routing to home page...
         // if (!_m && _path) {
@@ -685,6 +701,8 @@
         this._rePageTitle(_categoryFromHash);
 
         this.$.drawer.close();
+        // Here saves the last value of category before giving it a new value.
+        this.set('_lastCategory', this.category);
         this.set('category', 'loading');
 
         // Check if selected page has been rendered since every page is rendered lazily.
@@ -705,6 +723,13 @@
             }, 300);
           }
         }
+      },
+      _isSettingsPage: function(_category, _smallScreen) {
+        if (_smallScreen) {
+          return _category !== 'settings' && _smallScreen;
+        }
+
+        return _category === 'settings';
       },
 
       // Update uid.
@@ -801,12 +826,12 @@
 
       // Set _categories and _categoryNames with hash change.
       _recategorize: function(_ifTrueSetNewElseReset) {
-        var _newCategoryNames = [ 'Home', 'Current Reservations', 'Room Information' ];
-        var _newCategories = [ 'home', 'current', 'room' ];
+        var _newCategoryNames = [ 'Home', 'Current Reservations', 'Room Information', 'Settings' ];
+        var _newCategories = [ 'home', 'current', 'room', 'settings' ];
         if (_ifTrueSetNewElseReset) {
           _newCategoryNames = [ 'Home', 'My Profile', 'My Reservations',
-          'Search & Reserve', 'Current Reservations', 'Room Information'];
-          _newCategories = [ 'home', 'profile', 'reserve', 'search', 'current', 'room' ];
+          'Search & Reserve', 'Current Reservations', 'Room Information', 'Settings'];
+          _newCategories = [ 'home', 'profile', 'reserve', 'search', 'current', 'room', 'settings' ];
         }
 
         this.set('_categoryNames', _newCategoryNames);
@@ -819,6 +844,37 @@
         this.set('pageTitle', _pageTitle);
       },
 
+      _openDrawer: function(ev) {
+        this.debounce('_openDrawer', function() {
+          var _type = ev.type;
+
+          if (_type === 'tap') {
+            // Intercept category here during page loading.
+            // In loading page, paper-icon-button does nothing.
+            if (this.category === 'loading') {
+              return;
+            }
+
+            this.set('_readyToOpenDrawer', !0);
+          }else {
+            if (this._readyToOpenDrawer) {
+              var _target = Polymer.dom(ev).rootTarget.domHost;
+              if (_target && _target.tagName === 'PAPER-ICON-BUTTON') {
+                var _isArrowBackIcon = _target.icon.indexOf('menu') < 0;
+                var _lastCategory = this._lastCategory;
+
+                if (_isArrowBackIcon) {
+                  window.location.hash = _lastCategory ? _lastCategory + '/view' : 'home/view';
+                }else {
+                  this.$.drawer.open();
+                }
+              }
+
+              this.set('_readyToOpenDrawer', !1);
+            }
+          }
+        }, 1);
+      },
       // Awaiting v0.0.15 release of app-layout
       _onDrawerClosed: function(ev) {
       },
@@ -921,10 +977,19 @@
         }
       },
 
+      _updateThemeColor: function(ev) {
+        var _isDarkTheme = ev.detail.theme === 'dark theme';
+        this.toggleClass('dark-theme', _isDarkTheme, this);
+        this.updateStyles();
+      },
+
       // TODO: compound-timepicker SVGs not vulcanized.
       // TODO: Fix all spinner on all pages (skip search-page, done: room, current, profile, containerised: room, profile).
       // TODO: Add Semafloor logo maybe?
       // TODO: Awaiting Polymer to support native customProp (tabs' selection bar needs polyfill).
+      // TODO: carbon-router has released. A full routing system is needed.
+      // TODO: Settings page should only be shown when user logged in.
+      // TODO: Save theme selected flag to user's database or localstorage?
       // TODO: Push notification should only be shown when user is logged in and find a way to integrate it on desktop mode.
       // X - TODO: Reserve page scroll threshold not working? Always clearTriggers when it's an no-op and return.
       // X - TODO: current page weekend page padding 8px 12px to center text.
