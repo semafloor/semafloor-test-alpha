@@ -14,7 +14,10 @@
   <template strip-whitespace>
     <style>
       :host {
-        user-select: none;
+        -webkit-user-select: none;
+           -moz-user-select: none;
+            -ms-user-select: none;
+                user-select: none;
         display: block;
         box-sizing: border-box;
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -159,7 +162,7 @@
         background-color: #424242;
       }
       :host(.dark-theme) paper-dialog > h2 {
-        color: #bcbcbc;
+        color: #eee;
       }
       :host(.dark-theme) paper-radio-button {
         --paper-radio-button-label-color: #bcbcbc;

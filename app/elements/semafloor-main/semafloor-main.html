@@ -54,6 +54,14 @@
         background-color: #455a64;
       }
 
+      app-drawer {
+        --app-drawer-content-container: {
+          background-color: #fafafa;
+          will-change: transform;
+          @apply(--layout-scroll);
+        };
+      }
+
       .main-toolbar {
         height: 110px;
       }
@@ -91,14 +99,6 @@
       .big-reserve-tabs {
         height: 64px;
         background-color: #fff;
-      }
-
-      app-drawer {
-        --app-drawer-content-container: {
-          background-color: #fafafa;
-          will-change: transform;
-          @apply(--layout-scroll);
-        };
       }
 
       .account-image {
@@ -276,6 +276,14 @@
           margin-left: 24px;
         }
 
+        app-drawer {
+          --app-drawer-content-container: {
+            background-color: #fafafa;
+            will-change: transform;
+            @apply(--layout-scroll);
+          };
+        }
+
         .reserve-tabs {
           position: absolute;
           bottom: 0;
@@ -310,12 +318,19 @@
         --app-drawer-content-container: {
           background-color: #303030;
           color: #bcbcbc;
+          will-change: transform;
+          @apply(--layout-scroll);
         };
       }
 
       :host(.dark-theme) .nav-menu a.active {
         background-color: #737373;
         color: #80cbc4;
+      }
+
+      :host(.dark-theme) .loading {
+        border: 2px solid #212121;
+        border-left-color: #1ddb8b
       }
     </style>
 
@@ -407,8 +422,7 @@
           </template>
 
           <template is="dom-if" if="[[_isProfilePageOpened]]" restamp="true" strip-whitespace>
-            <semafloor-profile-page page="profile" uid="[[uid]]"
-              on-profile-page-attached="_onPageAttached"></semafloor-profile-page>
+            <semafloor-profile-page page="profile" uid="[[uid]]" theme-selected="[[_themeSelected]]" on-profile-page-attached="_onPageAttached"></semafloor-profile-page>
           </template>
           <template is="dom-if" if="[[_isReservePageOpened]]" restamp="true" strip-whitespace>
             <semafloor-reserve-page id="reservePage" page="reserve" uid="[[uid]]"
@@ -500,6 +514,8 @@
 
         _readyToOpenDrawer: Boolean,
         _lastCategory: String,
+
+        _themeSelected: String,
 
       },
 
@@ -880,6 +896,8 @@
         var _ts = _themeSelected instanceof Event ? _themeSelected.detail.theme : _themeSelected;
         var _isDarkTheme = _ts === 'dark theme';
         this.toggleClass('dark-theme', _isDarkTheme, this);
+        // This is used to set the theme of other pages.
+        this.set('_themeSelected', _ts);
         this.updateStyles();
       },
 

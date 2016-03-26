@@ -20,7 +20,7 @@
     "semafloor-current-page": "semafloor/semafloor-current-page#^0.5.10",
     "firebase-element": "GoogleWebComponents/firebase-element#^1.0.12",
     "paper-toast": "polymerelements/paper-toast#^1.2.0",
-    "semafloor-profile-page": "semafloor/semafloor-profile-page#^0.2.5",
+    "semafloor-profile-page": "^0.3.4",
     "semafloor-search-page": "semafloor/semafloor-search-page#^0.4.12",
     "semafloor-reserve-page": "semafloor/semafloor-reserve-page#^0.4.1",
     "platinum-push-messaging": "PolymerElements/platinum-push-messaging#^1.0.5"
