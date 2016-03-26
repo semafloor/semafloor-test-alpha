@@ -62,6 +62,12 @@
       .push-label {
         @apply(--layout-flex);
       }
+      .push-notice {
+        padding: 12px 16px;
+        font-weight: 400;
+        font-size: 14px;
+        color: #9b9b9b;
+      }
       paper-toggle-button.push-toggle {
         --paper-toggle-button-unchecked-bar-color: #7c7c7c;
         --paper-toggle-button-unchecked-button-color: #7c7c7c;
@@ -76,6 +82,8 @@
       paper-dialog {
         left: 0;
         right: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
       }
       paper-dialog-scrollable {
         --paper-dialog-scrollable: {
@@ -99,6 +107,27 @@
         --paper-button-ink-color: #9e9e9e;
       }
 
+      /* hidden attribute */
+      [hidden] {
+        display: none;
+      }
+
+      /* large screen */
+      @media all and (min-width: 600px) {
+        .settings-page-container {
+          width: 376px;
+          margin: 8px auto;
+          @apply(--shadow-elevation-4dp);
+        }
+
+        paper-dialog {
+          width: 376px;
+          top: auto;
+          left: auto;
+          right: auto;
+        }
+      }
+
       /*  dark theme */
       :host(.dark-theme) .settings-category {
         color: #80cbc4;
@@ -112,6 +141,9 @@
 
       :host(.dark-theme) .push-label {
         color: #bcbcbc;
+      }
+      :host(.dark-theme) .push-notice {
+        color: #646464;
       }
       :host(.dark-theme) paper-toggle-button.push-toggle {
         --paper-toggle-button-unchecked-bar-color: #bcbcbc;
@@ -142,7 +174,6 @@
         --paper-button-ink-color: #bcbcbc;
       }
 
-
     </style>
 
     <div class="settings-page-container">
@@ -160,11 +191,14 @@
       <div class="settings-category">
         Push Notification
       </div>
-      <div id="toggleColumn" class="settings-item push-opt-in" on-tap="_togglePush" on-transitionend="_togglePush">
+      <div class="push-notice" hidden$="[[!_hidePush(authUser)]]">
+        Sign-in is required to enable this feature.
+      </div>
+      <div id="toggleColumn" class="settings-item push-opt-in" on-tap="_togglePush" on-transitionend="_togglePush" hidden$="[[_hidePush(authUser)]]">
         <div class="push-label">
           Subscribe for reservation reminder
         </div>
-        <paper-toggle-button id="pushToggle" class="push-toggle" checked="{{_pushEnabled}}" disabled="[[_pushSupported]]" on-change="_optForPush"></paper-toggle-button>
+        <paper-toggle-button id="pushToggle" class="push-toggle" checked="{{_pushEnabled}}" disabled="[[_pushSupported]]"></paper-toggle-button>
         <paper-ripple id="toggleRipple"></paper-ripple>
       </div>
 
@@ -185,7 +219,7 @@
       </paper-dialog>
     </template>
 
-    <template is="dom-if" if="[[_revealPushMessaging]]" restamp="true" strip-whitespace>
+    <template is="dom-if" if="[[_revealPushMessaging]]" restamp="true" strip-whitespace on-dom-change="_openPushMessaging">
       <platinum-push-messaging id="semafloorPush"
         enabled="[[_pushEnabled]]"
         supported="{{_pushSupported}}"
@@ -209,21 +243,57 @@
       is: 'semafloor-settings-page',
 
       properties: {
+        authRef: Object,
+        authUser: Object,
         darkTheme: Boolean,
         themeSelected: {
           type: String,
-          value: 'light theme'
+          value: 'light theme',
+          notify: true
         },
 
+        _previousSubscriptionId: String,
+        _revealPushMessaging: Boolean,
         _pushEnabled: Boolean,
         _pushSupported: Boolean,
-        _revealPushMessaging: Boolean,
         _pushMessageUrl: String,
-        _pushClickUrl: String,
+        _pushClickUrl: {
+          type: String,
+          value: '//localhost:5000/#reserve/view'
+        },
         _pushTitle: String,
         _pushTag: String,
         _vibratePattern: {
           type: Array,
+          value: function() {
+            // Morse Code vibration pattern. http://goo.gl/ncjbda
+            var _dot = 200;
+            var _dash = 500;
+            var _shortGap = 200;
+            var _mediumGap = 500;
+            var _longGap = 1000;
+            return [
+              0,
+              _dot,  _shortGap, _dot, _shortGap, _dot,
+              _mediumGap,
+              _dot,
+              _mediumGap,
+              _dash, _shortGap, _dash,
+              _mediumGap,
+              _dot, _shortGap, _dash,
+              _mediumGap,
+              _dot, _shortGap, _dot, _shortGap, _dash, _shortGap, _dot,
+              _mediumGap,
+              _dot, _shortGap, _dash, _shortGap, _dot, _shortGap, _dot,
+              _mediumGap,
+              _dash, _shortGap, _dash, _shortGap, _dash,
+              _mediumGap,
+              _dash, _shortGap, _dash, _shortGap, _dash,
+              _mediumGap,
+              _dot, _shortGap, _dash, _shortGap, _dot,
+              _longGap
+            ];
+          }
         },
 
         _toggleRipple: HTMLElement,
@@ -249,25 +319,94 @@
         this.fire('settings-page-attached');
       },
 
-      _optForPush: function(ev) {
+      /**
+       * Methods for push notification.
+       */
+      _optForPush: function(_invertedPushEnabled) {
+        // The only way to update push messaging's enabled state from toggle button
+        // via user interaction.
+        var _semafloorPush = this.$$('#semafloorPush');
 
+        if (_invertedPushEnabled) {
+          console.log('You have opted in for push notification!');
+          _semafloorPush.enable();
+        }else {
+          console.log('You have opted out for push notification!');
+          _semafloorPush.disable();
+        }
       },
       _pushNotified: function(ev) {
-
+        console.log('_pushNotified', ev);
       },
       _pushClicked: function(ev) {
-
+        console.log('_pushClicked', ev);
       },
       _pushError: function(ev) {
-
+        console.log('_pushError', ev);
       },
       _pushSubscriptionChanged: function(ev) {
-
+        // GCM always needs the subscriptionId passed separately. Note that as of M45,
+        // the subscriptionId and the endpoint have merged.
+        var _ppm = this.$$('#semafloorPush');
+        var _subscriptionId = _ppm.subscription ? _ppm.subscription.subscriptionId : undefined;
+        if (_ppm.subscription && !_ppm.subscription.subscriptionId) {
+          var _endpointSections = _ppm.subscription.endpoint.split('/');
+          _subscriptionId = _endpointSections[_endpointSections.length - 1];
+        }
+        if (_subscriptionId) {
+          this.set('_previousSubscriptionId', _subscriptionId);
+        }
       },
       _pushEnabledChanged: function(ev) {
+        // For unknown reason, toggle button appears on anonymous.
+        if (!!!this.authUser) {
+          this.set('_pushEnabled', !1);
+          return;
+        }
 
+        var _ref = this.authRef;
+        var _authUser = this.authUser;
+        var _previousSubscriptionId = this._previousSubscriptionId;
+        // Whenever the push messaging kicks off, update the toggle state
+        // as the platinum-push-messaging will have the enabled state to
+        // indicate that whether the current has opted in for push notification.
+        this.set('_pushEnabled', ev.detail.value);
+
+        // Push subscribed device/ browser to user's Firebase.
+        _ref.child('users/' + _authUser.provider + '/' + _authUser.uid).child('pushSubscription').once('value').then(function(_snapshot) {
+          // If ev.detail.value is true, add current device/ browser to push subscription;
+          if (ev.detail.value) {
+            var _isIdRegistered = !1;
+            _snapshot.forEach(function(_n) {
+              if (_n.val() === _previousSubscriptionId) {
+                _isIdRegistered = !0;
+              }
+            });
+            // If current device/ browser not yet registered, push and register.
+            if (!_isIdRegistered) {
+              _snapshot.ref().push(_previousSubscriptionId);
+            }
+          }else {
+            // Else to remove from push subscription.
+            var _isIdRegisteredRef = '';
+            _snapshot.forEach(function(_n) {
+              if (_n.val() === _previousSubscriptionId) {
+                _isIdRegisteredRef = _n.ref();
+              }
+            });
+            // Remove subscribed device/ browser from subscription list if found.
+            if (!!_isIdRegisteredRef) {
+              _isIdRegisteredRef.remove();
+            }
+          }
+        }).catch(function(error) {
+          console.log(error);
+        });
       },
 
+      /**
+       * on-* type methods
+       */
       _togglePush: function(ev) {
         var _type = ev.type;
 
@@ -279,7 +418,12 @@
           }
           // Trigger ripple's downAction and toggle push state.
           this._toggleRipple.downAction();
-          this.set('_pushEnabled', !this._pushEnabled);
+          // Trigger _optForPush method to enable/ disable push messaging.
+          if (!this._revealPushMessaging) {
+            this.set('_revealPushMessaging', !0);
+          }else {
+            this._optForPush(!this._pushEnabled);
+          }
           this.set('_readyToTogglePush', !0);
         }else {
           if (this._readyToTogglePush) {
@@ -308,7 +452,9 @@
         }
       },
       _openDialog: function(ev) {
-        if (ev.target.if) {
+        var _target = Polymer.dom(ev).rootTarget;
+
+        if (_target.if) {
           this.$$('#themeDialog').open();
         }
       },
@@ -324,13 +470,29 @@
           _toggleRipple.upAction();
         }
       },
+      _openPushMessaging: function(ev) {
+        var _target = Polymer.dom(ev).rootTarget;
 
+        if (_target.if) {
+          this._optForPush(!this._pushEnabled);
+        }
+      },
+
+      /**
+       * Methods that produce new results.
+       */
       _updateThemeColor: function(_themeSelected) {
         var _isDarkTheme = _themeSelected === 'dark theme';
         this.toggleClass('dark-theme', _isDarkTheme, this);
         this.updateStyles();
-        console.log(_themeSelected);
-        this.fire('update-theme-color', {theme: _themeSelected});
+
+        // Now allows anonymous to play around with the theming system.
+        if (!!!this.authUser) {
+          this.fire('update-theme-color', {theme: _themeSelected});
+        }
+      },
+      _hidePush: function(_authUser) {
+        return !!!_authUser;
       },
 
     });
