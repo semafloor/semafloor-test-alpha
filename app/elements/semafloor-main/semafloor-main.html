@@ -435,12 +435,10 @@
             <semafloor-search-page id="searchPage" page="search" uid="[[uid]]" theme-selected="[[_themeSelected]]" on-search-page-attached="_onPageAttached"></semafloor-search-page>
           </template>
           <template is="dom-if" if="[[_isCurrentPageOpened]]" restamp="true" strip-whitespace>
-            <semafloor-current-page page="current"
-              on-current-page-attached="_onPageAttached"></semafloor-current-page>
+            <semafloor-current-page page="current" theme-selected="[[_themeSelected]]" on-current-page-attached="_onPageAttached"></semafloor-current-page>
           </template>
           <template is="dom-if" if="[[_isRoomPageOpened]]" restamp="true" strip-whitespace>
-            <semafloor-room-page page="room"
-              on-room-page-attached="_onPageAttached"></semafloor-room-page>
+            <semafloor-room-page page="room" theme-selected="[[_themeSelected]]" on-room-page-attached="_onPageAttached"></semafloor-room-page>
             <!-- <semafloor-room page="room" on-room-page-attached="_onPageAttached"></semafloor-room> -->
             <!-- <semafloor-animated-room page="room" on-room-page-attached="_onPageAttached"></semafloor-animated-room> -->
           </template>
