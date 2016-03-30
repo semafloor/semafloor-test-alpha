@@ -186,7 +186,7 @@
       <div id="themeColumn" class="settings-item" on-tap="_openThemeDialog" on-transitionend="_openThemeDialog">
         Theme
         <div class="settings-item-selector">
-          [[themeSelected]]
+          [[_computeThemeName(themeSelected)]]
         </div>
         <paper-ripple id="themeRipple"></paper-ripple>
       </div>
@@ -212,8 +212,8 @@
         <h2>Choose theme</h2>
         <paper-dialog-scrollable>
           <paper-radio-group selected="{{themeSelected}}">
-            <paper-radio-button name="light theme" dialog-confirm>Light theme</paper-radio-button>
-            <paper-radio-button name="dark theme" dialog-confirm>Dark theme</paper-radio-button>
+            <paper-radio-button name="light-theme" dialog-confirm>Light theme</paper-radio-button>
+            <paper-radio-button name="dark-theme" dialog-confirm>Dark theme</paper-radio-button>
           </paper-radio-group>
         </paper-dialog-scrollable>
         <div class="buttons">
@@ -251,7 +251,7 @@
         darkTheme: Boolean,
         themeSelected: {
           type: String,
-          value: 'light theme',
+          value: 'light-theme',
           notify: true
         },
 
@@ -487,7 +487,7 @@
        * Methods that produce new results.
        */
       _updateThemeColor: function(_themeSelected) {
-        var _isDarkTheme = _themeSelected === 'dark theme';
+        var _isDarkTheme = _themeSelected === 'dark-theme';
         this.toggleClass('dark-theme', _isDarkTheme, this);
         this.updateStyles();
 
@@ -502,6 +502,10 @@
       _manipulateDocumentScrolling: function(_state) {
         var _overflow = _state instanceof Event ? '' : _state || '';
         document.body.style.overflow = _overflow;
+      },
+      _computeThemeName: function(_themeSelected) {
+        var _themeName = _themeSelected.split('-').join(' ');
+        return _themeName;
       },
 
     });

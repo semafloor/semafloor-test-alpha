@@ -1,0 +1,313 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+
+<link rel="import" href="../../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animatable.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-shared-element-animatable-behavior.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/cascaded-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/ripple-animation.html">
+
+<dom-module id="semafloor-home-page">
+  <template strip-whitespace>
+    <style>
+      :host {
+        user-select: none;
+        box-sizing: border-box;
+        display: block;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        height: calc(100vh + 64px);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .home-page-container {
+        position: relative;
+      }
+
+      neon-animated-pages {
+        height: 100%;
+      }
+
+      neon-animatable {
+        @apply(--layout-horizontal);
+        @apply(--layout-wrap);
+      }
+
+      paper-material {
+        width: calc(100% / 3 - 16px);
+        height: 100px;
+        margin: 8px;
+      }
+
+      /* home page */
+      .home-title-col {
+        background-color: #009688;
+        color: #fff;
+        padding: 16px 24px;
+        width: 100%;
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+      }
+      .home-logo,
+      .semafloor-logo {
+        background-image: url(data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%20standalone%3D%22no%22%3F%3E%0A%3C%21--%20Created%20with%20Inkscape%20%28http%3A%2F%2Fwww.inkscape.org%2F%29%20--%3E%0A%3Csvg%20id%3D%22svg5222%22%20xmlns%3Ardf%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Aosb%3D%22http%3A%2F%2Fwww.openswatchbook.org%2Furi%2F2009%2Fosb%22%20height%3D%22192%22%20width%3D%22192%22%20version%3D%221.1%22%20xmlns%3Acc%3D%22http%3A%2F%2Fcreativecommons.org%2Fns%23%22%20viewBox%3D%220%200%20192%20192%22%20xmlns%3Adc%3D%22http%3A%2F%2Fpurl.org%2Fdc%2Felements%2F1.1%2F%22%3E%0A%20%3Cmetadata%20id%3D%22metadata5227%22%3E%0A%20%20%3Crdf%3ARDF%3E%0A%20%20%20%3Ccc%3AWork%20rdf%3Aabout%3D%22%22%3E%0A%20%20%20%20%3Cdc%3Aformat%3Eimage%2Fsvg%2Bxml%3C%2Fdc%3Aformat%3E%0A%20%20%20%20%3Cdc%3Atype%20rdf%3Aresource%3D%22http%3A%2F%2Fpurl.org%2Fdc%2Fdcmitype%2FStillImage%22%2F%3E%0A%20%20%20%20%3Cdc%3Atitle%2F%3E%0A%20%20%20%3C%2Fcc%3AWork%3E%0A%20%20%3C%2Frdf%3ARDF%3E%0A%20%3C%2Fmetadata%3E%0A%20%3Cg%20id%3D%22layer1%22%20transform%3D%22translate%280%20-860.36%29%22%3E%0A%20%20%3Cg%20id%3D%22g8280%22%20transform%3D%22matrix%281%200%200%201.0011%208.0003%20-8.969%29%22%3E%0A%20%20%20%3Cpath%20id%3D%22path5770%22%20d%3D%22m175.5%20964.27a87.503%2087.406%200%200%201%20-87.5%2087.43%2087.503%2087.406%200%200%201%20-87.503%20-87.43%2087.503%2087.406%200%200%201%2087.503%20-87.41%2087.503%2087.406%200%200%201%2087.503%2087.406z%22%20stroke%3D%22%2300796b%22%20stroke-width%3D%22.99399%22%20fill%3D%22%23009688%22%2F%3E%0A%20%20%20%3Cg%20id%3D%22g8241%22%20stroke-opacity%3D%22.4%22%20stroke%3D%22%23fff%22%20fill%3D%22%23fafafa%22%3E%0A%20%20%20%20%3Cpath%20id%3D%22rect7438-0-9-8%22%20d%3D%22m-341.06%20867.51h71.51c1.9011%200%203.4316%201.5305%203.4316%203.4316v11.425c0%201.9011-1.5305%203.4316-3.4316%203.4316h-71.51c-1.9011%200-3.4316-1.5305-3.4316-3.4316v-11.425c0-1.9011%201.5305-3.4316%203.4316-3.4316z%22%20transform%3D%22rotate%28-24.642%29%22%20stroke-width%3D%22.040225%22%2F%3E%0A%20%20%20%20%3Cpath%20id%3D%22rect7440-1-7-0%22%20d%3D%22m-341.07%20904.08h37.906c1.9016%200%203.4324%201.5309%203.4324%203.4324v11.428c0%201.9016-1.5309%203.4324-3.4324%203.4324h-37.906c-1.9016%200-3.4324-1.5309-3.4324-3.4324v-11.428c0-1.9016%201.5309-3.4324%203.4324-3.4324z%22%20transform%3D%22rotate%28-24.642%29%22%20stroke-width%3D%22.035111%22%2F%3E%0A%20%20%20%20%3Cpath%20id%3D%22rect7438-4-2-5-9%22%20d%3D%22m-374.65%20940.66h49.109c1.9017%200%203.4326%201.5309%203.4326%203.4326v11.429c0%201.9017-1.5309%203.4326-3.4326%203.4326h-49.109c-1.9017%200-3.4326-1.531-3.4326-3.4326v-11.429c0-1.9017%201.5309-3.4326%203.4326-3.4326z%22%20transform%3D%22rotate%28-24.642%29%22%20stroke-width%3D%220.034%22%2F%3E%0A%20%20%20%3C%2Fg%3E%0A%20%20%20%3Cpath%20id%3D%22path8246%22%20d%3D%22m81.683%20175.69c-2.9643-0.23284-7.1514-0.78915-10.103-1.3424l-2.5019-0.46888-6.6412-11.23c-3.6526-6.1767-6.6159-11.256-6.5851-11.287%200.03084-0.0308%200.34416%200.0643%200.69626%200.2114%201.4761%200.61676%200.53963%200.99853%2024.772-10.099%2012.45-5.7016%2022.915-10.582%2023.255-10.844%201.0298-0.79545%201.4405-1.678%201.3583-2.9192-0.0609-0.9199-0.41279-1.7996-2.6516-6.6291-2.2203-4.7896-2.6837-5.6605-3.3131-6.2266-0.79617-0.7161-1.5472-0.9381-2.6968-0.7972-0.43904%200.0538-3.7255%201.4674-8.0765%203.474-4.0349%201.8608-7.5024%203.4262-7.7055%203.4786-0.32612%200.0841-0.95259-0.88771-5.3661-8.3245-2.7483-4.6309-4.9609-8.4557-4.917-8.4996%200.04391-0.0439%200.38796%200.0489%200.76456%200.20626%200.41898%200.17506%200.96663%200.25432%201.4111%200.20423%200.78344-0.0883%201.1834-0.26668%2022.088-9.8515%209.6624-4.4301%2014.142-6.5709%2014.538-6.948%200.7495-0.7138%201.1788-1.8506%201.0651-2.8202-0.10393-0.88564-5.0784-11.845-5.6671-12.485-0.21434-0.23315-0.70791-0.57076-1.0968-0.75026-1.5527-0.71662-0.78093-1.017-19.874%207.7361-9.6817%204.4386-17.802%208.2065-18.045%208.373l-0.44194%200.30274-5.0381-8.5622c-2.771-4.7092-5.064-8.6343-5.0957-8.7225-0.03167-0.0882%200.31834%200.0059%200.77782%200.20918%201.218%200.5388%201.8699%200.39166%205.3786-1.2141%2033.043-15.122%2062.768-28.816%2063.13-29.083%200.75567-0.55753%201.2675-1.6492%201.2675-2.7036%200-0.70799-0.1605-1.272-0.67236-2.3628-0.36979-0.78802-0.63969-1.4623-0.59977-1.4983%200.0399-0.03604%2010.64%2017.821%2023.555%2039.682l23.483%2039.747-0.91888%202.6908c-3.9038%2011.432-10.053%2021.784-18.47%2031.095-7.1192%207.8758-16.548%2014.884-26.517%2019.71-9.1041%204.4076-18.87%207.1805-29.257%208.3072-3.0838%200.33453-12.259%200.47911-15.291%200.24096z%22%20fill-opacity%3D%22.2%22%20transform%3D%22translate%280%20876.36%29%22%20fill%3D%22%23263238%22%2F%3E%0A%20%20%3C%2Fg%3E%0A%20%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A);
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-origin: border-box;
+        height: 64px;
+        width: 64px;
+        border: 1px solid #bdbdbd;
+        border-radius: 50% 50%;
+        margin-right: auto;
+      }
+      .home-title,
+      .semafloor-title {
+        font-size: 32px;
+        font-weight: 500;
+        margin-right: auto;
+      }
+
+      /* semafloor page */
+      .fake-toolbar {
+        background-color: #009688;
+        color: #fff;
+        height: 192px;
+        margin-top: 8px;
+        padding: 16px;
+        width: 100%;
+        @apply(--layout-horizontal);
+        @apply(--layout-start);
+      }
+      .semafloor-logo {
+        height: 96px;
+        width: 96px;
+      }
+      .semafloor-title {
+        font-size: 48px;
+        margin-top: 19px;
+      }
+      .semafloor-content {
+        margin-top: -56px;
+        margin-left: 16px;
+        margin-right: 16px;
+        background-color: #fff;
+        border-radius: 3px;
+        padding: 12px 16px;
+        @apply(--shadow-elevation-2dp);
+      }
+    </style>
+
+    <div class="home-page-container">
+      <neon-animated-pages selected="{{page}}" attr-for-selected="page">
+        <neon-animatable id="material" page="home">
+          <paper-material elevation="1" class="home-title-col">
+            <div class="home-logo"></div>
+            <div class="home-title">
+              Semafloor
+            </div>
+          </paper-material>
+          <paper-material elevation="1">
+            Home
+            <paper-ripple></paper-ripple>
+          </paper-material>
+          <paper-material elevation="1">
+            Home
+            <paper-ripple></paper-ripple>
+          </paper-material>
+          <paper-material elevation="1">
+            Home
+            <paper-ripple></paper-ripple>
+          </paper-material>
+          <paper-material elevation="1">
+            Links to Github Repo...
+          </paper-material>
+        </neon-animatable>
+
+        <neon-animatable page="semafloor">
+          <div class="fake-toolbar">
+            <div class="semafloor-logo"></div>
+            <div class="semafloor-title">
+              Semafloor
+            </div>
+          </div>
+          <div class="semafloor-content">
+            <h2>What is Semafloor?</h2>
+            <p>
+              To start with, this section will briefly introduce Semafloor, just another Progressive Web App or PWA for short built with a bunch of goodies and bleeding edge web technologies such as Web Components.
+              Well, there are even more contents to be explained in more details at later sections.
+              So, just bear with me, as things will be simple, straightforward and much understandable here. Without further ado, let's dive in.
+            </p>
+            <h2>What is Progressive Web App?</h2>
+            <p>
+              There are some requirements for a Progressive Web App to fulfill:
+              <ul>
+                <li>Responsive - Fit in any kind of form factor, be it a desktop or a mobile device. The web app will transform and will react to the different sizes.</li>
+                <li>Connectivity independent - With the power of Service Workers, a web app can now work both online and offline regardless of the quality of the network connectivity.</li>
+                <li>Safe - As Service Workers embraces HTTPS, all content must be served via secured connection to prevent snooping and ensure content hasn't been tampered with.</li>
+                <li>Installable - Allow users to install their most use web apps at the homescreen for quick access and ease of use without any complicated installation process.</li>
+                <li>Re-engageable - Make web app more re-engaging with push notification.</li>
+              </ul>
+            </p>
+            <h2>What is Semafloor?</h2>
+            <p>
+              It is a meeting room booking web app which built with the notion of Progressive Web App (PWA) in mind and is fulfilled with all the guidelines needed to build a PWA.
+              The name of the web app came from the term <b>semaphore</b> in computer programming which is defined as a variable or abstract data type that is used for controlling access to some resource.
+              The term semaphore is kind of closely resembling how a meeting room booking application works. For example, semaphore controls access from certain sources to some resources just like booking a room. You can only book an empty room when it is available to be reserved otherwise wait for it to be available again or search for other empty ones.
+              The name changes over the course of the developement of this web app, it is eventually named Semafloor from the term semaphore.
+            </p>
+            <h2>Additional resources to learn more in depth:</h2>
+            <p>
+              Here you go if you wish to learn even more about what Service Workers is, what Progressive Web App is all about, etc.
+              <ul>
+                <li>Progressive Web App - https://developers.google.com/web/updates/2015/12/getting-started-pwa?hl=en</li>
+                <li>Service Workers - https://developers.google.com/web/fundamentals/primers/service-worker/</li>
+                <li>Semaphore - https://en.wikipedia.org/wiki/Semaphore_(programming)</li>
+              </ul>
+            </p>
+          </div>
+        </neon-animatable>
+
+        <neon-animatable page="goodies">
+          <h2>Web Components</h2>
+          <p>
+
+          </p>
+          <h2>Polymer</h2>
+          <p>
+
+          </p>
+          <h2>Service Workers</h2>
+          <p>
+
+          </p>
+          <h2>Lodash</h2>
+          <p>
+
+          </p>
+          <h2>Firebase</h2>
+          <p>
+
+          </p>
+        </neon-animatable>
+
+        <neon-animatable page="backend">
+          <h2>HTTP2</h2>
+          <p>
+
+          </p>
+          <h2>Nginx</h2>
+          <p>
+
+          </p>
+          <h2>NodeJS</h2>
+          <p>
+
+          </p>
+        </neon-animatable>
+
+        <neon-animatable page="tutorials">
+          <h2>Before logged in...</h2>
+          <p>
+
+          </p>
+          <h2>After logged in...</h2>
+          <p>
+
+          </p>
+          <h2>Profile page</h2>
+          <p>
+
+          </p>
+          <h2>My Reservations page</h2>
+          <p>
+
+          </p>
+          <h2>Search &amp; Reserve page</h2>
+          <p>
+
+          </p>
+          <h2>Current Reservations page</h2>
+          <p>
+
+          </p>
+          <h2>Room Information</h2>
+          <p>
+
+          </p>
+          <h2>Settings</h2>
+          <p>
+
+          </p>
+        </neon-animatable>
+      </neon-animated-pages>
+    </div>
+  </template>
+  <script>
+  (function() {
+    'use strict';
+
+    Polymer({
+      is: 'semafloor-home-page',
+
+      behaviors: [
+        Polymer.NeonSharedElementAnimatableBehavior,
+        Polymer.NeonAnimationRunnerBehavior
+      ],
+
+      properties: {
+        /**
+         * Set theme for the element.
+         */
+        theme: String,
+        animationConfig: {
+          type: Object,
+          value: function() {
+            return {
+              'entry': [{
+                name: 'cascaded-animation',
+                animation: 'scale-up-animation',
+                axis: 'x',
+                nodeDelay: 50,
+              }, {
+                name: 'cascaded-animation',
+                animation: 'fade-in-animation',
+                timing: {
+                  delay: 150
+                }
+              }]
+            };
+          }
+        },
+
+      },
+
+      attached: function() {
+        this.async(function() {
+          var _nodeList = Polymer.dom(this.$.material).querySelectorAll('paper-material');
+          this.animationConfig['entry'][0].nodes = Array.prototype.slice.call(_nodeList);
+          this.animationConfig['entry'][1].nodes = Array.prototype.slice.call(_nodeList);
+          this.fire('material-animation-config-set');
+        });
+
+      },
+
+      runMaterialAnimation: function() {
+        this.playAnimation('entry');
+      },
+
+      // TODO: What is Semafloor - a meeting room booking PWA built with Polymer, Lodash, Polymer, etc as well as what makes a PWA PWA.
+      // TODO: Promote how data in this PWA is synced in real time and this is done possible with Firebase.
+      // TODO: Promote push notification and how it can be enabled.
+      // TODO: Briefly explain how this PWA works.
+      // TODO: Briefly explain how its backend works and it's powered by Nginx, NodeJS and HTTP2.
+      // TODO: Add in Github repo link to this project and what to expect in future release probably with carbon-route (if any chance).
+    });
+  })();
+  </script>
+</dom-module>

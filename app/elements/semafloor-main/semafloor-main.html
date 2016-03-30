@@ -3,6 +3,7 @@
 <!-- <link rel="import" href="../semafloor-animated-room/semafloor-animated-room.html"> -->
 <link rel="import" href="../../bower_components/semafloor-icons/semafloor-icons.html">
 <link rel="import" href="../semafloor-settings-page/semafloor-settings-page.html">
+<link rel="import" href="../semafloor-home-page/semafloor-home-page.html">
 
 <link rel="import" href="../../bower_components/semafloor-profile-page/semafloor-profile-page.html">
 <link rel="import" href="../../bower_components/semafloor-reserve-page/semafloor-reserve-page.html">
@@ -196,10 +197,6 @@
         background-color: #eee;
         color: #7c7c7c;
         font-weight: 400;
-      }
-
-      .home {
-        padding: 24px 16px 16px;
       }
 
       app-toolbar > [icon] {
@@ -417,10 +414,10 @@
         </app-header>
 
         <iron-pages selected="[[category]]" attr-for-selected="page">
-          <div class="home" page="home">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quibusdam, minima!
-          </div>
           <div class="loading" page="loading"></div>
+          <template is="dom-if" if="[[_isHomePageOpened]]" restamp="true" strip-whitespace>
+            <semafloor-home-page id="home" page="home" theme-selected="{{_mainData.themeSelected}}" on-home-page-attached="_onPageAttached"></semafloor-home-page>
+          </template>
           <template is="dom-if" if="[[_isSettingsPageOpened]]" restamp="true" strip-whitespace>
             <semafloor-settings-page page="settings" auth-ref="[[_authRef]]" auth-user="[[authUser]]" theme-selected="{{_mainData.themeSelected}}" on-settings-page-attached="_onPageAttached"></semafloor-settings-page>
           </template>
@@ -520,6 +517,7 @@
 
       listeners: {
         'update-theme-color': '_updateThemeColor',
+        'material-animation-config-set': '_runMaterialAnimationOnLoad'
       },
 
       observers: [
@@ -893,19 +891,23 @@
       // Update themeSelected either from Firebase or user's input.
       _updateThemeColor: function(_themeSelected) {
         var _ts = _themeSelected instanceof Event ? _themeSelected.detail.theme : _themeSelected;
-        var _isDarkTheme = _ts === 'dark theme';
+        var _isDarkTheme = _ts === 'dark-theme';
         this.toggleClass('dark-theme', _isDarkTheme, this);
         // This is used to set the theme of other pages.
         this.set('_themeSelected', _ts);
         this.updateStyles();
       },
 
-      // TODO: compound-timepicker SVGs not vulcanized.
-      // TODO: Fix all spinner on all pages (skip search-page, done: room, current, profile, containerised: room, profile).
-      // TODO: Add Semafloor logo maybe?
+      _runMaterialAnimationOnLoad: function() {
+        this.$$('#home').runMaterialAnimation();
+      },
+
       // TODO: Awaiting Polymer to support native customProp (tabs' selection bar needs polyfill).
+      // TODO: Add Semafloor logo maybe?
       // TODO: carbon-router has released. A full routing system is needed.
       // TODO: Since semafloor-main can take care of Firebase data, why even bothered to use too many firebase-collectoin at each page?
+      // X - TODO: compound-timepicker SVGs not vulcanized.
+      // X - TODO: Fix all spinner on all pages (skip search-page, done: room, current, profile, containerised: room, profile).
       // X - TODO: Settings page should only be shown when user logged in.
       // X - TODO: Push notification should only be shown when user is logged in and find a way to integrate it on desktop mode. Added sneak-peek at push notification feature, eager user will want to sign in to try that awesome feature!
       // X - TODO: Save theme selected flag to user's database or localstorage? Coz I prefer Firebase!!!
