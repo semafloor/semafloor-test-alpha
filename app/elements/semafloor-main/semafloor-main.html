@@ -41,6 +41,7 @@
         user-select: none;
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
         height: 100vh;
+        @apply(--paper-font-common-base);
       }
 
       * {
@@ -333,6 +334,7 @@
         border: 2px solid #212121;
         border-left-color: #1ddb8b
       }
+
     </style>
 
     <iron-page-url hash="{{urlHash}}" path="{{path}}"></iron-page-url>
@@ -413,7 +415,7 @@
           </template>
         </app-header>
 
-        <iron-pages selected="[[category]]" attr-for-selected="page">
+        <iron-pages style="height: 100%;" selected="[[category]]" attr-for-selected="page">
           <div class="loading" page="loading"></div>
           <template is="dom-if" if="[[_isHomePageOpened]]" restamp="true" strip-whitespace>
             <semafloor-home-page id="home" page="home" theme-selected="{{_mainData.themeSelected}}" on-home-page-attached="_onPageAttached"></semafloor-home-page>
