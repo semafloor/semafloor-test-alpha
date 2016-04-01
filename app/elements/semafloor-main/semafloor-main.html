@@ -379,7 +379,7 @@
       </app-drawer>
 
       <app-header-layout>
-        <app-header id="header" class$="[[_computeSettingsCls(category)]]" shadow="[[_isSettingsPage(category)]]" fixed="[[!smallScreen]]" condenses="[[smallScreen]]" reveals="[[smallScreen]]" effects="waterfall">
+        <app-header id="header" class$="[[_computeSettingsCls(category)]]" scroll-target="[[_headerScroller]]" shadow="[[_isSettingsPage(category)]]" fixed="[[!smallScreen]]" condenses="[[smallScreen]]" reveals="[[smallScreen]]" effects="waterfall">
           <app-toolbar class="main-toolbar">
             <paper-icon-button hidden$="[[!smallScreen]]" icon="icons:[[_computeHeaderIcon(category)]]" on-tap="_openDrawer" on-transitionend="_openDrawer"></paper-icon-button>
             <!-- <span condensed-title hidden></span>
@@ -519,7 +519,8 @@
 
       listeners: {
         'update-theme-color': '_updateThemeColor',
-        'material-animation-config-set': '_runMaterialAnimationOnLoad'
+        'material-animation-config-set': '_runMaterialAnimationOnLoad',
+        'set-header-scroller': '_setHeaderScroller',
       },
 
       observers: [
@@ -902,6 +903,13 @@
 
       _runMaterialAnimationOnLoad: function() {
         this.$$('#home').runMaterialAnimation();
+      },
+
+      _setHeaderScroller: function(ev) {
+        // var _scroller = ev.detail.scroller;
+
+        // this.set('_headerScroller', _scroller);
+        // _scroller = null;
       },
 
       // TODO: Awaiting Polymer to support native customProp (tabs' selection bar needs polyfill).

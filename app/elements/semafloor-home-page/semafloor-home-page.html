@@ -433,7 +433,7 @@
 
       behaviors: [
         Polymer.NeonSharedElementAnimatableBehavior,
-        Polymer.NeonAnimationRunnerBehavior
+        Polymer.NeonAnimationRunnerBehavior,
       ],
 
       properties: {
@@ -480,14 +480,19 @@
 
       },
 
+      listeners: {
+        'scroll': '_scrollHandler',
+      },
+
       attached: function() {
         this.async(function() {
           var _nodeList = Polymer.dom(this.$.material).querySelectorAll('paper-material');
           this.animationConfig['entry'][0].nodes = Array.prototype.slice.call(_nodeList);
           this.animationConfig['entry'][1].nodes = Array.prototype.slice.call(_nodeList);
+
+          this.fire('set-header-scroller', {scroller: this});
           this.fire('material-animation-config-set');
         });
-
       },
 
       // on-* type methods.
@@ -527,6 +532,11 @@
             }
           }
         }, 1);
+      },
+      // scroll event.
+      _scrollHandler: function(ev) {
+        var _target = Polymer.dom(ev).rootTarget;
+        console.log(_target.scrollHeight, _target.scrollTop);
       },
 
       runMaterialAnimation: function() {
