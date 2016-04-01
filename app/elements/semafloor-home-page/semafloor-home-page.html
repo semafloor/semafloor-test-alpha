@@ -101,15 +101,21 @@
         @apply(--layout-horizontal);
         @apply(--layout-start);
       }
-      .intro-container {
-        @apply(--layout-fit);
-      }
       .intro-nav {
         width: 100%;
         @apply(--layout-vertical);
         @apply(--layout-center-center);
       }
-      .intro-nav > .next-topic {
+      .topic-nav-container {
+        width: 100%;
+        @apply(--layout-horizontal);
+      }
+      .intro-nav .next-topic.last-topic {
+        margin-left: 0;
+        margin-right: auto;
+        text-align: left;
+      }
+      .intro-nav .next-topic {
         margin-right: 0;
         margin-left: auto;
         font-size: 12px;
@@ -189,21 +195,20 @@
         </neon-animatable>
 
         <neon-animatable page="intro">
-          <div class="intro-container">
-            <div id="fakeToolbar" class="fake-toolbar">
-              <div class="intro-nav" next-topic sub-title="frontend" on-tap="_goPage">
-                <div class="next-topic">
-                  Next topic:
-                  <br>
-                  How it's built (Frontend edition)
-                </div>
-                <div class="intro-title">
-                  <span>Introduction to</span>
-                  Semafloor
-                </div>
+          <div id="introFakeToolbar" class="fake-toolbar">
+            <div class="intro-nav">
+              <div class="next-topic" sub-title="frontend" on-tap="_goPage">
+                Next topic:
+                <br>
+                How it's built (Frontend edition)
+              </div>
+              <div class="intro-title">
+                <span>Introduction to</span>
+                Semafloor
               </div>
             </div>
-            <div id="introContent" class="intro-content">
+          </div>
+          <div id="introContent" class="intro-content">
               <p>
                 To start with, this section will briefly introduce Semafloor, just another Progressive Web App or PWA for short built with a bunch of goodies and bleeding edge web technologies such as Web Components.
                 Well, there are even more contents to be explained in more details at later sections.
@@ -236,135 +241,115 @@
                 </ul>
               </p>
             </div>
-          </div>
         </neon-animatable>
         <neon-animatable page="frontend">
-          <div class="intro-container">
-            <div id="fakeToolbar" class="fake-toolbar">
-              <div class="intro-nav" next-topic sub-title="frontend" on-tap="_goPage">
-                <div class="next-topic">
+          <div id="frontendFakeToolbar" class="fake-toolbar">
+            <div class="intro-nav">
+              <div class="topic-nav-container">
+                <div class="next-topic last-topic" sub-title="intro" on-tap="_goPage">
+                  Last topic:
+                  <br>
+                  Introduction to Semafloor
+                </div>
+                <div class="next-topic" sub-title="backend" on-tap="_goPage">
                   Next topic:
                   <br>
                   How it's built (Backend edition)
                 </div>
-                <div class="intro-title frontend-title">
-                  How it's built
-                  <span>(Frontend edition)</span>
-                </div>
               </div>
-            </div>
-            <div id="introContent" class="intro-content">
-              <p>
-                In this section, we're going to walk you through some of the vital web technologies used that made this PWA possible.
-                To build a PWA, you might only need some frontend rendering however in this PWA, it is noteworthy to cover the backend that pieces everything together.
-                First and foremost, it seems to make sense to begin with the foundation of the library (namely Polymer) in this PWA - <a href="http://webcomponents.org/">Web Components</a>.
-              </p>
-              <h2>What is Web Components?</h2>
-              <p>
-                <blockquote cite="https://en.wikipedia.org/wiki/Web_Components">
-                  Web Components are a set of standards currently being produced by Google engineers as a W3C specification that allow for the creation of reusable widgets or components in web documents and web applications. The intention behind them is to bring component-based software engineering to the World Wide Web. The components model allows for encapsulation and interoperability of individual HTML elements.
-                </blockquote>
-
-                Web Components basically comprises of 4 fundamental elements:
-                <ul>
-                  <li><span>Custom Elements</span> - To enable users to define their own new types of DOM elements which are built with the notion of reusability and encapsulation in mind.</li>
-                  <li><span>HTML Imports</span> - A new way to include and reuse the new defined types of DOM elements.</li>
-                  <li><span>Templates</span> - A standard DOM-based approach for client-side templating which means a content fragment is delcared and parsed at page load but can subsequently be instantiated for later use.</li>
-                  <li><span>Shadow DOM</span> - a way to encapsulate new defined DOM elements and remain separated from the DOM of the main document.</li>
-                </ul>
-              </p>
-              <h2>What is Polymer?</h2>
-              <p>
-                It is a library designed to make creating reusable custom elements easier and quicker for developers.
-                <br><br>
-                So what makes Polymer differentiate from building custom elements using mere vanilla JS?
-                <br><br>
-                In Polymer, it provides developers a set of great tools and features such as two-way data binding and property observation to help developers creating custom elements much more powerful and reusable with lesser development time.
-                It's like adding another layer of abstraction to Web Components and developers only need to learn some basic stuffs Polymer provides which makes creating reusable custom elements easier and faster and you're good to go.
-              </p>
-              <h2>Besides Polymer, what else? Lodash!</h2>
-              <p>
-                In a nutshell, Lodash is a powerful Javascript utility library that provides developers or might be you hundreds of functions that could reduce whole lot of boilerplate codes that one might be writing it everytime for a new function.
-                Whenever you try reinventing the wheel, you should first check if that has already existed in Lodash before writing it.
-                <br><br>
-                Lodash focuses on modularity, performance, compatibility and many more.
-                Speaking of compatibility, it works on both client side cross platform and server side.
-                <br><br>
-                With Lodash, it not only helps reduce the amount of boilerplate codes needed and improves the readability of the overall application meantime assures the developer optimization plus much more consistent performance across different platforms as even Native VanillaJS implemented in major moderen browsers might not always be the fastest.
-              </p>
-              <h2>Anything else being left out? Service Worker!</h2>
-              <p>
-                Service worker is a script that is run by the browser in the background separated by the web page to intercept the network request and manage the caching of all responses.
-                <br><br>
-                Service worker provides a better offline experience to a web app which gives developers full controls over that experience by enabling caching necessarily critical resource assets.
-                Service worker is trying to tackle offline by getting rid of the 'offline dino' (which you can find it on Chrome during offline) as not all users don't always using the webapp or website on a consistent and stable network espcially on mobile networks are sometimes spotty.
-                In other words, service workers allows a web app to be able to work offline just like a Native app as long as all static site contents have been cached with service workers.
-                <br><br>
-                Not only that, service worker does provide other features such as push notification. Push notification allows developers to re-engage their users with new updates or contents provided the users have opted in for receiving notification.
-                <br><br>
-                The feature has been implemented on Native platforms but was missing from the Web for very long time. Good news is that as of Chrome version 42 and Firefox version 44, push notification has been a thing on modern browsers by fulfilling some of the requirements to enable that amazing feature.
-                In order to enable push notification, first a webapp or website must include a <b>Web App Manifest</b>, must <b>serve content via HTTPS</b> and have <b>Service worker enabled</b>.
-                However, developers are required to register for <b>Google Cloud Messaging (GCM)</b> API as push messaging on Chrome only works with GCM as of now.
-              </p>
-              <h2>Last but not least... Firebase!</h2>
-              <p>
-                Firebase is a cloud service backend which provides a series of services like real time database, authentication using OAuth, and web hosting.
-                <br><br>
-                This PWA uses two of the main services that Firebase provides: <b>real time database</b> and <b>authentication</b>.
-                <br><br>
-                The great thing about Firebase is that data in your Firebase database is stored as and sent as JSON and always stays in sync to every users connected to the same database.
-                When one user modifies the database, the rest of the users will receive the instant updates and all those are managed by Firebase in the background for you as in updating and synchronizing database and managing all the connection from different users, etc.
-                All data being transmitted to and fro over a <b>secured SSL connection</b> and more granular controls at the database are also at the owner's disposal by using Firebase's <b>Security Rules</b>.
-                <br><br>
-                One last point worth noting is that all modification to the Firebase database works offline. For example, the connection disconnected in the midst of updating the newest data to the Firebase. This would not affect the synchronizing to the Firebase backend as those changes will be updated and synchronized with the current server state once the connection is re-established.
-                <br><br>
-                Here comes the authentication part with Firebase. As you might know operating your own backend to handle the authentication would definitely be a headache to a lot of developers, with Firebase Authentication, not only it supports authentication with some of the major websites such as Facebook, Google, Twitter, etc, it has all built-in functionality where developers can easily integrate it into their app just in a few lines of code and it works on both client side and server side.
-                <br><br>
-                However, as for general purpose, this PWA only implemented authentication with Google account.
-              </p>
-              <h2>Further reading</h2>
-              <p>
-                <ul>
-                  <li><a href="http://goo.gl/k3rlKS" target="_blank">Are we componentized yet?</a></li>
-                  <li><a href="https://goo.gl/EzBfVq" target="_blank">Polymer Project</a></li>
-                  <li><a href="https://goo.gl/DqmUr0" target="_blank">What is Polymer</a></li>
-                  <li><a href="https://goo.gl/yxGYvq" target="_blank">Google I/O 2014 - Polymer and Web Components chnage everything you know about Web development</a></li>
-                  <li><a href="https://goo.gl/LuKMGd" target="_blank">Lodash</a></li>
-                  <li><a href="http://goo.gl/WQoiV6" target="_blank">Lodash, stop rewriting!</a></li>
-                  <li><a href="https://goo.gl/z6Vjhj" target="_blank">Service worker</a></li>
-                  <li><a href="https://goo.gl/KP571k" target="_blank">Service worker offline cook</a></li>
-                  <li><a href="https://goo.gl/Xv8E9o" target="_blank">Push notification</a></li>
-                  <li><a href="https://goo.gl/mWq2mT" target="_blank">Web push arrives in Firefox 44</a></li>
-                  <li><a href="https://goo.gl/yHm98v" target="_blank">Firebase</a></li>
-                  <li><a href="https://goo.gl/uMVuaB" target="_blank">End to End with Polymer (The Polymer Summit 2015)</a></li>
-                  <li><a href="https://goo.gl/l5lf6j" target="_blank">Introduction to Firebase Security Rules - Firecasts #7</a></li>
-                </ul>
-              </p>
+              <div class="intro-title frontend-title">
+                How it's built
+                <span>(Frontend edition)</span>
+              </div>
             </div>
           </div>
-        </neon-animatable>
+          <div id="frontendContent" class="intro-content">
+            <p>
+              In this section, we're going to walk you through some of the vital web technologies used that made this PWA possible.
+              To build a PWA, you might only need some frontend rendering however in this PWA, it is noteworthy to cover the backend that pieces everything together.
+              First and foremost, it seems to make sense to begin with the foundation of the library (namely Polymer) in this PWA - <a href="http://webcomponents.org/">Web Components</a>.
+            </p>
+            <h2>What is Web Components?</h2>
+            <p>
+              <blockquote cite="https://en.wikipedia.org/wiki/Web_Components">
+                Web Components are a set of standards currently being produced by Google engineers as a W3C specification that allow for the creation of reusable widgets or components in web documents and web applications. The intention behind them is to bring component-based software engineering to the World Wide Web. The components model allows for encapsulation and interoperability of individual HTML elements.
+              </blockquote>
 
-        <neon-animatable page="frontend2">
-          <div class="frontend-container">
-            <div id="fakeToolbar" class="fake-toolbar">
-              <div class="frontend-nav" next-topic sub-title="backend" on-tap="_goPage">
-                <div class="next-topic">
-                  Next topic:
-                  <br>
-                  How it's built (Backend edition)
-                </div>
-                <div class="frontend-title">
-                  How it's built
-                  <span>(Frontend edition)</span>
-                </div>
-              </div>
-            </div>
-            <div id="frontendContent" class="frontend-content">
-              <!--
-
-
-            -->
-            </div>
+              Web Components basically comprises of 4 fundamental elements:
+              <ul>
+                <li><span>Custom Elements</span> - To enable users to define their own new types of DOM elements which are built with the notion of reusability and encapsulation in mind.</li>
+                <li><span>HTML Imports</span> - A new way to include and reuse the new defined types of DOM elements.</li>
+                <li><span>Templates</span> - A standard DOM-based approach for client-side templating which means a content fragment is delcared and parsed at page load but can subsequently be instantiated for later use.</li>
+                <li><span>Shadow DOM</span> - a way to encapsulate new defined DOM elements and remain separated from the DOM of the main document.</li>
+              </ul>
+            </p>
+            <h2>What is Polymer?</h2>
+            <p>
+              It is a library designed to make creating reusable custom elements easier and quicker for developers.
+              <br><br>
+              So what makes Polymer differentiate from building custom elements using mere vanilla JS?
+              <br><br>
+              In Polymer, it provides developers a set of great tools and features such as two-way data binding and property observation to help developers creating custom elements much more powerful and reusable with lesser development time.
+              It's like adding another layer of abstraction to Web Components and developers only need to learn some basic stuffs Polymer provides which makes creating reusable custom elements easier and faster and you're good to go.
+            </p>
+            <h2>Besides Polymer, what else? Lodash!</h2>
+            <p>
+              In a nutshell, Lodash is a powerful Javascript utility library that provides developers or might be you hundreds of functions that could reduce whole lot of boilerplate codes that one might be writing it everytime for a new function.
+              Whenever you try reinventing the wheel, you should first check if that has already existed in Lodash before writing it.
+              <br><br>
+              Lodash focuses on modularity, performance, compatibility and many more.
+              Speaking of compatibility, it works on both client side cross platform and server side.
+              <br><br>
+              With Lodash, it not only helps reduce the amount of boilerplate codes needed and improves the readability of the overall application meantime assures the developer optimization plus much more consistent performance across different platforms as even Native VanillaJS implemented in major moderen browsers might not always be the fastest.
+            </p>
+            <h2>Anything else being left out? Service Worker!</h2>
+            <p>
+              Service worker is a script that is run by the browser in the background separated by the web page to intercept the network request and manage the caching of all responses.
+              <br><br>
+              Service worker provides a better offline experience to a web app which gives developers full controls over that experience by enabling caching necessarily critical resource assets.
+              Service worker is trying to tackle offline by getting rid of the 'offline dino' (which you can find it on Chrome during offline) as not all users don't always using the webapp or website on a consistent and stable network espcially on mobile networks are sometimes spotty.
+              In other words, service workers allows a web app to be able to work offline just like a Native app as long as all static site contents have been cached with service workers.
+              <br><br>
+              Not only that, service worker does provide other features such as push notification. Push notification allows developers to re-engage their users with new updates or contents provided the users have opted in for receiving notification.
+              <br><br>
+              The feature has been implemented on Native platforms but was missing from the Web for very long time. Good news is that as of Chrome version 42 and Firefox version 44, push notification has been a thing on modern browsers by fulfilling some of the requirements to enable that amazing feature.
+              In order to enable push notification, first a webapp or website must include a <b>Web App Manifest</b>, must <b>serve content via HTTPS</b> and have <b>Service worker enabled</b>.
+              However, developers are required to register for <b>Google Cloud Messaging (GCM)</b> API as push messaging on Chrome only works with GCM as of now.
+            </p>
+            <h2>Last but not least... Firebase!</h2>
+            <p>
+              Firebase is a cloud service backend which provides a series of services like real time database, authentication using OAuth, and web hosting.
+              <br><br>
+              This PWA uses two of the main services that Firebase provides: <b>real time database</b> and <b>authentication</b>.
+              <br><br>
+              The great thing about Firebase is that data in your Firebase database is stored as and sent as JSON and always stays in sync to every users connected to the same database.
+              When one user modifies the database, the rest of the users will receive the instant updates and all those are managed by Firebase in the background for you as in updating and synchronizing database and managing all the connection from different users, etc.
+              All data being transmitted to and fro over a <b>secured SSL connection</b> and more granular controls at the database are also at the owner's disposal by using Firebase's <b>Security Rules</b>.
+              <br><br>
+              One last point worth noting is that all modification to the Firebase database works offline. For example, the connection disconnected in the midst of updating the newest data to the Firebase. This would not affect the synchronizing to the Firebase backend as those changes will be updated and synchronized with the current server state once the connection is re-established.
+              <br><br>
+              Here comes the authentication part with Firebase. As you might know operating your own backend to handle the authentication would definitely be a headache to a lot of developers, with Firebase Authentication, not only it supports authentication with some of the major websites such as Facebook, Google, Twitter, etc, it has all built-in functionality where developers can easily integrate it into their app just in a few lines of code and it works on both client side and server side.
+              <br><br>
+              However, as for general purpose, this PWA only implemented authentication with Google account.
+            </p>
+            <h2>Further reading</h2>
+            <p>
+              <ul>
+                <li><a href="http://goo.gl/k3rlKS" target="_blank">Are we componentized yet?</a></li>
+                <li><a href="https://goo.gl/EzBfVq" target="_blank">Polymer Project</a></li>
+                <li><a href="https://goo.gl/DqmUr0" target="_blank">What is Polymer</a></li>
+                <li><a href="https://goo.gl/yxGYvq" target="_blank">Google I/O 2014 - Polymer and Web Components chnage everything you know about Web development</a></li>
+                <li><a href="https://goo.gl/LuKMGd" target="_blank">Lodash</a></li>
+                <li><a href="http://goo.gl/WQoiV6" target="_blank">Lodash, stop rewriting!</a></li>
+                <li><a href="https://goo.gl/z6Vjhj" target="_blank">Service worker</a></li>
+                <li><a href="https://goo.gl/KP571k" target="_blank">Service worker offline cook</a></li>
+                <li><a href="https://goo.gl/Xv8E9o" target="_blank">Push notification</a></li>
+                <li><a href="https://goo.gl/mWq2mT" target="_blank">Web push arrives in Firefox 44</a></li>
+                <li><a href="https://goo.gl/yHm98v" target="_blank">Firebase</a></li>
+                <li><a href="https://goo.gl/uMVuaB" target="_blank">End to End with Polymer (The Polymer Summit 2015)</a></li>
+                <li><a href="https://goo.gl/l5lf6j" target="_blank">Introduction to Firebase Security Rules - Firecasts #7</a></li>
+              </ul>
+            </p>
           </div>
         </neon-animatable>
 
@@ -459,10 +444,20 @@
               }],
               'introEntry': [{
                 name: 'fade-in-animation',
-                node: this.$.fakeToolbar
+                node: this.$.introFakeToolbar
               }, {
                 name: 'slide-from-bottom-animation',
                 node: this.$.introContent,
+                timing: {
+                  delay: 150
+                }
+              }],
+              'frontendEntry': [{
+                name: 'fade-in-animation',
+                node: this.$.frontendFakeToolbar
+              }, {
+                name: 'slide-from-bottom-animation',
+                node: this.$.frontendContent,
                 timing: {
                   delay: 150
                 }
@@ -498,12 +493,10 @@
           if (_type === 'tap') {
             var _target = Polymer.dom(ev).rootTarget;
 
-            while (_target && !_target.hasAttribute('next-topic')) {
-              _target = _target.parentElement;
-            }
-
-            if (_target && _target.tagName == 'DIV') {
-              this.set('_page', _target.getAttribute('sub-title'));
+            if (_target && _target.hasAttribute('sub-title')) {
+              var _subTitle = _target.getAttribute('sub-title');
+              this.set('_page', _subTitle);
+              this.playAnimation(_subTitle + 'Entry');
               return;
             }
 
