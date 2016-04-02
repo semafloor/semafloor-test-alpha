@@ -138,9 +138,8 @@
       }
       .account-sign-in {
         padding-left: 16px;
-        /*background-color: #007968;*/
-        background-color: #1ddb8b;
-        color: #444;
+        background-color: #455a64;
+        color: #f5f5f5;
         cursor: pointer;
         height: 48px;
         font-size: 20px;
@@ -256,6 +255,8 @@
 
         .title {
           font-size: 20px;
+          text-transform: capitalize;
+          @apply(--paper-font-common-nowrap);
         }
 
         .loading {
@@ -380,7 +381,7 @@
 
       <app-header-layout>
         <app-header id="header" class$="[[_computeSettingsCls(category)]]" shadow="[[_isSettingsPage(category)]]" fixed="[[!smallScreen]]" condenses="[[smallScreen]]" reveals="[[smallScreen]]" effects="waterfall">
-          <app-toolbar class="main-toolbar">
+          <app-toolbar hidden$="[[_isHomeHeader]]" class="main-toolbar">
             <paper-icon-button hidden$="[[!smallScreen]]" icon="icons:[[_computeHeaderIcon(category)]]" on-tap="_openDrawer" on-transitionend="_openDrawer"></paper-icon-button>
             <!-- <span condensed-title hidden></span>
             <span title hidden></span> -->
@@ -401,6 +402,19 @@
               </template>
             </template>
           </app-toolbar>
+
+          <template is="dom-if" if="[[_isHomeHeader]]" restamp="true" strip-whitespace>
+            <app-toolbar class="main-toolbar">
+              <template is="dom-if" if="[[!_isWalkthrough]]" restamp="true" strip-whitespace>
+                <paper-icon-button icon="icons:arrow-back" on-tap="_closeHomeHeader" on-transitionend="_closeHomeHeader"></paper-icon-button>
+              </template>
+              <template is="dom-if" if="[[_isWalkthrough]]" restamp="true" strip-whitespace>
+                <paper-icon-button icon="icons:close" on-tap="_closeWk" on-transitionend="_closeWk"></paper-icon-button>
+              </template>
+
+              <span class="title">[[_homeHeaderTitle]]</span>
+            </app-toolbar>
+          </template>
 
           <!-- <template is="dom-if" if="[[_shouldShowTabs(smallScreen)]]" restamp="true" strip-whitespace> -->
           <template is="dom-if" if="[[!smallScreen]]" restamp="true" strip-whitespace>
@@ -515,11 +529,21 @@
 
         _themeSelected: String,
 
+        _readyToCloseHomeHeader: Boolean,
+        _isHomeHeader: Boolean,
+        _homeHeaderTitle: String,
+        _isWalkthrough: {
+          type: Boolean,
+          value: !1
+        },
+        _readyToCloseWk: Boolean,
       },
 
       listeners: {
         'update-theme-color': '_updateThemeColor',
         'material-animation-config-set': '_runMaterialAnimationOnLoad',
+        'set-home-header': '_setHomeHeader',
+        'set-wk-header': '_setWkHeader',
       },
 
       observers: [
@@ -902,6 +926,54 @@
 
       _runMaterialAnimationOnLoad: function() {
         this.$$('#home').runMaterialAnimation();
+      },
+
+      _setHomeHeader: function(ev) {
+        if (!this._isHomeHeader) {
+          this.set('_isHomeHeader', !0);
+        }
+
+        this.set('_homeHeaderTitle', ev.detail.title);
+      },
+      _closeHomeHeader: function(ev) {
+        this.debounce('_closeHomeHeader', function() {
+          var _type = ev.type;
+
+          if (_type === 'tap') {
+            this.set('_readyToCloseHomeHeader', !0);
+          }else {
+            if (this._readyToCloseHomeHeader) {
+              this.set('_isHomeHeader', !1);
+              this.$$('#home').closeHomeHeader();
+
+              this.set('_readyToCloseHomeHeader', !1);
+            }
+          }
+        }, 1);
+      },
+      _setWkHeader: function(ev) {
+        if (!this._isWalkthrough) {
+          this.set('_isWalkthrough', !0);
+        }
+
+        this.set('_homeHeaderTitle', ev.detail.title);
+      },
+      _closeWk: function(ev) {
+        this.debounce('_closeWk', function() {
+          var _type = ev.type;
+
+          if (_type === 'tap') {
+            this.set('_readyToCloseWk', !0);
+          }else {
+            if (this._readyToCloseWk) {
+              this.set('_isWalkthrough', !1);
+              this.set('_homeHeaderTitle', 'walkthrough');
+              this.$$('#home').closeWk();
+
+              this.set('_readyToCloseWk', !1);
+            }
+          }
+        }, 1);
       },
 
       // TODO: Awaiting Polymer to support native customProp (tabs' selection bar needs polyfill).
