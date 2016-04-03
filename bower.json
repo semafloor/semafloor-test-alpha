@@ -24,7 +24,7 @@
     "semafloor-search-page": "semafloor/semafloor-search-page#^0.5.0",
     "semafloor-reserve-page": "semafloor/semafloor-reserve-page#^0.5.1",
     "platinum-push-messaging": "PolymerElements/platinum-push-messaging#^1.0.5",
-    "jv-datepicker": "motss/jv-datepicker#^2.4.3",
+    "jv-datepicker": "motss/jv-datepicker#^2.4.3"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"
