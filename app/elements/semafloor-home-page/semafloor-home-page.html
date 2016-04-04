@@ -26,12 +26,16 @@
         width: 100%;
         @apply(--layout-scroll);
       }
+
       * {
+
         box-sizing: border-box;
       }
+
       .home-page-container {
         position: relative;
       }
+
       neon-animated-pages {
         height: 100%;
       }
@@ -44,6 +48,7 @@
         height: 100px;
         margin: 8px;
       }
+
       /* home page */
       .home-title-col {
         background-color: #009688;
@@ -72,15 +77,16 @@
         margin-right: auto;
       }
       .sub-title-col {
-        padding: 16px;
-        font-size: 16px;
+        padding: 8px;
+        font-size: 14px;
         font-weight: 500;
+        text-align: center;
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
       }
       .sub-title-col > span {
         color: #9e9e9e;
-        font-size: 14px;
+        font-size: 12px;
         font-style: italic;
       }
       /* intro page */
@@ -132,7 +138,7 @@
         text-align: right;
       }
       .intro-content {
-        margin: -128px 16px 84px;
+        margin: -128px 16px 16px;
         background-color: #fff;
         border-radius: 3px;
         padding: 12px 16px;
@@ -214,7 +220,7 @@
         margin: 8px auto;
       }
       .wk-container > p {
-        margin: 8px 16px 24px 16px;
+        margin: 8px 16px 24px;
       }
       .comparison-slider {
         background-color: rgba(0, 0, 0, .7);
@@ -230,30 +236,13 @@
         left: -24px;
         opacity: 1;
         transition: opacity ease-in .2s;
-        transform: translate3d(0px, 0px, 0px);
+        transform: translate3d(160px, 0px, 0px);
         -webkit-backface-visibility: hidden;
         backface-visibility: hidden;
         will-change: transform;
       }
       .comparison-slider.is-dragging {
         opacity: 0;
-      }
-      .comparison {
-        opacity: 0;
-        resize: horizontal;
-        position: relative;
-        top: 50%;
-        left: 0;
-        width: 0;
-        height: 15px;
-        max-width: 320px;
-        cursor: move;
-        cursor: all-scroll;
-        transform: scaleY(35);
-        transform-origin: 50% 50%;
-        transition: transform linear .2s;
-        min-width: 15px;
-        outline: 0 solid rgba(0, 0, 0, 0);
       }
       .figure-caption {
         margin: 0 auto;
@@ -282,6 +271,7 @@
         top: 0;
         left: 0;
         min-width: 0;
+        width: 160px;
         max-width: 320px;
         transfrom: translate3d(0px, 0px, 0px);
         -webkit-backface-visibility: hidden;
@@ -293,6 +283,12 @@
       }
       .settings-page-dark-theme.settings-page-theme-change {
         background-image: url('../../images/docs/settings-page/settings_page-theme_change-dark_theme-compressor.png');
+      }
+
+      /* cursor */
+      paper-material,
+      .next-topic {
+        cursor: pointer;
       }
 
       /* login page */
@@ -511,6 +507,65 @@
         background-image: url('../../images/docs/room-info/room_info-room_info-2-dark_theme-compressor.png');
       }
 
+      /* N5 and above */
+      @media all and (min-width: 360px) {
+        .sub-title-col {
+          font-size: 16px;
+        }
+      }
+
+      /* N7 and above */
+      @media all and (min-width: 600px) {
+        :host {
+          height: calc(100% - 112px);
+        }
+
+        .intro-content {
+          width: 435px;
+          margin: -128px auto 16px;
+        }
+
+        .wk-container {
+          width: 435px;
+        }
+        .wk-container > p {
+          margin: 8px auto 24px;
+        }
+      }
+
+      @media all and (min-width: 1200px) {
+        :host {
+          height: calc(100% - 158px);
+        }
+
+        .home-title-col {
+          height: 128px;
+        }
+        .home-logo {
+          height: 96px;
+          width: 96px;
+          margin-left: auto;
+          margin-right: 64px;
+        }
+        .home-title {
+          font-size: 38px;
+        }
+        .sub-title-col {
+          font-size: 20px;
+          width: calc(100% / 4 - 16px);
+        }
+        .sub-title-col > span {
+          font-size: 16px;
+          margin-left: 8px;
+        }
+
+        .intro-content,
+        .wk-container {
+          width: 600px;
+        }
+
+      }
+
     </style>
 
     <div class="home-page-container">
@@ -531,19 +586,19 @@
             <span>(Frontend edition)</span>
             <paper-ripple></paper-ripple>
           </paper-material>
-          <paper-material elevation="1" class="sub-title-col" sub-title="backend">
+          <paper-material elevation="1" class="sub-title-col" sub-title="backend" on-tap="_goPage" on-transitionend="_goPage">
             How it's built
             <span>(Backend edition)</span>
             <paper-ripple></paper-ripple>
           </paper-material>
-          <paper-material elevation="1" class="sub-title-col" sub-title="tuts">
-            Tutorials
+          <paper-material elevation="1" class="sub-title-col" sub-title="walkthroughs" on-tap="_goPage" on-transitionend="_goPage">
+            Walkthroughs
             <paper-ripple></paper-ripple>
           </paper-material>
-          <paper-material elevation="1" class="sub-title-col" sub-title="links">
+          <!-- <paper-material elevation="1" class="sub-title-col" sub-title="links" on-tap="_goPage" on-transitionend="_goPage">
             Links to all the resources
             <paper-ripple></paper-ripple>
-          </paper-material>
+          </paper-material> -->
         </neon-animatable>
 
         <neon-animatable page="intro">
