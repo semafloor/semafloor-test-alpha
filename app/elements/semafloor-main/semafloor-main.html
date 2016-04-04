@@ -55,6 +55,9 @@
       app-header.is-settings-page {
         background-color: #455a64;
       }
+      app-header.is-about-page {
+        background-color: #00bcd4;
+      }
 
       app-drawer {
         --app-drawer-content-container: {
@@ -67,9 +70,16 @@
       .main-toolbar {
         height: 110px;
       }
+      .new-home-header > paper-icon-button {
+        margin-left: 24px;
+        --paper-icon-button: {
+          height: 48px;
+          width: 48px;
+        };
+      }
 
       .title {
-        margin: 0 auto 0 48px;
+        margin: 0 auto;
         font-size: 36px;
       }
 
@@ -199,7 +209,7 @@
         font-weight: 400;
       }
 
-      app-toolbar > [icon] {
+      app-toolbar[hidden] > [icon] {
         display: none;
       }
 
@@ -251,6 +261,11 @@
         }
         .main-toolbar > paper-icon-button {
           --paper-icon-button-ink-color: #fff;
+        }
+        .new-home-header > paper-icon-button {
+          height: 40px;
+          width: 40px;
+          margin: 0;
         }
 
         .title {
@@ -404,7 +419,7 @@
           </app-toolbar>
 
           <template is="dom-if" if="[[_isHomeHeader]]" restamp="true" strip-whitespace>
-            <app-toolbar class="main-toolbar">
+            <app-toolbar class="main-toolbar new-home-header">
               <template is="dom-if" if="[[!_isWalkthrough]]" restamp="true" strip-whitespace>
                 <paper-icon-button icon="icons:arrow-back" on-tap="_closeHomeHeader" on-transitionend="_closeHomeHeader"></paper-icon-button>
               </template>
@@ -419,13 +434,19 @@
           <!-- <template is="dom-if" if="[[_shouldShowTabs(smallScreen)]]" restamp="true" strip-whitespace> -->
           <template is="dom-if" if="[[!smallScreen]]" restamp="true" strip-whitespace>
             <!-- <paper-tabs id="tabs" selected="{{category}}" scrollable primary$="[[_shouldShowTabs(smallScreen)]]" attr-for-selected="tab"> -->
-            <paper-tabs id="tabs" selected="{{category}}" scrollable primary$="[[smallScreen]]" attr-for-selected="tab">
-              <template is="dom-repeat" initial-count="3" target-framerate="60" items="[[_categories]]" index-as="index" strip-whitespace>
-                <paper-tab tab="[[item]]">
-                  <a href="#[[item]]/view"> [[_computeCategoryName(index, item)]] </a>
-                </paper-tab>
-              </template>
-            </paper-tabs>
+            <template is="dom-if" if="[[_isHomeHeader]]" restamp="true" strip-whitespace>
+
+            </template>
+
+            <template is="dom-if" if="[[!_isHomeHeader]]" restamp="true" strip-whitespace>
+              <paper-tabs id="tabs" selected="{{category}}" scrollable primary$="[[smallScreen]]" attr-for-selected="tab">
+                <template is="dom-repeat" initial-count="3" target-framerate="60" items="[[_categories]]" index-as="index" strip-whitespace>
+                  <paper-tab tab="[[item]]">
+                    <a href="#[[item]]/view"> [[_computeCategoryName(index, item)]] </a>
+                  </paper-tab>
+                </template>
+              </paper-tabs>
+            </template>
           </template>
         </app-header>
 
@@ -530,7 +551,10 @@
         _themeSelected: String,
 
         _readyToCloseHomeHeader: Boolean,
-        _isHomeHeader: Boolean,
+        _isHomeHeader: {
+          type: Boolean,
+          value: !1
+        },
         _homeHeaderTitle: String,
         _isWalkthrough: {
           type: Boolean,
@@ -544,6 +568,7 @@
         'material-animation-config-set': '_runMaterialAnimationOnLoad',
         'set-home-header': '_setHomeHeader',
         'set-wk-header': '_setWkHeader',
+        'set-new-header-background': '_setNewHeaderBackground',
       },
 
       observers: [
@@ -934,6 +959,8 @@
         }
 
         this.set('_homeHeaderTitle', ev.detail.title);
+        // Reset app header layout for home page.
+        this.$.header.resetLayout();
       },
       _closeHomeHeader: function(ev) {
         this.debounce('_closeHomeHeader', function() {
@@ -945,6 +972,10 @@
             if (this._readyToCloseHomeHeader) {
               this.set('_isHomeHeader', !1);
               this.$$('#home').closeHomeHeader();
+              // Reset app header layout for home page.
+              this.$.header.resetLayout();
+              // Reset new header background.
+              this.$.header.classList.remove('is-about-page');
 
               this.set('_readyToCloseHomeHeader', !1);
             }
@@ -967,7 +998,7 @@
           }else {
             if (this._readyToCloseWk) {
               this.set('_isWalkthrough', !1);
-              this.set('_homeHeaderTitle', 'walkthrough');
+              this.set('_homeHeaderTitle', 'Walkthroughs');
               this.$$('#home').closeWk();
 
               this.set('_readyToCloseWk', !1);
@@ -975,6 +1006,13 @@
           }
         }, 1);
       },
+      _setNewHeaderBackground: function(ev) {
+        this.$.header.classList.add(ev.detail);
+      },
+
+      // TODO: Room info page checkbox inherits dark theme CSS.
+      // TODO: Current page does not show busy room.
+      // TODO: Weird result in reserve page in different browsers.
 
       // TODO: Awaiting Polymer to support native customProp (tabs' selection bar needs polyfill).
       // TODO: Add Semafloor logo maybe?

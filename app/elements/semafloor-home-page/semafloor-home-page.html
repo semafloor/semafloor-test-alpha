@@ -88,6 +88,7 @@
         color: #9e9e9e;
         font-size: 12px;
         font-style: italic;
+        margin-left: 8px;
       }
       /* intro page */
       .fake-toolbar {
@@ -250,6 +251,7 @@
         font-size: 11px;
         font-style: italic;
         text-align: center;
+        color: #7c7c7c;
       }
 
       /* settings page */
@@ -507,6 +509,79 @@
         background-image: url('../../images/docs/room-info/room_info-room_info-2-dark_theme-compressor.png');
       }
 
+      /* about page */
+      .logo {
+        background-color: #fff;
+        border-radius: 50%;
+        height: 40px;
+        margin: 8px;
+        padding: 8px;
+        width: 40px;
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+        @apply(--shadow-elevation-2dp);
+      }
+      .love {
+        color: #f44336;
+        font-size: 20px;
+        transform: translate3d(0px, 0px, 0px);
+        backface-visibility: hidden;
+        animation: beating cubic-bezier(0.39, 0.58, 0.57, 1) 0.4s infinite;
+      }
+      @keyframes beating {
+        50% {
+          font-size: 24px;
+        }
+      }
+      .polymer {
+        background-image: url('../../images/docs/logo/polymer.svg');
+        background-repeat: no-repeat;
+        background-size: 24px 24px;
+        background-origin: border-box;
+        background-position: 50% 50%;
+      }
+
+      .author {
+
+      }
+      .author-col {
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+        @apply(--layout-start-justified);
+      }
+      .author-col > a {
+        border-radius: 3px;
+        color: #55acee;
+        padding: 8px;
+        text-decoration: none;
+      }
+      .author-col > a:hover {
+        color: #fff;
+        background-color: #00bcd4;
+      }
+      .twitter {
+        background-image: url('../../images/docs/logo/twitter.svg');
+        background-repeat: no-repeat;
+        background-size: 24px 24px;
+        background-origin: border-box;
+        background-position: 50% 50%;
+      }
+      .google-plus+a {
+        color: #f44336;
+      }
+      .google-plus {
+        background-image: url('../../images/docs/logo/google-plus.svg');
+        background-repeat: no-repeat;
+        background-size: 24px 24px;
+        background-origin: border-box;
+        background-position: 50% 50%;
+        background-clip: content-box;
+      }
+      .footer {
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+      }
+
       /* N5 and above */
       @media all and (min-width: 360px) {
         .sub-title-col {
@@ -518,6 +593,9 @@
       @media all and (min-width: 600px) {
         :host {
           height: calc(100% - 112px);
+        }
+        :host(.is-walkthrough) {
+          height: calc(100% - 64px);
         }
 
         .intro-content {
@@ -533,9 +611,13 @@
         }
       }
 
+      /* desktop */
       @media all and (min-width: 1200px) {
         :host {
-          height: calc(100% - 158px);
+          height: calc(100% - 110px);
+        }
+        :host(.is-walkthrough) {
+          height: calc(100% - 110px);
         }
 
         .home-title-col {
@@ -556,14 +638,42 @@
         }
         .sub-title-col > span {
           font-size: 16px;
-          margin-left: 8px;
         }
 
         .intro-content,
         .wk-container {
           width: 600px;
         }
+      }
 
+      /* dark theme */
+      :host(.dark-theme) .home-title-col {
+        background-color: #00695c;
+      }
+      :host(.dark-theme) .sub-title-col {
+        color: #bcbcbc;
+      }
+      :host(.dark-theme) .fake-toolbar {
+        background-color: #00695c;
+      }
+      :host(.dark-theme) .intro-content {
+        background-color: #424242;
+        color: #bcbcbc;
+      }
+      :host(.dark-theme) .intro-content h2 {
+        color: #fff;
+      }
+      :host(.dark-theme) .intro-content a {
+        color: #2196f3;
+      }
+      :host(.dark-theme) .walkthroughs-col > paper-material.stepped {
+        color: #fff;
+      }
+      :host(.dark-theme) .figure-caption {
+        color: #9e9e9e;
+      }
+      :host(.dark-theme) .wk-container > p {
+        color: #bcbcbc;
       }
 
     </style>
@@ -595,10 +705,10 @@
             Walkthroughs
             <paper-ripple></paper-ripple>
           </paper-material>
-          <!-- <paper-material elevation="1" class="sub-title-col" sub-title="links" on-tap="_goPage" on-transitionend="_goPage">
-            Links to all the resources
+          <paper-material elevation="1" class="sub-title-col" sub-title="about" on-tap="_goPage" on-transitionend="_goPage">
+            About
             <paper-ripple></paper-ripple>
-          </paper-material> -->
+          </paper-material>
         </neon-animatable>
 
         <neon-animatable page="intro">
@@ -894,7 +1004,7 @@
           <div id="walkthroughsFakeToolbar" class="fake-toolbar">
             <div class="intro-nav">
               <div class="topic-nav-container">
-                <div class="next-topic last-topic" sub-title="frontend" on-tap="_goPage">
+                <div class="next-topic last-topic" sub-title="backend" on-tap="_goPage">
                   Last topic:
                   <br>
                   How it's built (Backend edition)
@@ -963,14 +1073,6 @@
                 </paper-material>
               </div>
             </div>
-
-            <h2>Further reading</h2>
-            <p>
-              <ul>
-                <li><a href="" target="_blank"></a></li>
-                <li><a href="" target="_blank"></a></li>
-              </ul>
-            </p>
           </div>
         </neon-animatable>
 
@@ -1497,6 +1599,26 @@
           </div>
         </neon-animatable>
 
+        <neon-animatable page="about">
+          <div class="wk-container">
+            <div class="author">
+              <div class="author-col">
+                <div class="logo twitter">
+                </div>
+                <a href="https://twitter.com/igarshmyb">@igarshmyb</a>
+              </div>
+              <div class="author-col">
+                <div class="logo google-plus">
+                </div>
+                <a href="https://plus.google.com/103450531185198654718">+igarashimiyabi</a>
+              </div>
+            </div>
+            <div class="footer">
+              Made with <div class="logo love">❤️</div> and <div class="logo polymer"></div>.
+            </div>
+          </div>
+        </neon-animatable>
+
       </neon-animated-pages>
     </div>
   </template>
@@ -1516,7 +1638,7 @@
           /**
            * Set theme for the element.
            */
-          theme: String,
+          themeSelected: String,
           animationConfig: {
             type: Object,
             value: function() {
@@ -1603,6 +1725,10 @@
           'settingsWk.up': '_deRipple',
         },
 
+        observers: [
+          '_updateThemeColor(themeSelected)',
+        ],
+
         attached: function() {
           this.async(function() {
             var _nodeList = Polymer.dom(this.$.material).querySelectorAll('paper-material');
@@ -1624,6 +1750,8 @@
                 this._setHomeHeader(_subTitle);
 
                 this.set('_page', _subTitle);
+                // Reset scrollTop.
+                this.scrollTop = 0;
                 this.cancelAnimation();
                 this.playAnimation(_subTitle + 'Entry');
                 return;
@@ -1641,8 +1769,16 @@
 
                   // Set home header title.
                   this._setHomeHeader(_subTitle);
+                  // set new header height in page.
+                  this.toggleClass('is-walkthrough', !0, this);
+                  // Set new background color for about page.
+                  if (_subTitle === 'about') {
+                    this.fire('set-new-header-background', 'is-about-page');
+                  }
 
                   this.set('_page', _subTitle);
+                  // Reset scrollTop.
+                  this.scrollTop = 0;
                   this.cancelAnimation();
                   this.playAnimation(_subTitle + 'Entry');
                 }
@@ -1661,7 +1797,6 @@
             var _type = ev.type;
 
             if (_type === 'tap') {
-              console.log(this._hasDeRippled);
               if (this._hasDeRippled) {
                 this.set('_hasDeRippled', !1);
                 return;
@@ -1696,9 +1831,11 @@
           switch(ev.detail.state) {
             case 'start':
               // With margin: 8px auto, it needs to offset that auto margin.
-              var _target = ev.detail.sourceEvent.target;
+              var _target = ev.currentTarget;
               var _sliderImg = _target.parentElement.getBoundingClientRect().left;
 
+              console.dir(Polymer.dom(ev).localTarget);
+              console.dir(Polymer.dom(ev).rootTarget);
               // TODO: To be removed. Debugging purpose.
               if (_target.tagName !== 'PAPER-FAB') {
                 console.warn('touch sourceEvent is not PAPER-FAB.');
@@ -1708,7 +1845,7 @@
               _target.classList.add('is-dragging');
               break;
             case 'track':
-              var _target = ev.detail.sourceEvent.target;
+              var _target = ev.currentTarget;
               var _sliderImg = _target.parentElement;
               var _sliderImgLeft = this._sliderImgLeft;
 
@@ -1725,7 +1862,7 @@
               }
               break;
             case 'end':
-              var _target = ev.detail.sourceEvent.target;
+              var _target = ev.currentTarget;
               _target.classList.remove('is-dragging');
           }
         },
@@ -1750,19 +1887,22 @@
         },
 
         _setHomeHeader: function(_subTitle) {
-          var _headerTitleIdx = [ 'intro', 'frontend', 'backend', 'walkthroughs' ].indexOf(_subTitle);
+          var _headerTitleIdx = [ 'intro', 'frontend', 'backend', 'walkthroughs', 'about' ].indexOf(_subTitle);
           var _headerTitle = [
             'Introduction to Semafloor',
             'How it\'s built (Frontend edition)',
             'How it\'s built (Backend edition)',
-            'walkthroughs'
+            'Walkthroughs',
+            'About'
           ][_headerTitleIdx];
 
           // Fire event to change header.
-          console.log(_headerTitle);
           this.fire('set-home-header', {title: _headerTitle});
         },
         closeHomeHeader: function() {
+          // Set new header when home header is gone.
+          this.toggleClass('is-walkthrough', !1, this);
+
           this.set('_page', 'home');
           this.cancelAnimation();
           this.playAnimation('entry');
@@ -1770,13 +1910,13 @@
         _setWkHeader: function(_wkTitle) {
           var _wkTitleIdx = [ 'login', 'profile', 'reserve', 'search', 'current', 'room', 'settings' ].indexOf(_wkTitle);
           var _headerTitle = [
-            'walkthroughs: Login page',
-            'walkthroughs: My Profile',
-            'walkthroughs: My Reservations',
-            'walkthroughs: Search & Reserve',
-            'walkthroughs: Current Reservations',
-            'walkthroughs: Room Information',
-            'walkthroughs: Settings',
+            'Walkthroughs: Login page',
+            'Walkthroughs: My Profile',
+            'Walkthroughs: My Reservations',
+            'Walkthroughs: Search & Reserve',
+            'Walkthroughs: Current Reservations',
+            'Walkthroughs: Room Information',
+            'Walkthroughs: Settings',
           ][_wkTitleIdx];
 
           this.fire('set-wk-header', {title: _headerTitle});
@@ -1806,7 +1946,17 @@
               this.toggleClass('stepped', !0, _nodeList[i]);
             }
           }
+        },
+        // Update theme color.
+        _updateThemeColor: function(_themeSelected) {
+          var _isDarkTheme = _themeSelected === 'dark-theme';
+          this.toggleClass('dark-theme', _isDarkTheme, this);
+          this.updateStyles();
 
+          // Now allows anonymous to play around with the theming system.
+          if (!!!this.authUser) {
+            this.fire('update-theme-color', {theme: _themeSelected});
+          }
         },
 
         // TODO: What is Semafloor - a meeting room booking PWA built with Polymer, Lodash, Polymer, etc as well as what makes a PWA PWA.
