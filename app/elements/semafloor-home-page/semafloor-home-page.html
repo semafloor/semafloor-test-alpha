@@ -510,6 +510,88 @@
       }
 
       /* about page */
+      .tools {
+        padding: 16px;
+        margin: 8px;
+      }
+      .tools-col {
+        @apply(--layout-horizontal);
+        @apply(--layout-wrap);
+        @apply(--layout-center-center);
+        margin: 8px;
+      }
+      .tools-col > a {
+        width: 56px;
+        height: 56px;
+        margin: 8px;
+        background-position: 50% 50%;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+        background-origin: border-box;
+        border-radius: 3px;
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+        @apply(--shadow-elevation-2dp);
+      }
+      .babel {
+        background-image: url('../../images/docs/logo/babel.svg');
+      }
+      .cloudflare {
+        background-image: url('../../images/docs/logo/cloudflare.svg');
+      }
+      .es6 {
+        background-image: url('../../images/docs/logo/es6.svg');
+      }
+      .express {
+        background-image: url('../../images/docs/logo/express.svg');
+      }
+      .firebase {
+        background-image: url('../../images/docs/logo/firebase.svg');
+      }
+      .github {
+        background-image: url('../../images/docs/logo/github.svg');
+      }
+      .letsencrypt {
+        background-image: url('../../images/docs/logo/letsencrypt.svg');
+      }
+      .lodash {
+        background-image: url('../../images/docs/logo/lodash.svg');
+      }
+      .nginx {
+        background-image: url('../../images/docs/logo/nginx.svg');
+      }
+      .nodejs {
+        background-image: url('../../images/docs/logo/nodejs.svg');
+      }
+      .polymer {
+        background-image: url('../../images/docs/logo/polymer.svg');
+      }
+      .webcomponents {
+        background-image: url('../../images/docs/logo/webcomponents.svg');
+      }
+      .travis-ci {
+        background-image: url('../../images/docs/logo/travis-ci.svg');
+      }
+      .gulp {
+        background-image: url('../../images/docs/logo/gulp.svg');
+      }
+
+      .repo {
+        margin: 8px;
+        padding: 16px;
+        font-size: 14px;
+        @apply(--layout-vertical);
+      }
+      .repo > a {
+        background-color: #00bcd4;
+        border-radius: 3px;
+        color: #fff;
+        font-size: inherit;
+        margin: 8px auto;
+        padding: 16px;
+        text-decoration: none;
+      }
+
       .logo {
         background-color: #fff;
         border-radius: 50%;
@@ -542,7 +624,12 @@
       }
 
       .author {
-
+        width: 224px;
+        padding: 16px;
+        margin: 8px;
+        @apply(--layout-vertical);
+        @apply(--layout-start);
+        @apply(--layout-center-justified);
       }
       .author-col {
         @apply(--layout-horizontal);
@@ -551,13 +638,20 @@
       }
       .author-col > a {
         border-radius: 3px;
-        color: #55acee;
+        color: inherit;
+        font-size: inherit;
         padding: 8px;
         text-decoration: none;
       }
       .author-col > a:hover {
         color: #fff;
         background-color: #00bcd4;
+      }
+      .twitter+a {
+        color: #55acee;
+      }
+      .google-plus+a {
+        color: #f44336;
       }
       .twitter {
         background-image: url('../../images/docs/logo/twitter.svg');
@@ -566,18 +660,25 @@
         background-origin: border-box;
         background-position: 50% 50%;
       }
-      .google-plus+a {
-        color: #f44336;
-      }
       .google-plus {
         background-image: url('../../images/docs/logo/google-plus.svg');
         background-repeat: no-repeat;
         background-size: 24px 24px;
         background-origin: border-box;
         background-position: 50% 50%;
-        background-clip: content-box;
       }
+      .github {
+        background-image: url('../../images/docs/logo/github-icon.svg');
+        background-repeat: no-repeat;
+        background-size: 24px 24px;
+        background-origin: border-box;
+        background-position: 50% 50%;
+      }
+
       .footer {
+        border-top: 1px solid #00bcd4;
+        padding: 16px;
+        margin: 8px;
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
       }
@@ -1601,18 +1702,53 @@
 
         <neon-animatable page="about">
           <div class="wk-container">
-            <div class="author">
-              <div class="author-col">
-                <div class="logo twitter">
-                </div>
-                <a href="https://twitter.com/igarshmyb">@igarshmyb</a>
+            <div class="tools">
+              <div class="">
+                Built with:
               </div>
-              <div class="author-col">
-                <div class="logo google-plus">
-                </div>
-                <a href="https://plus.google.com/103450531185198654718">+igarashimiyabi</a>
+              <div class="tools-col">
+                <a href="https://babeljs.io/" class="babel" _target="blank"></a>
+                <a href="https://www.cloudflare.com/" class="cloudflare" _target="blank"></a>
+                <a href="http://www.ecma-international.org/ecma-262/6.0/" class="es6" _target="blank"></a>
+                <a href="http://expressjs.com/" class="express" _target="blank"></a>
+                <a href="https://www.firebase.com/" class="firebase" _target="blank"></a>
+                <a href="https://github.com/" class="github" _target="blank"></a>
+                <a href="https://letsencrypt.org/" class="letsencrypt" _target="blank"></a>
+                <a href="https://lodash.com/" class="lodash" _target="blank"></a>
+                <a href="http://nginx.org/" class="nginx" _target="blank"></a>
+                <a href="https://nodejs.org/en/" class="nodejs" _target="blank"></a>
+                <a href="https://www.polymer-project.org/1.0/" class="polymer" _target="blank"></a>
+                <a href="http://webcomponents.org/" class="webcomponents" _target="blank"></a>
+                <a href="https://travis-ci.org/" class="travis-ci" _target="blank"></a>
+                <a href="http://gulpjs.com/" class="gulp" _target="blank"></a>
               </div>
             </div>
+
+            <div class="repo">
+              <div class="">
+                The source codes are made available under the MIT license at Github.
+              </div>
+              <br>
+              Links to the Github repo/ org:
+              <a href="https://github.com/semafloor" target="_blank">Semafloor @ Github</a>
+            </div>
+
+            <div class="author">
+              Find me at:
+              <div class="author-col">
+                <div class="logo github"></div>
+                <a href="https://github.com/motss" target="_blank">@motss</a>
+              </div>
+              <div class="author-col">
+                <div class="logo twitter"></div>
+                <a href="https://twitter.com/igarshmyb" target="_blank">@igarshmyb</a>
+              </div>
+              <div class="author-col">
+                <div class="logo google-plus"></div>
+                <a href="https://plus.google.com/103450531185198654718" target="_blank">+igarashimiyabi</a>
+              </div>
+            </div>
+
             <div class="footer">
               Made with <div class="logo love">❤️</div> and <div class="logo polymer"></div>.
             </div>
