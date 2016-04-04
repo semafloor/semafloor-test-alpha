@@ -958,9 +958,9 @@
           this.set('_isHomeHeader', !0);
         }
 
-        this.set('_homeHeaderTitle', ev.detail.title);
         // Reset app header layout for home page.
         this.$.header.resetLayout();
+        this.set('_homeHeaderTitle', ev.detail.title);
       },
       _closeHomeHeader: function(ev) {
         this.debounce('_closeHomeHeader', function() {
@@ -1010,14 +1010,14 @@
         this.$.header.classList.add(ev.detail);
       },
 
-      // TODO: Room info page checkbox inherits dark theme CSS.
-      // TODO: Current page does not show busy room.
-      // TODO: Weird result in reserve page in different browsers.
-
       // TODO: Awaiting Polymer to support native customProp (tabs' selection bar needs polyfill).
       // TODO: Add Semafloor logo maybe?
       // TODO: carbon-router has released. A full routing system is needed.
       // TODO: Since semafloor-main can take care of Firebase data, why even bothered to use too many firebase-collectoin at each page?
+      // X - TODO: Weird result in reserve page in different browsers.
+      // X - TODO: Add missing icon files.
+      // X - TODO: Current page does not show busy room.
+      // X - TODO: Room info page checkbox inherits dark theme CSS.
       // X - TODO: compound-timepicker SVGs not vulcanized.
       // X - TODO: Fix all spinner on all pages (skip search-page, done: room, current, profile, containerised: room, profile).
       // X - TODO: Settings page should only be shown when user logged in.

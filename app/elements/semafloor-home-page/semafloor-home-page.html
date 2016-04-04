@@ -17,7 +17,10 @@
   <template strip-whitespace>
     <style>
       :host {
-        user-select: none;
+        -webkit-user-select: none;
+           -moz-user-select: none;
+            -ms-user-select: none;
+                user-select: none;
         box-sizing: border-box;
         display: block;
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -28,7 +31,6 @@
       }
 
       * {
-
         box-sizing: border-box;
       }
 
@@ -100,7 +102,8 @@
         width: 100%;
         @apply(--layout-horizontal);
         @apply(--layout-start);
-        transform: translate3d(0px, 0px, 0px);
+        -webkit-transform: translate3d(0px, 0px, 0px);
+                transform: translate3d(0px, 0px, 0px);
         -webkit-backface-visibility: hidden;
                 backface-visibility: hidden;
         will-change: transform;
@@ -145,7 +148,8 @@
         padding: 12px 16px;
         @apply(--shadow-elevation-2dp);
         @apply(--paper-font-body1);
-        transform: translate3d(0px, 0px, 0px);
+        -webkit-transform: translate3d(0px, 0px, 0px);
+                transform: translate3d(0px, 0px, 0px);
         -webkit-backface-visibility: hidden;
                 backface-visibility: hidden;
         will-change: transform;
@@ -236,8 +240,10 @@
         text-align: center;
         left: -24px;
         opacity: 1;
+        -webkit-transition: opacity ease-in .2s;
         transition: opacity ease-in .2s;
-        transform: translate3d(160px, 0px, 0px);
+        -webkit-transform: translate3d(160px, 0px, 0px);
+                transform: translate3d(160px, 0px, 0px);
         -webkit-backface-visibility: hidden;
         backface-visibility: hidden;
         will-change: transform;
@@ -526,7 +532,7 @@
         margin: 8px;
         background-position: 50% 50%;
         background-repeat: no-repeat;
-        background-size: 100% 100%;
+        background-size: contain;
         background-origin: border-box;
         border-radius: 3px;
         @apply(--layout-horizontal);
@@ -606,9 +612,17 @@
       .love {
         color: #f44336;
         font-size: 20px;
-        transform: translate3d(0px, 0px, 0px);
-        backface-visibility: hidden;
-        animation: beating cubic-bezier(0.39, 0.58, 0.57, 1) 0.4s infinite;
+        -webkit-transform: translate3d(0px, 0px, 0px);
+                transform: translate3d(0px, 0px, 0px);
+        -webkit-backface-visibility: hidden;
+                backface-visibility: hidden;
+        -webkit-animation: beating cubic-bezier(0.39, 0.58, 0.57, 1) 0.4s infinite;
+                animation: beating cubic-bezier(0.39, 0.58, 0.57, 1) 0.4s infinite;
+      }
+      @-webkit-keyframes beating {
+        50% {
+          font-size: 24px;
+        }
       }
       @keyframes beating {
         50% {
@@ -776,7 +790,6 @@
       :host(.dark-theme) .wk-container > p {
         color: #bcbcbc;
       }
-
     </style>
 
     <div class="home-page-container">
@@ -1701,26 +1714,26 @@
         </neon-animatable>
 
         <neon-animatable page="about">
-          <div class="wk-container">
+          <div class="wk-container" id="aboutPage">
             <div class="tools">
               <div class="">
                 Built with:
               </div>
               <div class="tools-col">
-                <a href="https://babeljs.io/" class="babel" _target="blank"></a>
-                <a href="https://www.cloudflare.com/" class="cloudflare" _target="blank"></a>
-                <a href="http://www.ecma-international.org/ecma-262/6.0/" class="es6" _target="blank"></a>
-                <a href="http://expressjs.com/" class="express" _target="blank"></a>
-                <a href="https://www.firebase.com/" class="firebase" _target="blank"></a>
-                <a href="https://github.com/" class="github" _target="blank"></a>
-                <a href="https://letsencrypt.org/" class="letsencrypt" _target="blank"></a>
-                <a href="https://lodash.com/" class="lodash" _target="blank"></a>
-                <a href="http://nginx.org/" class="nginx" _target="blank"></a>
-                <a href="https://nodejs.org/en/" class="nodejs" _target="blank"></a>
-                <a href="https://www.polymer-project.org/1.0/" class="polymer" _target="blank"></a>
-                <a href="http://webcomponents.org/" class="webcomponents" _target="blank"></a>
-                <a href="https://travis-ci.org/" class="travis-ci" _target="blank"></a>
-                <a href="http://gulpjs.com/" class="gulp" _target="blank"></a>
+                <a href="https://babeljs.io/" class="babel" target="_blank"></a>
+                <a href="https://www.cloudflare.com/" class="cloudflare" target="_blank"></a>
+                <a href="http://www.ecma-international.org/ecma-262/6.0/" class="es6" target="_blank"></a>
+                <a href="http://expressjs.com/" class="express" target="_blank"></a>
+                <a href="https://www.firebase.com/" class="firebase" target="_blank"></a>
+                <a href="http://gulpjs.com/" class="gulp" target="_blank"></a>
+                <a href="https://github.com/" class="github" target="_blank"></a>
+                <a href="https://letsencrypt.org/" class="letsencrypt" target="_blank"></a>
+                <a href="https://lodash.com/" class="lodash" target="_blank"></a>
+                <a href="http://nginx.org/" class="nginx" target="_blank"></a>
+                <a href="https://nodejs.org/en/" class="nodejs" target="_blank"></a>
+                <a href="https://www.polymer-project.org/1.0/" class="polymer" target="_blank"></a>
+                <a href="https://travis-ci.org/" class="travis-ci" target="_blank"></a>
+                <a href="http://webcomponents.org/" class="webcomponents" target="_blank"></a>
               </div>
             </div>
 
@@ -1731,6 +1744,10 @@
               <br>
               Links to the Github repo/ org:
               <a href="https://github.com/semafloor" target="_blank">Semafloor @ Github</a>
+              <br>
+              It is worth noting that the Polymer elements listed below are specially made for this project:
+              <a href="https://github.com/motss/compound-timepicker" target="_blank">compound-timepicker</a>
+              <a href="https://github.com/motss/jv-datepicker" target="_blank">jv-datepicker</a>
             </div>
 
             <div class="author">
@@ -1830,6 +1847,10 @@
                   timing: {
                     delay: 150
                   }
+                }],
+                'aboutEntry': [{
+                  name: 'fade-in-animation',
+                  node: this.$.aboutPage
                 }]
               };
             }
