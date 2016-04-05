@@ -62,32 +62,4 @@
   sw.addEventListener('service-worker-installed', function(ev) {
     console.log('%c ' + ev.detail + ' This app can now work offline. ' + '%c For more info about Service Worker please visit https://goo.gl/BjF9w9', 'background-color: #009d81; color: #fff', 'background-color: inherit; color: #03a9f4');
   }, !1);
-
-  // page('/:category/view', function(ctx) {
-  //   var _category = ctx.params.category;
-  //
-  //   function setData() {
-  //     semafloor.classList.add('finish-loading');
-  //
-  //     semafloor.category = _category;
-  //     semafloor.page = _category;
-  //     window.scrollTo(0, 0);
-  //   }
-  //
-  //   if (!semafloor.upgraded) {
-  //     once(semafloor, 'upgraded', setData);
-  //   }else {
-  //     setData();
-  //   }
-  // });
-  //
-  // page('*', function() {
-  //   console.warn('Can\'t find: ' + window.location.href + '. Redirecting to home page.');
-  //   page.redirect('#home/view');
-  // });
-  //
-  // page({
-  //   hashbang: true
-  // });
-  // page();
 })(document);

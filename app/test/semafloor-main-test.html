@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>semafloor-main</title>
+
+  <script src="../../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../../bower_components/web-component-tester/browser.js"></script>
+  <script src="../../bower_components/test-fixture/test-fixture-mocha.js"></script>
+  <link rel="import" href="../../bower_components/test-fixture/test-fixture.html">
+
+  <link rel="import" href="../elements/semafloor-main/semafloor-main.html">
+
+</head>
+<body>
+
+<test-fixture id="semafloorMain">
+  <template>
+    <semafloor-main></semafloor-main>
+  </template>
+</test-fixture>
+
+<script>
+  describe('semafloor-main tests', function() {
+    var element;
+
+    before(function() {
+      element = fixture('semafloorMain');
+    });
+
+    context('test for swipe-open', function() {
+      // it('should enable swipe-open on small screen', function() {
+      //   var _appDrawer = Polymer.dom(element.root).querySelector('app-drawer');
+      //
+      //   element.smallScreen = !0;
+      //   expect(_appDrawer.swipeOpen).to.be.true;
+      // });
+      //
+      // it('should disable swipe-open on large screen', function() {
+      //   var _appDrawer = Polymer.dom(element.root).querySelector('app-drawer');
+      //
+      //   element.smallScreen = !1;
+      //   expect(_appDrawer.swipeOpen).to.be.false;
+      // });
+    });
+  });
+</script>
+
+</body>
+</html>

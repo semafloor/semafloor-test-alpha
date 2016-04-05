@@ -67,8 +67,8 @@
       font-weight: 400;
       background-color: #fff;
       color: #009688;
-      -webkit-transform: translate3d(0, 0, 0);
-              transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0px, 0px, 0px);
+              transform: translate3d(0px, 0px, 0px);
       left: 256px;
     }
 
@@ -95,21 +95,6 @@
               justify-content: center;
     }
 
-    /*#skeleton {
-      opacity: 1;
-      -webkit-transition: opacity ease-in .2s;
-      transition: opacity ease-in .2s;
-    }*/
-
-    /*semafloor-main {
-      opacity: 0;
-      -webkit-transition: opacity ease-in .4s .1s;
-      transition: opacity ease-in .4s .1s;
-    }
-    semafloor-main.finish-loading {
-      opacity: 1;
-    }*/
-
     /* @media - large desktop */
     @media all and (max-width: 1280px) {
       #skeleton .drawer {
@@ -133,15 +118,12 @@
 </head>
 
 <body>
-  <!-- <span id="browser-sync-binding"></span> -->
-
   <div id="skeleton">
     <div class="drawer"></div>
 
     <div class="main">
       <div class="app-header">
         <div class="app-toolbar">
-          <!-- Semafloor -->
         </div>
       </div>
     </div>
@@ -149,7 +131,6 @@
 
   <semafloor-main></semafloor-main>
 
-  <!-- Uncomment next block to enable Service Worker support (1/2) -->
   <platinum-sw-register auto-register
                         clients-claim
                         skip-waiting
@@ -159,12 +140,7 @@
     </platinum-sw-cache>
   </platinum-sw-register>
 
-  <!-- build:js scripts/app.js -->
-
-  <!-- <script src="bower_components/page/page.js" async></script> -->
-  <!-- <script src="bower_components/lodash/dist/lodash.min.js" async></script> -->
   <script src="scripts/app.js" async></script>
-  <!-- endbuild-->
 </body>
 
 </html>

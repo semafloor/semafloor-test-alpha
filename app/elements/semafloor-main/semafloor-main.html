@@ -1,6 +1,4 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<!-- <link rel="import" href="../semafloor-room/semafloor-room.html"> -->
-<!-- <link rel="import" href="../semafloor-animated-room/semafloor-animated-room.html"> -->
 <link rel="import" href="../../bower_components/semafloor-icons/semafloor-icons.html">
 <link rel="import" href="../semafloor-settings-page/semafloor-settings-page.html">
 <link rel="import" href="../semafloor-home-page/semafloor-home-page.html">
@@ -191,8 +189,6 @@
       }
       .nav-menu {
         margin-top: 8px;
-        /*padding-bottom: 16px;*/
-        /*border-bottom: 1px solid #ddd;*/
       }
       .nav-menu > a {
         display: block;
@@ -456,8 +452,6 @@
           </template>
           <template is="dom-if" if="[[_isRoomPageOpened]]" restamp="true" strip-whitespace>
             <semafloor-room-page page="room" theme-selected="[[_themeSelected]]" on-room-page-attached="_onPageAttached"></semafloor-room-page>
-            <!-- <semafloor-room page="room" on-room-page-attached="_onPageAttached"></semafloor-room> -->
-            <!-- <semafloor-animated-room page="room" on-room-page-attached="_onPageAttached"></semafloor-animated-room> -->
           </template>
 
         </iron-pages>
@@ -472,33 +466,69 @@
       is: 'semafloor-main',
 
       properties: {
+        /**
+         * Set user's uid when the user is logged in which allows to retrieve data from the user's account.
+         */
         uid: String,
+        /**
+         * Set the first page to be displayed when first load.
+         */
         category: {
           type: String,
           value: 'home'
         },
+        /**
+         * Set the name of page being displayed.
+         */
         pageTitle: {
           type: String,
           value: 'Home'
         },
+        /**
+         * Set the url hash when first load.
+         */
         urlHash: {
           type: String,
           value: "home/view"
         },
+        /**
+         * Set the path name when first load.
+         */
         path: String,
+        /**
+         * Set when the webapp is displayed on a small screen device.
+         */
         smallScreen: Boolean,
 
+        /**
+         * Set the url to authenticate the logged in user.
+         */
         authURL: {
           type: String,
           value: '//semafloor-webapp.firebaseio.com'
         },
+        /**
+         * Set the provider to authenticate the user's account.
+         */
         authProvider: {
           type: String,
           value: 'google'
         },
+        /**
+         * Set on mobile device to allow redirect during authentication process.
+         */
         authRedirect: Boolean,
+        /**
+         * Authentication status.
+         */
         authStatus: Boolean,
+        /**
+         * Token payload object after user is logged in.
+         */
         authUser: Object,
+        /**
+         * Message to the toast when user's is logged in/ logged out.
+         */
         authMsg: String,
         _authRef: Object,
 
