@@ -8,8 +8,8 @@
 Semafloor, a meeting room booking ~~app~~ [progressive web app](https://developers.google.com/web/updates/2015/12/getting-started-pwa?hl=en) built with [Polymer](https://www.polymer-project.org/1.0/).
 
 The PWA is hosted on two different sites, one of which is HTTP/2 enabled:
-- https://www.semafloor.com (main site with HTTP/2 enabled)
-- https://semafloor-webapp.firebaseapp.com (secondary site with Firebase Hosting)
+- [Main site with HTTP/2 enabled](https://www.semafloor.com)
+- [Secondary site with Firebase Hosting](https://semafloor-webapp.firebaseapp.com)
 
 
 ## Introduction
