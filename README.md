@@ -33,9 +33,9 @@ For logged in users, there are three pages more as shown in the image _**Layout 
 - **My Reservations** - to show literally reservations of the logged in user and has three different categories: _**Today**_, _**This week**_, and _**Upcoming**_.
 - **Search & Reserve** - to search for empty room for upcoming reservation(s).
 
-<img src="" height="200" width="200"/>
+<img src="https://cloud.githubusercontent.com/assets/10607759/14292662/9fee2fe6-fb9b-11e5-9579-b12eae70dc60.png" height="200" width="200"/>
 ###### Semafloor in one pic
-
+A picture is worth a thousand words. The above illustrates an overall work flow of the webapp from the layout before login to the layout after login and with different themes being changed at the **Settings** page.
 
 ## Libraries and tools used
 Here listed the tools and libraries that made this PWA possible:
