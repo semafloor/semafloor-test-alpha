@@ -1934,8 +1934,14 @@
           _sliderImgLeft: Number,
           _hasDeRippled: Boolean,
 
-          _isHomeHeader: Boolean,
-          _isWalkthroughs: Boolean,
+          _isHomeHeader: {
+            type: Boolean,
+            value: !1
+          },
+          _isWalkthroughs: {
+            type: Boolean,
+            value: !1
+          },
           _walkthroughsTitle: String,
 
           _readyToCloseWk: Boolean,
@@ -1959,7 +1965,7 @@
 
         observers: [
           '_updateThemeColor(themeSelected)',
-          '_setHomeHeaderAttribute(_isHomeHeader)',
+          '_setHomeHeaderAttribute(_isHomeHeader, _isWalkthroughs)',
         ],
 
         attached: function() {
@@ -2275,7 +2281,6 @@
         },
         // Update theme color.
         _updateThemeColor: function(_themeSelected) {
-          console.log(_themeSelected);
           var _isDarkTheme = _themeSelected === 'dark-theme';
           this.toggleClass('dark-theme', _isDarkTheme, this);
           this.updateStyles();
@@ -2289,8 +2294,10 @@
           }
         },
         // Set to resize element.
-        _setHomeHeaderAttribute: function(_isHomeHeader) {
-          if (_isHomeHeader) {
+        _setHomeHeaderAttribute: function(_isHomeHeader, _isWalkthroughs) {
+          var _hasHomeHeaderSet = _isHomeHeader || _isWalkthroughs;
+
+          if (_hasHomeHeaderSet) {
             this.setAttribute('is-home-header', '');
           }else {
             this.removeAttribute('is-home-header');
