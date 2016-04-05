@@ -26,7 +26,7 @@
         display: block;
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
         position: fixed;
-        height: 100%;
+        height: calc(100% - 64px);
         width: 100%;
         @apply(--layout-scroll);
       }
@@ -39,10 +39,12 @@
         position: relative;
       }
       .home-page-container > paper-icon-button {
-        margin: 12px 16px;
+        color: #fff;
+        --paper-icon-button-ink-color: #fff;
       }
 
       .walkthroughs-toolbar {
+        color: #fff;
         background-color: #009688;
         height: 64px;
         padding: 0 16px;
@@ -51,7 +53,9 @@
         @apply(--layout-start-justified);
       }
       .walkthroughs-toolbar > paper-icon-button {
+        color: #fff;
         margin-right: 16px;
+        --paper-icon-button-ink-color: #fff;
       }
       .walkthroughs-title {
         @apply(--paper-font-common-nowrap);
@@ -541,6 +545,7 @@
         left: auto;
         right: 50%;
         font-size: 20px;
+        color: #fff;
       }
       .tools {
         padding: 16px;
@@ -776,12 +781,12 @@
         }
       }
 
-      /* dark theme */
-      :host(.dark-theme) .home-page-container > paper-icon-button,
-      :host(.dark-theme) .walkthroughs-toolbar > paper-icon-button {
-        color: #fff;
-        --paper-icon-button-ink-color: #fff;
+      /* Resize when home header is set. */
+      :host([is-home-header]) {
+        height: 100%;
       }
+
+      /* dark theme */
       :host(.dark-theme) .walkthroughs-toolbar {
         background-color: #212121;
         color: #fff;
@@ -837,7 +842,9 @@
         </div>
       </template>
       <template is="dom-if" if="[[_isHomeHeader]]" restamp="true" strip-whitespace>
-        <paper-icon-button icon="icons:close" on-tap="_closeHomeHeader" on-transitionend="_closeHomeHeader"></paper-icon-button>
+        <div class="walkthroughs-toolbar">
+          <paper-icon-button icon="icons:close" on-tap="_closeHomeHeader" on-transitionend="_closeHomeHeader"></paper-icon-button>
+        </div>
       </template>
 
       <neon-animated-pages selected="{{_page}}" attr-for-selected="page" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
@@ -1952,6 +1959,7 @@
 
         observers: [
           '_updateThemeColor(themeSelected)',
+          '_setHomeHeaderAttribute(_isHomeHeader)',
         ],
 
         attached: function() {
@@ -2282,6 +2290,14 @@
 
           for (var i = 0; i < _nodesLen; i++) {
             this.animationConfig[_name][i].node = _nodes[i];
+          }
+        },
+        // Set to resize element.
+        _setHomeHeaderAttribute: function(_isHomeHeader) {
+          if (_isHomeHeader) {
+            this.setAttribute('is-home-header', '');
+          }else {
+            this.removeAttribute('is-home-header');
           }
         },
 
