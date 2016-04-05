@@ -7,6 +7,10 @@
 
 Semafloor, a meeting room booking ~~app~~ [progressive web app](https://developers.google.com/web/updates/2015/12/getting-started-pwa?hl=en) built with [Polymer](https://www.polymer-project.org/1.0/).
 
+The PWA is hosted on two different sites, one of which is HTTP/2 enabled:
+- https://www.semafloor.com (main site with HTTP/2 enabled)
+- https://semafloor-webapp.firebaseapp.com (secondary site with Firebase Hosting)
+
 
 ## Introduction
 The name of the web app came from the term [semaphore](https://en.wikipedia.org/wiki/Semaphore_(programming)) in computer programming which is defined as a variable or abstract data type that is used for controlling access to some resource. The term semaphore is kind of closely resembling how a meeting room booking application works. For example, semaphore controls access from certain sources to some resources just like booking a room. You can only book an empty room when it is available to be reserved otherwise wait for it to be available again or search for other empty ones. The name changes over the course of the developement of this web app, it is eventually named Semafloor from the term semaphore.
