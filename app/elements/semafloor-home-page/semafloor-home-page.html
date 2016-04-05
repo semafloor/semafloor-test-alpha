@@ -2275,14 +2275,10 @@
         },
         // Update theme color.
         _updateThemeColor: function(_themeSelected) {
+          console.log(_themeSelected);
           var _isDarkTheme = _themeSelected === 'dark-theme';
           this.toggleClass('dark-theme', _isDarkTheme, this);
           this.updateStyles();
-
-          // Now allows anonymous to play around with the theming system.
-          if (!!!this.authUser) {
-            this.fire('update-theme-color', {theme: _themeSelected});
-          }
         },
         // Set animation config's node dynamically.
         _setHomeAnimationConfig: function(_name, _nodes) {
