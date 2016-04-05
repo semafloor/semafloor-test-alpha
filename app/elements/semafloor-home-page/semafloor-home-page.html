@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 
@@ -25,7 +26,7 @@
         display: block;
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
         position: fixed;
-        height: calc(100% - 64px);
+        height: 100%;
         width: 100%;
         @apply(--layout-scroll);
       }
@@ -36,6 +37,24 @@
 
       .home-page-container {
         position: relative;
+      }
+      .home-page-container > paper-icon-button {
+        margin: 12px 16px;
+      }
+
+      .walkthroughs-toolbar {
+        background-color: #009688;
+        height: 64px;
+        padding: 0 16px;
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+        @apply(--layout-start-justified);
+      }
+      .walkthroughs-toolbar > paper-icon-button {
+        margin-right: 16px;
+      }
+      .walkthroughs-title {
+        @apply(--paper-font-common-nowrap);
       }
 
       neon-animated-pages {
@@ -80,7 +99,7 @@
       }
       .sub-title-col {
         padding: 8px;
-        font-size: 14px;
+        font-size: 12px;
         font-weight: 500;
         text-align: center;
         @apply(--layout-horizontal);
@@ -100,13 +119,13 @@
         margin-top: 8px;
         padding: 16px;
         width: 100%;
-        @apply(--layout-horizontal);
-        @apply(--layout-start);
         -webkit-transform: translate3d(0px, 0px, 0px);
                 transform: translate3d(0px, 0px, 0px);
         -webkit-backface-visibility: hidden;
                 backface-visibility: hidden;
         will-change: transform;
+        @apply(--layout-vertical);
+        @apply(--layout-start);
       }
       .intro-nav {
         width: 100%;
@@ -222,7 +241,7 @@
         border-left-color: #009688;
       }
       .wk-container {
-        margin: 8px auto;
+        margin: 0 auto 8px;
       }
       .wk-container > p {
         margin: 8px 16px 24px;
@@ -516,6 +535,13 @@
       }
 
       /* about page */
+      .about-title {
+        position: absolute;
+        top: -44px;
+        left: auto;
+        right: 50%;
+        font-size: 20px;
+      }
       .tools {
         padding: 16px;
         margin: 8px;
@@ -706,13 +732,6 @@
 
       /* N7 and above */
       @media all and (min-width: 600px) {
-        :host {
-          height: calc(100% - 112px);
-        }
-        :host(.is-walkthrough) {
-          height: calc(100% - 64px);
-        }
-
         .intro-content {
           width: 435px;
           margin: -128px auto 16px;
@@ -728,13 +747,6 @@
 
       /* desktop */
       @media all and (min-width: 1200px) {
-        :host {
-          height: calc(100% - 110px);
-        }
-        :host(.is-walkthrough) {
-          height: calc(100% - 110px);
-        }
-
         .home-title-col {
           height: 128px;
         }
@@ -762,6 +774,15 @@
       }
 
       /* dark theme */
+      :host(.dark-theme) .home-page-container > paper-icon-button,
+      :host(.dark-theme) .walkthroughs-toolbar > paper-icon-button {
+        color: #fff;
+        --paper-icon-button-ink-color: #fff;
+      }
+      :host(.dark-theme) .walkthroughs-toolbar {
+        background-color: #212121;
+        color: #fff;
+      }
       :host(.dark-theme) .home-title-col {
         background-color: #00695c;
       }
@@ -790,9 +811,32 @@
       :host(.dark-theme) .wk-container > p {
         color: #bcbcbc;
       }
+      :host(.dark-theme) .wk-container#aboutPage,
+      :host(.dark-theme) .about-title {
+        color: #bcbcbc;
+      }
+      :host(.dark-theme) .tools-col > a {
+        background-color: #eee;
+      }
+      :host(.dark-theme) .repo > a,
+      :host(.dark-theme) .author-col > a:hover {
+        background-color: #006064;
+      }
     </style>
 
     <div class="home-page-container">
+      <template is="dom-if" if="[[_isWalkthroughs]]" restamp="true" strip-whitespace>
+        <div id="wkToolbar" class="walkthroughs-toolbar">
+          <paper-icon-button icon="icons:arrow-back" on-tap="_closeWk" on-transitionend="_closeWk"></paper-icon-button>
+          <div class="walkthroughs-title">
+            [[_walkthroughsTitle]]
+          </div>
+        </div>
+      </template>
+      <template is="dom-if" if="[[_isHomeHeader]]" restamp="true" strip-whitespace>
+        <paper-icon-button icon="icons:close" on-tap="_closeHomeHeader" on-transitionend="_closeHomeHeader"></paper-icon-button>
+      </template>
+
       <neon-animated-pages selected="{{_page}}" attr-for-selected="page" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
         <neon-animatable id="material" page="home">
           <paper-material elevation="1" class="home-title-col">
@@ -825,21 +869,22 @@
           </paper-material>
         </neon-animatable>
 
-        <neon-animatable page="intro">
-          <div id="introFakeToolbar" class="fake-toolbar">
-            <div class="intro-nav">
-              <div class="next-topic" sub-title="frontend" on-tap="_goPage">
-                Next topic:
-                <br>
-                How it's built (Frontend edition)
-              </div>
-              <div class="intro-title">
-                <span>Introduction to</span>
-                Semafloor
+        <template is="dom-if" if="[[_introOpened]]" restamp="true" strip-whitespace is-page="intro" on-dom-change="_onOpened">
+          <neon-animatable page="intro">
+            <div id="introFakeToolbar" class="fake-toolbar">
+              <div class="intro-nav">
+                <div class="next-topic" sub-title="frontend" on-tap="_goPage">
+                  Next topic:
+                  <br>
+                  How it's built (Frontend edition)
+                </div>
+                <div class="intro-title">
+                  <span>Introduction to</span>
+                  Semafloor
+                </div>
               </div>
             </div>
-          </div>
-          <div id="introContent" class="intro-content">
+            <div id="introContent" class="intro-content">
               <p>
                 To start with, this section will briefly introduce Semafloor, just another Progressive Web App or PWA for short built with a bunch of goodies and bleeding edge web technologies such as Web Components.
                 Well, there are even more contents to be explained in more details at later sections.
@@ -872,262 +917,263 @@
                 </ul>
               </p>
             </div>
-        </neon-animatable>
+          </neon-animatable>
+        </template>
 
-        <neon-animatable page="frontend">
-          <div id="frontendFakeToolbar" class="fake-toolbar">
-            <div class="intro-nav">
-              <div class="topic-nav-container">
-                <div class="next-topic last-topic" sub-title="intro" on-tap="_goPage">
-                  Last topic:
-                  <br>
-                  Introduction to Semafloor
+        <template is="dom-if" if="[[_frontendOpened]]" restamp="true" strip-whitespace is-page="frontend" on-dom-change="_onOpened">
+          <neon-animatable page="frontend">
+            <div id="frontendFakeToolbar" class="fake-toolbar">
+              <div class="intro-nav">
+                <div class="topic-nav-container">
+                  <div class="next-topic last-topic" sub-title="intro" on-tap="_goPage">
+                    Last topic:
+                    <br>
+                    Introduction to Semafloor
+                  </div>
+                  <div class="next-topic" sub-title="backend" on-tap="_goPage">
+                    Next topic:
+                    <br>
+                    How it's built (Backend edition)
+                  </div>
                 </div>
-                <div class="next-topic" sub-title="backend" on-tap="_goPage">
-                  Next topic:
-                  <br>
-                  How it's built (Backend edition)
+                <div class="intro-title frontend-title">
+                  How it's built
+                  <span>(Frontend edition)</span>
                 </div>
-              </div>
-              <div class="intro-title frontend-title">
-                How it's built
-                <span>(Frontend edition)</span>
-              </div>
-            </div>
-          </div>
-          <div id="frontendContent" class="intro-content">
-            <p>
-              In this section, we're going to walk you through some of the vital web technologies used that made this PWA possible.
-              To build a PWA, you might only need some frontend rendering however in this PWA, it is noteworthy to cover the backend that pieces everything together.
-              First and foremost, it seems to make sense to begin with the foundation of the library (namely Polymer) in this PWA - <a href="http://webcomponents.org/">Web Components</a>.
-            </p>
-            <h2>What is Web Components?</h2>
-            <p>
-              <blockquote cite="https://en.wikipedia.org/wiki/Web_Components">
-                Web Components are a set of standards currently being produced by Google engineers as a W3C specification that allow for the creation of reusable widgets or components in web documents and web applications. The intention behind them is to bring component-based software engineering to the World Wide Web. The components model allows for encapsulation and interoperability of individual HTML elements.
-              </blockquote>
-
-              Web Components basically comprises of 4 fundamental elements:
-              <ul>
-                <li><span>Custom Elements</span> - To enable users to define their own new types of DOM elements which are built with the notion of reusability and encapsulation in mind.</li>
-                <li><span>HTML Imports</span> - A new way to include and reuse the new defined types of DOM elements.</li>
-                <li><span>Templates</span> - A standard DOM-based approach for client-side templating which means a content fragment is delcared and parsed at page load but can subsequently be instantiated for later use.</li>
-                <li><span>Shadow DOM</span> - a way to encapsulate new defined DOM elements and remain separated from the DOM of the main document.</li>
-              </ul>
-            </p>
-            <h2>What is Polymer?</h2>
-            <p>
-              It is a library designed to make creating reusable custom elements easier and quicker for developers.
-              <br><br>
-              So what makes Polymer differentiate from building custom elements using mere vanilla JS?
-              <br><br>
-              In Polymer, it provides developers a set of great tools and features such as two-way data binding and property observation to help developers creating custom elements much more powerful and reusable with lesser development time.
-              It's like adding another layer of abstraction to Web Components and developers only need to learn some basic stuffs Polymer provides which makes creating reusable custom elements easier and faster and you're good to go.
-            </p>
-            <h2>Besides Polymer, what else? Lodash!</h2>
-            <p>
-              In a nutshell, Lodash is a powerful Javascript utility library that provides developers or might be you hundreds of functions that could reduce whole lot of boilerplate codes that one might be writing it everytime for a new function.
-              Whenever you try reinventing the wheel, you should first check if that has already existed in Lodash before writing it.
-              <br><br>
-              Lodash focuses on modularity, performance, compatibility and many more.
-              Speaking of compatibility, it works on both client side cross platform and server side.
-              <br><br>
-              With Lodash, it not only helps reduce the amount of boilerplate codes needed and improves the readability of the overall application meantime assures the developer optimization plus much more consistent performance across different platforms as even Native VanillaJS implemented in major moderen browsers might not always be the fastest.
-            </p>
-            <h2>Anything else being left out? Service Worker!</h2>
-            <p>
-              Service worker is a script that is run by the browser in the background separated by the web page to intercept the network request and manage the caching of all responses.
-              <br><br>
-              Service worker provides a better offline experience to a web app which gives developers full controls over that experience by enabling caching necessarily critical resource assets.
-              Service worker is trying to tackle offline by getting rid of the 'offline dino' (which you can find it on Chrome during offline) as not all users don't always using the webapp or website on a consistent and stable network espcially on mobile networks are sometimes spotty.
-              In other words, service workers allows a web app to be able to work offline just like a Native app as long as all static site contents have been cached with service workers.
-              <br><br>
-              Not only that, service worker does provide other features such as push notification. Push notification allows developers to re-engage their users with new updates or contents provided the users have opted in for receiving notification.
-              <br><br>
-              The feature has been implemented on Native platforms but was missing from the Web for very long time. Good news is that as of Chrome version 42 and Firefox version 44, push notification has been a thing on modern browsers by fulfilling some of the requirements to enable that amazing feature.
-              In order to enable push notification, first a webapp or website must include a <b>Web App Manifest</b>, must <b>serve content via HTTPS</b> and have <b>Service worker enabled</b>.
-              However, developers are required to register for <b>Google Cloud Messaging (GCM)</b> API as push messaging on Chrome only works with GCM as of now.
-            </p>
-            <h2>Last but not least... Firebase!</h2>
-            <p>
-              Firebase is a cloud service backend which provides a series of services like real time database, authentication using OAuth, and web hosting.
-              <br><br>
-              This PWA uses two of the main services that Firebase provides: <b>real time database</b> and <b>authentication</b>.
-              <br><br>
-              The great thing about Firebase is that data in your Firebase database is stored as and sent as JSON and always stays in sync to every users connected to the same database.
-              When one user modifies the database, the rest of the users will receive the instant updates and all those are managed by Firebase in the background for you as in updating and synchronizing database and managing all the connection from different users, etc.
-              All data being transmitted to and fro over a <b>secured SSL connection</b> and more granular controls at the database are also at the owner's disposal by using Firebase's <b>Security Rules</b>.
-              <br><br>
-              One last point worth noting is that all modification to the Firebase database works offline. For example, the connection disconnected in the midst of updating the newest data to the Firebase. This would not affect the synchronizing to the Firebase backend as those changes will be updated and synchronized with the current server state once the connection is re-established.
-              <br><br>
-              Here comes the authentication part with Firebase. As you might know operating your own backend to handle the authentication would definitely be a headache to a lot of developers, with Firebase Authentication, not only it supports authentication with some of the major websites such as Facebook, Google, Twitter, etc, it has all built-in functionality where developers can easily integrate it into their app just in a few lines of code and it works on both client side and server side.
-              <br><br>
-              However, as for general purpose, this PWA only implemented authentication with Google account.
-            </p>
-            <h2>Further reading</h2>
-            <p>
-              <ul>
-                <li><a href="http://goo.gl/k3rlKS" target="_blank">Are we componentized yet?</a></li>
-                <li><a href="https://goo.gl/EzBfVq" target="_blank">Polymer Project</a></li>
-                <li><a href="https://goo.gl/DqmUr0" target="_blank">What is Polymer</a></li>
-                <li><a href="https://goo.gl/yxGYvq" target="_blank">Google I/O 2014 - Polymer and Web Components chnage everything you know about Web development</a></li>
-                <li><a href="https://goo.gl/LuKMGd" target="_blank">Lodash</a></li>
-                <li><a href="http://goo.gl/WQoiV6" target="_blank">Lodash, stop rewriting!</a></li>
-                <li><a href="https://goo.gl/z6Vjhj" target="_blank">Service worker</a></li>
-                <li><a href="https://goo.gl/KP571k" target="_blank">Service worker offline cook</a></li>
-                <li><a href="https://goo.gl/Xv8E9o" target="_blank">Push notification</a></li>
-                <li><a href="https://goo.gl/mWq2mT" target="_blank">Web push arrives in Firefox 44</a></li>
-                <li><a href="https://goo.gl/yHm98v" target="_blank">Firebase</a></li>
-                <li><a href="https://goo.gl/uMVuaB" target="_blank">End to End with Polymer (The Polymer Summit 2015)</a></li>
-                <li><a href="https://goo.gl/l5lf6j" target="_blank">Introduction to Firebase Security Rules - Firecasts #7</a></li>
-              </ul>
-            </p>
-          </div>
-        </neon-animatable>
-
-        <neon-animatable page="backend">
-          <div id="backendFakeToolbar" class="fake-toolbar">
-            <div class="intro-nav">
-              <div class="topic-nav-container">
-                <div class="next-topic last-topic" sub-title="frontend" on-tap="_goPage">
-                  Last topic:
-                  <br>
-                  How it's built (Frontend edition)
-                </div>
-                <div class="next-topic" sub-title="walkthroughs" on-tap="_goPage">
-                  Next topic:
-                  <br>
-                  Walkthroughs
-                </div>
-              </div>
-              <div class="intro-title frontend-title">
-                How it's built
-                <span>(Backend edition)</span>
               </div>
             </div>
-          </div>
-          <div id="backendContent" class="intro-content">
-            <p>
-              It's time for another section about what is involved in building the backend that powers some of the great features of the PWA.
-              Here's a simplified list of the technologies and services used that made this PWA possible:
-              <ul>
-                <li><b>Nginx</b> - an open source HTTP Web server and reserve proxy server to power up the web app and serve the static contents.</li>
-                <li><b>NodeJS</b> - an open source, cross platform runtime environment for developing server-side and networking applications.</li>
-                <li><b>Express</b> - a Node.js web application server framework, designed for building single-page, multiple page web applications.</li>
-                <li><b>Firebase</b> - cloud service backend which provides a series of services like real time database, authentication using OAuth, and web hosting.</li>
-                <li><b>HTTP/2</b> - the next version of HTTP and is based on Google's SPDY.</li>
-                <li><b>Let's Encrypt</b> - a free, automated, and open certificate authority.</li>
-                <li><b>Cloudflare</b> -  a content delivery network and distributed domain name server services, acting as a reverse proxy for websites.</li>
-              </ul>
-            </p>
-            <h2>Nginx - the backbone that powers everything!</h2>
-            <p>
-              People often ask why use Nginx? My response to that question is always: Why not Nginx?
-              <br><br>
-              One main point of using Nginx is that Nginx is based on the event-driven (asynchronous) architecture (EDA).
-              It simple means that an EDA based server is capable of handling a number of clients with lesser threads compared to the conventional way (one thread per client).
-              <br><br>
-              Since an event based system will mean that the CPU utilization will be at its optimum as there will be no I/O blocking during execution of tasks as the CPU needs not to wait until the response, be it a network request or reading data from certain source is completed and is able to continue to execute other tasks while waiting for the response. When the response is completed, the tasks can be continued from the paused state and so on.
-              That can greatly improves the overall performance of the web servers with much more effective use of system resources.
-              <br><br>
-              Besides that, there are a few more great features that Nginx possess to make it even more powerful such as load balancing, easy configuration, etc.
-            </p>
-            <h2>NodeJS (+ ES2015 + Babel)</h2>
-            <p>
-              In this case, NodeJS seems to behave somewhat like Nginx. NodeJS is also event-based and asynchronous, non-blocking.
-              <br><br>
-              NodeJS is designed to have only a single thread per process and is able to interleave multiple activities for multiple parallel workflows, running those are synchronous while waiting for asynchronous response to complete.
-              With this kind of design, NodeJS is able to run a large number of tasks and to handle multiple connections simultaneously just like Nginx.
-              <br><br>
-              Worth to note that, NodeJS can be used to run a web server too. However for some technical reasons, it is acceptable and preferable to run Nginx to reverse proxy the connection to NodeJS for task execution.
-              <br><br>
-              Meantime there is a transpiler called Babel to convert most of the ES2015 features into similar existing ones.
-              As major browser vendors are going to support most of the features in ES2015 or ES6 in the upcoming releases, developers are encouraged to learn the next version of ECMAScript/ ES.
-              This also allows developers to try out experimental features without a sweat in current modern browsers.
-            </p>
-            <h2>Express</h2>
-            <p>
-              Express is a light-weight web application framework that provides a set of features for building a web application, from managing routes, to handling requests and views.
-              <br><br>
-              Although these can be done with NodeJS, Express brings those tedious tasks to the next level by simplifying complicated and reduces boilerplate codes that need to run over and over again.
-              Express plays an important role in handling routing for the backend in this case.
-            </p>
-            <h2>Firebase</h2>
-            <p>
-              As this has been discussed in the last section, it is going to briefly explain why Firebase is used here.
-              Since Firebase can be run on both client and server side to handle real time database processing and custom authentication.
-              <br><br>
-              It is used at the backend to do filtering and querying from incoming request and send the response back.
-            </p>
-            <h2>HTTP/2</h2>
-            <p>
-              It is already year 2016. It is getting more and more websites hopping in to the upgrading to adopting HTTP/2.
-              <br><br>
-              And this may strike you in the mind: Why use HTTP/2?
-              Well, It's been over 6 years since HTTP/1.1 which was first drafted in 1999 and the web has changed drastically over the years.
-              <br><br>
-              It's time to change the standard to make a better web especially for the mobile web.
-              These are the major improvements in HTTP/2:
-              <ul>
-                <li><b>Single connection</b> - only one connection to the server, no more setting up multiple TCP connections to the user from just one connected client for data transmission.</li>
-                <li><b>Header Compression</b> - HPACK compression to greatly reduce header overhead.</li>
-                <li><b>Multiplexing</b> - With HTTP/1.1, only one transfer can happen at a time and it must wait for the previous one to complete. With HTTP/2, this is no longer the case, multiple requests are allowed at the same time, on the same connection.</li>
-                <li><b>Priotization</b> - High priority requests will be sent first.</li>
-                <li><b>Server Push</b> - Additional predicatable resource assets can be send in advance before the user even requests for it.</li>
-                <li><b>Binary</b> - Makes HTTP/2 easier for a server to parse, more compact and less error-prone.</li>
-              </ul>
-            </p>
-            <h2>Let's Encrypt</h2>
-            <p>
-              While HTTP/2 supports both secure and non-secure connections, major browser vendors Mozilla Firefox and Google Chrome will only support HTTP/2 over HTTPS.
-              As this is no longer a performance issue of sort in HTTP/2 for implementing secured connections, this actually is great move towards a more secure web for a greater future of web.
-              <br><br>
-              Fortunately, there is a new initiave named Let's Encrypt just went public beta on December 3, 2015 to help providing free and certified security certificates to encourage people to embrace HTTPS.
-              <br><br>
-              Let's Encrypt aims to bring a more secured web meantime to tackle problems found in registering for a certificate and setting up for a secured website which has been a truly complicated process.
-            </p>
-            <h2>Cloudflare</h2>
-            <p>
-              Speaking of secured connection, besides Let's Encrypt, there is another initiative has you covered, Cloudflare.
-              <br><br>
-              Cloudflare offers basic Free plans to the public with some easy setup steps to secure the connection to the server.
-              This includes free SSL certificate and the connection established in between the visitors and the server is HTTP/2 based which ensures better performance.
-              <br><br>
-              Cloudflare also provides some great features to accelerate your web page such as optimizing the web contents before sending it to the visitors, cache static contents, various support Cloudflare Apps for traffic and stats monitoring, threat protection as well content delivery network (CDN) service so that the site contents can be served to the visitors from the nearest datacenter.
-            </p>
-            <h2>Further reading</h2>
-            <p>
-              <ul>
-                <li><a href="http://goo.gl/DxZWFA" target="_blank">What is Nginx?</a></li>
-                <li><a href="https://goo.gl/XftsgK" target="_blank">Why Nginx?</a></li>
-                <li><a href="http://goo.gl/uIOpIM" target="_blank">What is Node.js?</a></li>
-                <li><a href="https://goo.gl/nf8Hjt" target="_blank">ECMAScript 6 compatibility table</a></li>
-                <li><a href="http://goo.gl/nYnZ56" target="_blank">ECMAScript 6: New Features: Overview and Comparison</a></li>
-                <li><a href="https://goo.gl/aKufH6" target="_blank">Learn ES2015 - Babel</a></li>
-                <li><a href="http://goo.gl/hecDgt" target="_blank">Express</a></li>
-                <li><a href="https://goo.gl/8oa7ox" target="_blank">HTTP/2 Frequently Asked Questions</a></li>
-                <li><a href="https://goo.gl/Gm0HA5" target="_blank">HTTP/2: The future of the Internet</a></li>
-                <li><a href="https://goo.gl/dWi5j4" target="_blank">Let's Encrypt</a></li>
-                <li><a href="https://goo.gl/i8HQ1T" target="_blank">Cloudflare Overview</a></li>
-              </ul>
-            </p>
-          </div>
-        </neon-animatable>
+            <div id="frontendContent" class="intro-content">
+              <p>
+                In this section, we're going to walk you through some of the vital web technologies used that made this PWA possible.
+                To build a PWA, you might only need some frontend rendering however in this PWA, it is noteworthy to cover the backend that pieces everything together.
+                First and foremost, it seems to make sense to begin with the foundation of the library (namely Polymer) in this PWA - <a href="http://webcomponents.org/">Web Components</a>.
+              </p>
+              <h2>What is Web Components?</h2>
+              <p>
+                <blockquote cite="https://en.wikipedia.org/wiki/Web_Components">
+                  Web Components are a set of standards currently being produced by Google engineers as a W3C specification that allow for the creation of reusable widgets or components in web documents and web applications. The intention behind them is to bring component-based software engineering to the World Wide Web. The components model allows for encapsulation and interoperability of individual HTML elements.
+                </blockquote>
 
-        <neon-animatable page="walkthroughs">
-          <div id="walkthroughsFakeToolbar" class="fake-toolbar">
-            <div class="intro-nav">
-              <div class="topic-nav-container">
-                <div class="next-topic last-topic" sub-title="backend" on-tap="_goPage">
-                  Last topic:
-                  <br>
-                  How it's built (Backend edition)
+                Web Components basically comprises of 4 fundamental elements:
+                <ul>
+                  <li><span>Custom Elements</span> - To enable users to define their own new types of DOM elements which are built with the notion of reusability and encapsulation in mind.</li>
+                  <li><span>HTML Imports</span> - A new way to include and reuse the new defined types of DOM elements.</li>
+                  <li><span>Templates</span> - A standard DOM-based approach for client-side templating which means a content fragment is delcared and parsed at page load but can subsequently be instantiated for later use.</li>
+                  <li><span>Shadow DOM</span> - a way to encapsulate new defined DOM elements and remain separated from the DOM of the main document.</li>
+                </ul>
+              </p>
+              <h2>What is Polymer?</h2>
+              <p>
+                It is a library designed to make creating reusable custom elements easier and quicker for developers.
+                <br><br>
+                So what makes Polymer differentiate from building custom elements using mere vanilla JS?
+                <br><br>
+                In Polymer, it provides developers a set of great tools and features such as two-way data binding and property observation to help developers creating custom elements much more powerful and reusable with lesser development time.
+                It's like adding another layer of abstraction to Web Components and developers only need to learn some basic stuffs Polymer provides which makes creating reusable custom elements easier and faster and you're good to go.
+              </p>
+              <h2>Besides Polymer, what else? Lodash!</h2>
+              <p>
+                In a nutshell, Lodash is a powerful Javascript utility library that provides developers or might be you hundreds of functions that could reduce whole lot of boilerplate codes that one might be writing it everytime for a new function.
+                Whenever you try reinventing the wheel, you should first check if that has already existed in Lodash before writing it.
+                <br><br>
+                Lodash focuses on modularity, performance, compatibility and many more.
+                Speaking of compatibility, it works on both client side cross platform and server side.
+                <br><br>
+                With Lodash, it not only helps reduce the amount of boilerplate codes needed and improves the readability of the overall application meantime assures the developer optimization plus much more consistent performance across different platforms as even Native VanillaJS implemented in major moderen browsers might not always be the fastest.
+              </p>
+              <h2>Anything else being left out? Service Worker!</h2>
+              <p>
+                Service worker is a script that is run by the browser in the background separated by the web page to intercept the network request and manage the caching of all responses.
+                <br><br>
+                Service worker provides a better offline experience to a web app which gives developers full controls over that experience by enabling caching necessarily critical resource assets.
+                Service worker is trying to tackle offline by getting rid of the 'offline dino' (which you can find it on Chrome during offline) as not all users don't always using the webapp or website on a consistent and stable network espcially on mobile networks are sometimes spotty.
+                In other words, service workers allows a web app to be able to work offline just like a Native app as long as all static site contents have been cached with service workers.
+                <br><br>
+                Not only that, service worker does provide other features such as push notification. Push notification allows developers to re-engage their users with new updates or contents provided the users have opted in for receiving notification.
+                <br><br>
+                The feature has been implemented on Native platforms but was missing from the Web for very long time. Good news is that as of Chrome version 42 and Firefox version 44, push notification has been a thing on modern browsers by fulfilling some of the requirements to enable that amazing feature.
+                In order to enable push notification, first a webapp or website must include a <b>Web App Manifest</b>, must <b>serve content via HTTPS</b> and have <b>Service worker enabled</b>.
+                However, developers are required to register for <b>Google Cloud Messaging (GCM)</b> API as push messaging on Chrome only works with GCM as of now.
+              </p>
+              <h2>Last but not least... Firebase!</h2>
+              <p>
+                Firebase is a cloud service backend which provides a series of services like real time database, authentication using OAuth, and web hosting.
+                <br><br>
+                This PWA uses two of the main services that Firebase provides: <b>real time database</b> and <b>authentication</b>.
+                <br><br>
+                The great thing about Firebase is that data in your Firebase database is stored as and sent as JSON and always stays in sync to every users connected to the same database.
+                When one user modifies the database, the rest of the users will receive the instant updates and all those are managed by Firebase in the background for you as in updating and synchronizing database and managing all the connection from different users, etc.
+                All data being transmitted to and fro over a <b>secured SSL connection</b> and more granular controls at the database are also at the owner's disposal by using Firebase's <b>Security Rules</b>.
+                <br><br>
+                One last point worth noting is that all modification to the Firebase database works offline. For example, the connection disconnected in the midst of updating the newest data to the Firebase. This would not affect the synchronizing to the Firebase backend as those changes will be updated and synchronized with the current server state once the connection is re-established.
+                <br><br>
+                Here comes the authentication part with Firebase. As you might know operating your own backend to handle the authentication would definitely be a headache to a lot of developers, with Firebase Authentication, not only it supports authentication with some of the major websites such as Facebook, Google, Twitter, etc, it has all built-in functionality where developers can easily integrate it into their app just in a few lines of code and it works on both client side and server side.
+                <br><br>
+                However, as for general purpose, this PWA only implemented authentication with Google account.
+              </p>
+              <h2>Further reading</h2>
+              <p>
+                <ul>
+                  <li><a href="http://goo.gl/k3rlKS" target="_blank">Are we componentized yet?</a></li>
+                  <li><a href="https://goo.gl/EzBfVq" target="_blank">Polymer Project</a></li>
+                  <li><a href="https://goo.gl/DqmUr0" target="_blank">What is Polymer</a></li>
+                  <li><a href="https://goo.gl/yxGYvq" target="_blank">Google I/O 2014 - Polymer and Web Components chnage everything you know about Web development</a></li>
+                  <li><a href="https://goo.gl/LuKMGd" target="_blank">Lodash</a></li>
+                  <li><a href="http://goo.gl/WQoiV6" target="_blank">Lodash, stop rewriting!</a></li>
+                  <li><a href="https://goo.gl/z6Vjhj" target="_blank">Service worker</a></li>
+                  <li><a href="https://goo.gl/KP571k" target="_blank">Service worker offline cook</a></li>
+                  <li><a href="https://goo.gl/Xv8E9o" target="_blank">Push notification</a></li>
+                  <li><a href="https://goo.gl/mWq2mT" target="_blank">Web push arrives in Firefox 44</a></li>
+                  <li><a href="https://goo.gl/yHm98v" target="_blank">Firebase</a></li>
+                  <li><a href="https://goo.gl/uMVuaB" target="_blank">End to End with Polymer (The Polymer Summit 2015)</a></li>
+                  <li><a href="https://goo.gl/l5lf6j" target="_blank">Introduction to Firebase Security Rules - Firecasts #7</a></li>
+                </ul>
+              </p>
+            </div>
+          </neon-animatable>
+        </template>
+
+        <template is="dom-if" if="[[_backendOpened]]" restamp="true" strip-whitespace is-page="backend" on-dom-change="_onOpened">
+          <neon-animatable page="backend">
+            <div id="backendFakeToolbar" class="fake-toolbar">
+              <div class="intro-nav">
+                <div class="topic-nav-container">
+                  <div class="next-topic last-topic" sub-title="frontend" on-tap="_goPage">
+                    Last topic:
+                    <br>
+                    How it's built (Frontend edition)
+                  </div>
+                  <div class="next-topic" sub-title="walkthroughs" on-tap="_goPage">
+                    Next topic:
+                    <br>
+                    Walkthroughs
+                  </div>
                 </div>
-                <!-- <div class="next-topic" sub-title="backend" on-tap="_goPage">
-                  Next topic:
-                  <br>
-                  walkthroughs
-                </div> -->
+                <div class="intro-title frontend-title">
+                  How it's built
+                  <span>(Backend edition)</span>
+                </div>
+              </div>
+            </div>
+            <div id="backendContent" class="intro-content">
+              <p>
+                It's time for another section about what is involved in building the backend that powers some of the great features of the PWA.
+                Here's a simplified list of the technologies and services used that made this PWA possible:
+                <ul>
+                  <li><b>Nginx</b> - an open source HTTP Web server and reserve proxy server to power up the web app and serve the static contents.</li>
+                  <li><b>NodeJS</b> - an open source, cross platform runtime environment for developing server-side and networking applications.</li>
+                  <li><b>Express</b> - a Node.js web application server framework, designed for building single-page, multiple page web applications.</li>
+                  <li><b>Firebase</b> - cloud service backend which provides a series of services like real time database, authentication using OAuth, and web hosting.</li>
+                  <li><b>HTTP/2</b> - the next version of HTTP and is based on Google's SPDY.</li>
+                  <li><b>Let's Encrypt</b> - a free, automated, and open certificate authority.</li>
+                  <li><b>Cloudflare</b> -  a content delivery network and distributed domain name server services, acting as a reverse proxy for websites.</li>
+                </ul>
+              </p>
+              <h2>Nginx - the backbone that powers everything!</h2>
+              <p>
+                People often ask why use Nginx? My response to that question is always: Why not Nginx?
+                <br><br>
+                One main point of using Nginx is that Nginx is based on the event-driven (asynchronous) architecture (EDA).
+                It simple means that an EDA based server is capable of handling a number of clients with lesser threads compared to the conventional way (one thread per client).
+                <br><br>
+                Since an event based system will mean that the CPU utilization will be at its optimum as there will be no I/O blocking during execution of tasks as the CPU needs not to wait until the response, be it a network request or reading data from certain source is completed and is able to continue to execute other tasks while waiting for the response. When the response is completed, the tasks can be continued from the paused state and so on.
+                That can greatly improves the overall performance of the web servers with much more effective use of system resources.
+                <br><br>
+                Besides that, there are a few more great features that Nginx possess to make it even more powerful such as load balancing, easy configuration, etc.
+              </p>
+              <h2>NodeJS (+ ES2015 + Babel)</h2>
+              <p>
+                In this case, NodeJS seems to behave somewhat like Nginx. NodeJS is also event-based and asynchronous, non-blocking.
+                <br><br>
+                NodeJS is designed to have only a single thread per process and is able to interleave multiple activities for multiple parallel workflows, running those are synchronous while waiting for asynchronous response to complete.
+                With this kind of design, NodeJS is able to run a large number of tasks and to handle multiple connections simultaneously just like Nginx.
+                <br><br>
+                Worth to note that, NodeJS can be used to run a web server too. However for some technical reasons, it is acceptable and preferable to run Nginx to reverse proxy the connection to NodeJS for task execution.
+                <br><br>
+                Meantime there is a transpiler called Babel to convert most of the ES2015 features into similar existing ones.
+                As major browser vendors are going to support most of the features in ES2015 or ES6 in the upcoming releases, developers are encouraged to learn the next version of ECMAScript/ ES.
+                This also allows developers to try out experimental features without a sweat in current modern browsers.
+              </p>
+              <h2>Express</h2>
+              <p>
+                Express is a light-weight web application framework that provides a set of features for building a web application, from managing routes, to handling requests and views.
+                <br><br>
+                Although these can be done with NodeJS, Express brings those tedious tasks to the next level by simplifying complicated and reduces boilerplate codes that need to run over and over again.
+                Express plays an important role in handling routing for the backend in this case.
+              </p>
+              <h2>Firebase</h2>
+              <p>
+                As this has been discussed in the last section, it is going to briefly explain why Firebase is used here.
+                Since Firebase can be run on both client and server side to handle real time database processing and custom authentication.
+                <br><br>
+                It is used at the backend to do filtering and querying from incoming request and send the response back.
+              </p>
+              <h2>HTTP/2</h2>
+              <p>
+                It is already year 2016. It is getting more and more websites hopping in to the upgrading to adopting HTTP/2.
+                <br><br>
+                And this may strike you in the mind: Why use HTTP/2?
+                Well, It's been over 6 years since HTTP/1.1 which was first drafted in 1999 and the web has changed drastically over the years.
+                <br><br>
+                It's time to change the standard to make a better web especially for the mobile web.
+                These are the major improvements in HTTP/2:
+                <ul>
+                  <li><b>Single connection</b> - only one connection to the server, no more setting up multiple TCP connections to the user from just one connected client for data transmission.</li>
+                  <li><b>Header Compression</b> - HPACK compression to greatly reduce header overhead.</li>
+                  <li><b>Multiplexing</b> - With HTTP/1.1, only one transfer can happen at a time and it must wait for the previous one to complete. With HTTP/2, this is no longer the case, multiple requests are allowed at the same time, on the same connection.</li>
+                  <li><b>Priotization</b> - High priority requests will be sent first.</li>
+                  <li><b>Server Push</b> - Additional predicatable resource assets can be send in advance before the user even requests for it.</li>
+                  <li><b>Binary</b> - Makes HTTP/2 easier for a server to parse, more compact and less error-prone.</li>
+                </ul>
+              </p>
+              <h2>Let's Encrypt</h2>
+              <p>
+                While HTTP/2 supports both secure and non-secure connections, major browser vendors Mozilla Firefox and Google Chrome will only support HTTP/2 over HTTPS.
+                As this is no longer a performance issue of sort in HTTP/2 for implementing secured connections, this actually is great move towards a more secure web for a greater future of web.
+                <br><br>
+                Fortunately, there is a new initiave named Let's Encrypt just went public beta on December 3, 2015 to help providing free and certified security certificates to encourage people to embrace HTTPS.
+                <br><br>
+                Let's Encrypt aims to bring a more secured web meantime to tackle problems found in registering for a certificate and setting up for a secured website which has been a truly complicated process.
+              </p>
+              <h2>Cloudflare</h2>
+              <p>
+                Speaking of secured connection, besides Let's Encrypt, there is another initiative has you covered, Cloudflare.
+                <br><br>
+                Cloudflare offers basic Free plans to the public with some easy setup steps to secure the connection to the server.
+                This includes free SSL certificate and the connection established in between the visitors and the server is HTTP/2 based which ensures better performance.
+                <br><br>
+                Cloudflare also provides some great features to accelerate your web page such as optimizing the web contents before sending it to the visitors, cache static contents, various support Cloudflare Apps for traffic and stats monitoring, threat protection as well content delivery network (CDN) service so that the site contents can be served to the visitors from the nearest datacenter.
+              </p>
+              <h2>Further reading</h2>
+              <p>
+                <ul>
+                  <li><a href="http://goo.gl/DxZWFA" target="_blank">What is Nginx?</a></li>
+                  <li><a href="https://goo.gl/XftsgK" target="_blank">Why Nginx?</a></li>
+                  <li><a href="http://goo.gl/uIOpIM" target="_blank">What is Node.js?</a></li>
+                  <li><a href="https://goo.gl/nf8Hjt" target="_blank">ECMAScript 6 compatibility table</a></li>
+                  <li><a href="http://goo.gl/nYnZ56" target="_blank">ECMAScript 6: New Features: Overview and Comparison</a></li>
+                  <li><a href="https://goo.gl/aKufH6" target="_blank">Learn ES2015 - Babel</a></li>
+                  <li><a href="http://goo.gl/hecDgt" target="_blank">Express</a></li>
+                  <li><a href="https://goo.gl/8oa7ox" target="_blank">HTTP/2 Frequently Asked Questions</a></li>
+                  <li><a href="https://goo.gl/Gm0HA5" target="_blank">HTTP/2: The future of the Internet</a></li>
+                  <li><a href="https://goo.gl/dWi5j4" target="_blank">Let's Encrypt</a></li>
+                  <li><a href="https://goo.gl/i8HQ1T" target="_blank">Cloudflare Overview</a></li>
+                </ul>
+              </p>
+            </div>
+          </neon-animatable>
+        </template>
+
+        <template is="dom-if" if="[[_walkthroughsOpened]]" restamp="true" strip-whitespace is-page="walkthroughs" on-dom-change="_onOpened">
+          <neon-animatable page="walkthroughs">
+            <div id="walkthroughsFakeToolbar" class="fake-toolbar">
+              <div class="intro-nav">
+                <div class="topic-nav-container">
+                  <div class="next-topic last-topic" sub-title="backend" on-tap="_goPage">
+                    Last topic:
+                    <br>
+                    How it's built (Backend edition)
+                  </div>
               </div>
               <div class="intro-title frontend-title">
                 Walkthroughs
@@ -1138,49 +1184,49 @@
           <div id="walkthroughsContent" class="intro-content walkthroughs-content">
             <div class="walkthroughs-stepper-container">
               <div class="walkthroughs-col">
-                <paper-material id="loginWk" elevation="0" class="sub-title-col" wk-title="login" on-tap="_goWk" on-transitionend="_goWk">
+                <paper-material id="loginWk" elevation="0" class="sub-title-col" wk-title="login" on-tap="_goWk" on-transitionend="_goWk" on-touchmove="_deRipple" on-up="_deRipple">
                   <span>1</span>
                   Login page
                   <paper-ripple></paper-ripple>
                 </paper-material>
               </div>
               <div class="walkthroughs-col">
-                <paper-material id="profileWk" elevation="0" class="sub-title-col" wk-title="profile" on-tap="_goWk" on-transitionend="_goWk">
+                <paper-material id="profileWk" elevation="0" class="sub-title-col" wk-title="profile" on-tap="_goWk" on-transitionend="_goWk" on-touchmove="_deRipple" on-up="_deRipple">
                   <span>2</span>
                   Profile page
                   <paper-ripple></paper-ripple>
                 </paper-material>
               </div>
               <div class="walkthroughs-col">
-                <paper-material id="reserveWk" elevation="0" class="sub-title-col" wk-title="reserve" on-tap="_goWk" on-transitionend="_goWk">
+                <paper-material id="reserveWk" elevation="0" class="sub-title-col" wk-title="reserve" on-tap="_goWk" on-transitionend="_goWk" on-touchmove="_deRipple" on-up="_deRipple">
                   <span>3</span>
                   My Reservations page
                   <paper-ripple></paper-ripple>
                 </paper-material>
               </div>
               <div class="walkthroughs-col">
-                <paper-material id="searchWk" elevation="0" class="sub-title-col" wk-title="search" on-tap="_goWk" on-transitionend="_goWk">
+                <paper-material id="searchWk" elevation="0" class="sub-title-col" wk-title="search" on-tap="_goWk" on-transitionend="_goWk" on-touchmove="_deRipple" on-up="_deRipple">
                   <span>4</span>
                   Search &amp; Reserve page
                   <paper-ripple></paper-ripple>
                 </paper-material>
               </div>
               <div class="walkthroughs-col">
-                <paper-material id="currentWk" elevation="0" class="sub-title-col" wk-title="current" on-tap="_goWk" on-transitionend="_goWk">
+                <paper-material id="currentWk" elevation="0" class="sub-title-col" wk-title="current" on-tap="_goWk" on-transitionend="_goWk" on-touchmove="_deRipple" on-up="_deRipple">
                   <span>5</span>
                   Current Reservations page
                   <paper-ripple></paper-ripple>
                 </paper-material>
               </div>
               <div class="walkthroughs-col">
-                <paper-material id="roomWk" elevation="0" class="sub-title-col" wk-title="room" on-tap="_goWk" on-transitionend="_goWk">
+                <paper-material id="roomWk" elevation="0" class="sub-title-col" wk-title="room" on-tap="_goWk" on-transitionend="_goWk" on-touchmove="_deRipple" on-up="_deRipple">
                   <span>6</span>
                   Room Information page
                   <paper-ripple></paper-ripple>
                 </paper-material>
               </div>
               <div class="walkthroughs-col">
-                <paper-material id="settingsWk" elevation="0" class="sub-title-col" wk-title="settings" on-tap="_goWk" on-transitionend="_goWk">
+                <paper-material id="settingsWk" elevation="0" class="sub-title-col" wk-title="settings" on-tap="_goWk" on-transitionend="_goWk" on-touchmove="_deRipple" on-up="_deRipple">
                   <span>7</span>
                   Settings page
                   <paper-ripple></paper-ripple>
@@ -1189,588 +1235,607 @@
             </div>
           </div>
         </neon-animatable>
+        </template>
 
-        <neon-animatable page="login">
-          <div class="wk-container">
-            <div class="settings-page-light-theme login-page-before-login-light-theme">
-              <div class="settings-page-dark-theme login-page-before-login-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+        <template is="dom-if" if="[[_loginOpened]]" restamp="true" strip-whitespace is-page="login" on-dom-change="_onOpened">
+          <neon-animatable page="login">
+            <div class="wk-container">
+              <div class="settings-page-light-theme login-page-before-login-light-theme">
+                <div class="settings-page-dark-theme login-page-before-login-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
               </div>
-            </div>
-            <div class="figure-caption">
-              Before login.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              This illustrates the layout of the web app before user is logged in.
-              Only certain tabs are shown for anonymous users: <b>Home</b>, <b>Current Reservations</b>, <b>Room Information</b>, and <b>Settings</b>.
-            </p>
-            <div class="settings-page-light-theme login-page-after-login-light-theme">
-              <div class="settings-page-dark-theme login-page-after-login-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <div class="figure-caption">
+                Before login.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
               </div>
+              <p>
+                This illustrates the layout of the web app before user is logged in.
+                Only certain tabs are shown for anonymous users: <b>Home</b>, <b>Current Reservations</b>, <b>Room Information</b>, and <b>Settings</b>.
+              </p>
+              <div class="settings-page-light-theme login-page-after-login-light-theme">
+                <div class="settings-page-dark-theme login-page-after-login-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
+              </div>
+              <div class="figure-caption">
+                After login.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
+              </div>
+              <p>
+                After login, more tabs appears to show only details that are retrieved from logged in user's account from the backend server.
+              </p>
             </div>
-            <div class="figure-caption">
-              After login.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              After login, more tabs appears to show only details that are retrieved from logged in user's account from the backend server.
-            </p>
-          </div>
-        </neon-animatable>
+          </neon-animatable>
+        </template>
 
-        <neon-animatable page="profile">
-          <div class="wk-container">
-            <div class="settings-page-light-theme profile-page-light-theme">
-              <div class="settings-page-dark-theme profile-page-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+        <template is="dom-if" if="[[_profileOpened]]" restamp="true" strip-whitespace is-page="profile" on-dom-change="_onOpened">
+          <neon-animatable page="profile">
+            <div class="wk-container">
+              <div class="settings-page-light-theme profile-page-light-theme">
+                <div class="settings-page-dark-theme profile-page-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
               </div>
-            </div>
-            <div class="figure-caption">
-              My Profile page.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              This page strictly requires user to log in as any information displays on the page is retrieved from user's account.
-              This page is hidden for anonymous users.
-            </p>
-            <div class="settings-page-light-theme profile-page-change-email-light-theme">
-              <div class="settings-page-dark-theme profile-page-change-email-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <div class="figure-caption">
+                My Profile page.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
               </div>
-            </div>
-            <div class="figure-caption">
-              Change email dialog.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              User can click on the email tab to modify the email address.
-              A dialog will appear and is ready for user to change the email address as needed.
-            </p>
-            <div class="settings-page-light-theme profile-page-change-tzone-light-theme">
-              <div class="settings-page-dark-theme profile-page-change-tzone-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <p>
+                This page strictly requires user to log in as any information displays on the page is retrieved from user's account.
+                This page is hidden for anonymous users.
+              </p>
+              <div class="settings-page-light-theme profile-page-change-email-light-theme">
+                <div class="settings-page-dark-theme profile-page-change-email-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
               </div>
-            </div>
-            <div class="figure-caption">
-              Change time zone dialog.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              This is another user information which allows users to apply changes.
-            </p>
-            <div class="settings-page-light-theme profile-page-email-changed-light-theme">
-              <div class="settings-page-dark-theme profile-page-email-changed-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <div class="figure-caption">
+                Change email dialog.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
               </div>
-            </div>
-            <div class="figure-caption">
-              Display toasst after email has been changed.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              Toast appears after new email has been successfully updated at the server backend as well as at user's account.
-              The change is stored permanently with logged in user's account.
-            </p>
-            <div class="settings-page-light-theme profile-page-tzone-changed-light-theme">
-              <div class="settings-page-dark-theme profile-page-tzone-changed-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <p>
+                User can click on the email tab to modify the email address.
+                A dialog will appear and is ready for user to change the email address as needed.
+              </p>
+              <div class="settings-page-light-theme profile-page-change-tzone-light-theme">
+                <div class="settings-page-dark-theme profile-page-change-tzone-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
               </div>
+              <div class="figure-caption">
+                Change time zone dialog.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
+              </div>
+              <p>
+                This is another user information which allows users to apply changes.
+              </p>
+              <div class="settings-page-light-theme profile-page-email-changed-light-theme">
+                <div class="settings-page-dark-theme profile-page-email-changed-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
+              </div>
+              <div class="figure-caption">
+                Display toasst after email has been changed.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
+              </div>
+              <p>
+                Toast appears after new email has been successfully updated at the server backend as well as at user's account.
+                The change is stored permanently with logged in user's account.
+              </p>
+              <div class="settings-page-light-theme profile-page-tzone-changed-light-theme">
+                <div class="settings-page-dark-theme profile-page-tzone-changed-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
+              </div>
+              <div class="figure-caption">
+                Display toast after time zone has been changed.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
+              </div>
+              <p>
+                Toast appears after new time zone has been successfully updated at the server backend as well as at user's account.
+                The change is stored permanently with logged in user's account.
+              </p>
             </div>
-            <div class="figure-caption">
-              Display toast after time zone has been changed.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              Toast appears after new time zone has been successfully updated at the server backend as well as at user's account.
-              The change is stored permanently with logged in user's account.
-            </p>
-          </div>
-        </neon-animatable>
+          </neon-animatable>
+        </template>
 
-        <neon-animatable page="reserve">
-          <div class="wk-container">
-            <div class="settings-page-light-theme reserve-page-empty-list-light-theme">
-              <div class="settings-page-dark-theme reserve-page-empty-list-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+        <template is="dom-if" if="[[_reserveOpened]]" restamp="true" strip-whitespace is-page="reserve" on-dom-change="_onOpened">
+          <neon-animatable page="reserve">
+            <div class="wk-container">
+              <div class="settings-page-light-theme reserve-page-empty-list-light-theme">
+                <div class="settings-page-dark-theme reserve-page-empty-list-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
               </div>
-            </div>
-            <div class="figure-caption">
-              My Reservations page - empty list.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              This illustrates how the page should display when it's in its empty state.
-            </p>
-            <div class="settings-page-light-theme reserve-page-full-list-light-theme">
-              <div class="settings-page-dark-theme reserve-page-full-list-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <div class="figure-caption">
+                My Reservations page - empty list.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
               </div>
-            </div>
-            <div class="figure-caption">
-              My Reservations page - full list.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              This shows basic layout of a list of full reservations.
-            </p>
-            <div class="settings-page-light-theme reserve-page-reserve-detail-light-theme">
-              <div class="settings-page-dark-theme reserve-page-reserve-detail-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <p>
+                This illustrates how the page should display when it's in its empty state.
+              </p>
+              <div class="settings-page-light-theme reserve-page-full-list-light-theme">
+                <div class="settings-page-dark-theme reserve-page-full-list-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
               </div>
-            </div>
-            <div class="figure-caption">
-              My Reservations page - reservation detail.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              When clicked on any of the reservations on the list, it shows the reservation detail of the selected item.
-            </p>
-            <div class="settings-page-light-theme reserve-page-reserve-removed-light-theme">
-              <div class="settings-page-dark-theme reserve-page-reserve-removed-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <div class="figure-caption">
+                My Reservations page - full list.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
               </div>
-            </div>
-            <div class="figure-caption">
-              My Reservations page - reservation removed.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              User can remove a selected reservation by clicking on the <b>Remove</b> button from the reservation detail dialog.
-              A toast displays the status of the action performed when the selected reservation is removed from the list.
-            </p>
-            <div class="settings-page-light-theme reserve-page-removed-restored-light-theme">
-              <div class="settings-page-dark-theme reserve-page-removed-restored-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <p>
+                This shows basic layout of a list of full reservations.
+              </p>
+              <div class="settings-page-light-theme reserve-page-reserve-detail-light-theme">
+                <div class="settings-page-dark-theme reserve-page-reserve-detail-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
               </div>
+              <div class="figure-caption">
+                My Reservations page - reservation detail.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
+              </div>
+              <p>
+                When clicked on any of the reservations on the list, it shows the reservation detail of the selected item.
+              </p>
+              <div class="settings-page-light-theme reserve-page-reserve-removed-light-theme">
+                <div class="settings-page-dark-theme reserve-page-reserve-removed-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
+              </div>
+              <div class="figure-caption">
+                My Reservations page - reservation removed.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
+              </div>
+              <p>
+                User can remove a selected reservation by clicking on the <b>Remove</b> button from the reservation detail dialog.
+                A toast displays the status of the action performed when the selected reservation is removed from the list.
+              </p>
+              <div class="settings-page-light-theme reserve-page-removed-restored-light-theme">
+                <div class="settings-page-dark-theme reserve-page-removed-restored-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
+              </div>
+              <div class="figure-caption">
+                My Reservations page - undo removed reservation.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
+              </div>
+              <p>
+                However, the removed reservation can be recovered within a stipulated period of time after the removal occurs by clicking on the <b>Undo</b> button at the toast displayed on the screen.
+                When a reservation is recovered from removal, a toast displays the result of the undo action performed.
+              </p>
             </div>
-            <div class="figure-caption">
-              My Reservations page - undo removed reservation.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              However, the removed reservation can be recovered within a stipulated period of time after the removal occurs by clicking on the <b>Undo</b> button at the toast displayed on the screen.
-              When a reservation is recovered from removal, a toast displays the result of the undo action performed.
-            </p>
-          </div>
-        </neon-animatable>
+          </neon-animatable>
+        </template>
 
-        <neon-animatable page="search">
-          <div class="wk-container">
-            <div class="settings-page-light-theme search-page-light-theme">
-              <div class="settings-page-dark-theme search-page-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+        <template is="dom-if" if="[[_searchOpened]]" restamp="true" strip-whitespace is-page="search" on-dom-change="_onOpened">
+          <neon-animatable page="search">
+            <div class="wk-container">
+              <div class="settings-page-light-theme search-page-light-theme">
+                <div class="settings-page-dark-theme search-page-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
               </div>
-            </div>
-            <div class="figure-caption">
-              Search &amp; Reserve page.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              By default, this page is revealed when user is logged in.
-              User can search for empty room for reservation in this page with a number of criteria.
-            </p>
-            <div class="settings-page-light-theme search-page-datepicker-light-theme">
-              <div class="settings-page-dark-theme search-page-datepicker-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <div class="figure-caption">
+                Search &amp; Reserve page.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
               </div>
-            </div>
-            <div class="figure-caption">
-              Search &amp; Reserve page - datepicker.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              Datepicker layout to select a date for starting date and ending date.
-            </p>
-            <div class="settings-page-light-theme search-page-timepicker-light-theme">
-              <div class="settings-page-dark-theme search-page-timepicker-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <p>
+                By default, this page is revealed when user is logged in.
+                User can search for empty room for reservation in this page with a number of criteria.
+              </p>
+              <div class="settings-page-light-theme search-page-datepicker-light-theme">
+                <div class="settings-page-dark-theme search-page-datepicker-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
               </div>
-            </div>
-            <div class="figure-caption">
-              Search &amp; Reserve page - timepicker.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              Timepicker layout to select a starting time and ending time.
-            </p>
-            <div class="settings-page-light-theme search-page-site-select-light-theme">
-              <div class="settings-page-dark-theme search-page-site-select-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <div class="figure-caption">
+                Search &amp; Reserve page - datepicker.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
               </div>
-            </div>
-            <div class="figure-caption">
-              Search &amp; Reserve page - site selection.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              Site selection dialog to select a site.
-            </p>
-            <div class="settings-page-light-theme search-page-floor-select-light-theme">
-              <div class="settings-page-dark-theme search-page-floor-select-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <p>
+                Datepicker layout to select a date for starting date and ending date.
+              </p>
+              <div class="settings-page-light-theme search-page-timepicker-light-theme">
+                <div class="settings-page-dark-theme search-page-timepicker-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
               </div>
-            </div>
-            <div class="figure-caption">
-              Search &amp; Reserve page - floor selection.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              Floor selection dialog to select a floor provided a site has been selected.
-              Some floors are disabled for selection as they are not present at the selected site.
-            </p>
-            <div class="settings-page-light-theme search-page-more-options-light-theme">
-              <div class="settings-page-dark-theme search-page-more-options-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <div class="figure-caption">
+                Search &amp; Reserve page - timepicker.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
               </div>
-            </div>
-            <div class="figure-caption">
-              Search &amp; Reserve page - click for more criteria.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              There is more options column for less frequently used criteria.
-              Click on it to expand the list for more options in filtering the result.
-            </p>
-            <div class="settings-page-light-theme search-page-search-result-light-theme">
-              <div class="settings-page-dark-theme search-page-search-result-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <p>
+                Timepicker layout to select a starting time and ending time.
+              </p>
+              <div class="settings-page-light-theme search-page-site-select-light-theme">
+                <div class="settings-page-dark-theme search-page-site-select-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
               </div>
-            </div>
-            <div class="figure-caption">
-              Search &amp; Reserve page - search result.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              Searh result is displayed after the filtered result returns from the backend server.
-            </p>
-            <div class="settings-page-light-theme search-page-bottom-sheet-light-theme">
-              <div class="settings-page-dark-theme search-page-bottom-sheet-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <div class="figure-caption">
+                Search &amp; Reserve page - site selection.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
               </div>
-            </div>
-            <div class="figure-caption">
-              Search &amp; Reserve page - bottom sheet.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              Click on each result to directly display the room information or click on the rightmost icon button that can be found on each result for more hidden options.
-            </p>
-            <div class="settings-page-light-theme search-page-room-info-light-theme">
-              <div class="settings-page-dark-theme search-page-room-info-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <p>
+                Site selection dialog to select a site.
+              </p>
+              <div class="settings-page-light-theme search-page-floor-select-light-theme">
+                <div class="settings-page-dark-theme search-page-floor-select-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
               </div>
-            </div>
-            <div class="figure-caption">
-              Search &amp; Reserve page - room info dialog.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              This shows how room information of the selected result is listed.
-            </p>
-            <div class="settings-page-light-theme search-page-reserve-room-dialog-light-theme">
-              <div class="settings-page-dark-theme search-page-reserve-room-dialog-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <div class="figure-caption">
+                Search &amp; Reserve page - floor selection.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
               </div>
-            </div>
-            <div class="figure-caption">
-              Search &amp; Reserve page - loading screen while reserving a room.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              Loading screen displays while reserving a room.
-            </p>
-            <div class="settings-page-light-theme search-page-reserve-room-detail-light-theme">
-              <div class="settings-page-dark-theme search-page-reserve-room-detail-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <p>
+                Floor selection dialog to select a floor provided a site has been selected.
+                Some floors are disabled for selection as they are not present at the selected site.
+              </p>
+              <div class="settings-page-light-theme search-page-more-options-light-theme">
+                <div class="settings-page-dark-theme search-page-more-options-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
               </div>
-            </div>
-            <div class="figure-caption">
-              Search &amp; Reserve page - modify reservation detail before committing.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              When the room is reserved, this dialog appears to allow user to modify any values of the reservation.
-              It comes with default values but user can change them at will before committing.
-            </p>
-            <div class="settings-page-light-theme search-page-room-reserved-light-theme">
-              <div class="settings-page-dark-theme search-page-room-reserved-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <div class="figure-caption">
+                Search &amp; Reserve page - click for more criteria.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
               </div>
+              <p>
+                There is more options column for less frequently used criteria.
+                Click on it to expand the list for more options in filtering the result.
+              </p>
+              <div class="settings-page-light-theme search-page-search-result-light-theme">
+                <div class="settings-page-dark-theme search-page-search-result-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
+              </div>
+              <div class="figure-caption">
+                Search &amp; Reserve page - search result.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
+              </div>
+              <p>
+                Searh result is displayed after the filtered result returns from the backend server.
+              </p>
+              <div class="settings-page-light-theme search-page-bottom-sheet-light-theme">
+                <div class="settings-page-dark-theme search-page-bottom-sheet-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
+              </div>
+              <div class="figure-caption">
+                Search &amp; Reserve page - bottom sheet.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
+              </div>
+              <p>
+                Click on each result to directly display the room information or click on the rightmost icon button that can be found on each result for more hidden options.
+              </p>
+              <div class="settings-page-light-theme search-page-room-info-light-theme">
+                <div class="settings-page-dark-theme search-page-room-info-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
+              </div>
+              <div class="figure-caption">
+                Search &amp; Reserve page - room info dialog.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
+              </div>
+              <p>
+                This shows how room information of the selected result is listed.
+              </p>
+              <div class="settings-page-light-theme search-page-reserve-room-dialog-light-theme">
+                <div class="settings-page-dark-theme search-page-reserve-room-dialog-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
+              </div>
+              <div class="figure-caption">
+                Search &amp; Reserve page - loading screen while reserving a room.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
+              </div>
+              <p>
+                Loading screen displays while reserving a room.
+              </p>
+              <div class="settings-page-light-theme search-page-reserve-room-detail-light-theme">
+                <div class="settings-page-dark-theme search-page-reserve-room-detail-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
+              </div>
+              <div class="figure-caption">
+                Search &amp; Reserve page - modify reservation detail before committing.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
+              </div>
+              <p>
+                When the room is reserved, this dialog appears to allow user to modify any values of the reservation.
+                It comes with default values but user can change them at will before committing.
+              </p>
+              <div class="settings-page-light-theme search-page-room-reserved-light-theme">
+                <div class="settings-page-dark-theme search-page-room-reserved-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
+              </div>
+              <div class="figure-caption">
+                Search &amp; Reserve page - room reserved toast.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
+              </div>
+              <p>
+                Toast displays when reservation of the selected room is saved at the backend server and at the logged in user's account.
+              </p>
             </div>
-            <div class="figure-caption">
-              Search &amp; Reserve page - room reserved toast.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              Toast displays when reservation of the selected room is saved at the backend server and at the logged in user's account.
-            </p>
-          </div>
-        </neon-animatable>
+          </neon-animatable>
+        </template>
 
-        <neon-animatable page="current">
-          <div class="wk-container">
-            <div class="settings-page-light-theme current-page-light-theme">
-              <div class="settings-page-dark-theme current-page-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+        <template is="dom-if" if="[[_currentOpened]]" restamp="true" strip-whitespace is-page="current" on-dom-change="_onOpened">
+          <neon-animatable page="current">
+            <div class="wk-container">
+              <div class="settings-page-light-theme current-page-light-theme">
+                <div class="settings-page-dark-theme current-page-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
               </div>
-            </div>
-            <div class="figure-caption">
-              Current Reservations page.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              By default, the first site is selected and all floors of that selected site is listed.
-              <b>Current Reservations</b> page only shows reservations an hour before the reserved time on weekdays.
-            </p>
-            <div class="settings-page-light-theme current-page-weekends-light-theme">
-              <div class="settings-page-dark-theme current-page-weekends-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <div class="figure-caption">
+                Current Reservations page.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
               </div>
-            </div>
-            <div class="figure-caption">
-              Current Reservations page - wekeends page.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              Otherwise, it is regarded as empty state and the weekends page displays during weekends.
-            </p>
-            <div class="settings-page-light-theme current-page-room-level-light-theme">
-              <div class="settings-page-dark-theme current-page-room-level-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <p>
+                By default, the first site is selected and all floors of that selected site is listed.
+                <b>Current Reservations</b> page only shows reservations an hour before the reserved time on weekdays.
+              </p>
+              <div class="settings-page-light-theme current-page-weekends-light-theme">
+                <div class="settings-page-dark-theme current-page-weekends-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
               </div>
-            </div>
-            <div class="figure-caption">
-              Current Reservations page - room level.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              When one of the floors listed is clicked, it will navigate to show all the rooms from that selected floor.
-            </p>
-            <div class="settings-page-light-theme current-page-info-level-light-theme">
-              <div class="settings-page-dark-theme current-page-info-level-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <div class="figure-caption">
+                Current Reservations page - wekeends page.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
               </div>
-            </div>
-            <div class="figure-caption">
-              Current Reservations page - info level.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              Click on one of the rooms will navigate to the info level of the selected room where it shows the reservation detail in its simplest form.
-              Click on the buttons on top of the room's name will show the more-in-depth room information and room schedule of all day.
-            </p>
-            <div class="settings-page-light-theme current-page-room-info-light-theme">
-              <div class="settings-page-dark-theme current-page-room-info-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <p>
+                Otherwise, it is regarded as empty state and the weekends page displays during weekends.
+              </p>
+              <div class="settings-page-light-theme current-page-room-level-light-theme">
+                <div class="settings-page-dark-theme current-page-room-level-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
               </div>
-            </div>
-            <div class="figure-caption">
-              Current Reservations page - room info dialog.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              Room information dialog shows the more-in-depth details of the selected room.
-            </p>
-            <div class="settings-page-light-theme current-page-room-schedule-light-theme">
-              <div class="settings-page-dark-theme current-page-room-schedule-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <div class="figure-caption">
+                Current Reservations page - room level.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
               </div>
+              <p>
+                When one of the floors listed is clicked, it will navigate to show all the rooms from that selected floor.
+              </p>
+              <div class="settings-page-light-theme current-page-info-level-light-theme">
+                <div class="settings-page-dark-theme current-page-info-level-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
+              </div>
+              <div class="figure-caption">
+                Current Reservations page - info level.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
+              </div>
+              <p>
+                Click on one of the rooms will navigate to the info level of the selected room where it shows the reservation detail in its simplest form.
+                Click on the buttons on top of the room's name will show the more-in-depth room information and room schedule of all day.
+              </p>
+              <div class="settings-page-light-theme current-page-room-info-light-theme">
+                <div class="settings-page-dark-theme current-page-room-info-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
+              </div>
+              <div class="figure-caption">
+                Current Reservations page - room info dialog.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
+              </div>
+              <p>
+                Room information dialog shows the more-in-depth details of the selected room.
+              </p>
+              <div class="settings-page-light-theme current-page-room-schedule-light-theme">
+                <div class="settings-page-dark-theme current-page-room-schedule-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
+              </div>
+              <div class="figure-caption">
+                Current Reservations page - room schedule dialog.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
+              </div>
+              <p>
+                Room schedule dialog shows the reservation status of the selected room of all day.
+              </p>
             </div>
-            <div class="figure-caption">
-              Current Reservations page - room schedule dialog.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              Room schedule dialog shows the reservation status of the selected room of all day.
-            </p>
-          </div>
-        </neon-animatable>
+          </neon-animatable>
+        </template>
 
-        <neon-animatable page="room">
-          <div class="wk-container">
-            <div class="settings-page-light-theme room-info-site-level-light-theme">
-              <div class="settings-page-dark-theme room-info-site-level-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+        <template is="dom-if" if="[[_roomOpened]]" restamp="true" strip-whitespace is-page="room" on-dom-change="_onOpened">
+          <neon-animatable page="room">
+            <div class="wk-container">
+              <div class="settings-page-light-theme room-info-site-level-light-theme">
+                <div class="settings-page-dark-theme room-info-site-level-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
               </div>
-            </div>
-            <div class="figure-caption">
-              Room Information page.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              Room Information page is open to the public where login is not required.
-              Click on <b>Explore</b> button to view all floors available at selected site.
-            </p>
-            <div class="settings-page-light-theme room-info-floor-level-light-theme">
-              <div class="settings-page-dark-theme room-info-floor-level-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <div class="figure-caption">
+                Room Information page.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
               </div>
-            </div>
-            <div class="figure-caption">
-              Room Information page - Floor Level.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              In the subsequent page, the selected site name is shown at the toolbar.
-              Click on the button with a cross icon to close the selected site will direct you to the main page for site selection.
-              Click on <b>Explore</b> button to view all rooms available at the selected floor.
-            </p>
-            <div class="settings-page-light-theme room-info-room-level-light-theme">
-              <div class="settings-page-dark-theme room-info-room-level-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <p>
+                Room Information page is open to the public where login is not required.
+                Click on <b>Explore</b> button to view all floors available at selected site.
+              </p>
+              <div class="settings-page-light-theme room-info-floor-level-light-theme">
+                <div class="settings-page-dark-theme room-info-floor-level-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
               </div>
-            </div>
-            <div class="figure-caption">
-              Room Information page - Room Level.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              In the selected floor page, the selected floor name is displayed at the toolbar.
-              Here lists all the rooms located at that selected floor.
-              Click on <b>Explore</b> button to further reveal the detailed information of an individual room.
-            </p>
-            <div class="settings-page-light-theme room-info-room-info-light-theme">
-              <div class="settings-page-dark-theme room-info-room-info-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <div class="figure-caption">
+                Room Information page - Floor Level.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
               </div>
+              <p>
+                In the subsequent page, the selected site name is shown at the toolbar.
+                Click on the button with a cross icon to close the selected site will direct you to the main page for site selection.
+                Click on <b>Explore</b> button to view all rooms available at the selected floor.
+              </p>
+              <div class="settings-page-light-theme room-info-room-level-light-theme">
+                <div class="settings-page-dark-theme room-info-room-level-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
+              </div>
+              <div class="figure-caption">
+                Room Information page - Room Level.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
+              </div>
+              <p>
+                In the selected floor page, the selected floor name is displayed at the toolbar.
+                Here lists all the rooms located at that selected floor.
+                Click on <b>Explore</b> button to further reveal the detailed information of an individual room.
+              </p>
+              <div class="settings-page-light-theme room-info-room-info-light-theme">
+                <div class="settings-page-dark-theme room-info-room-info-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
+              </div>
+              <div class="figure-caption">
+                Room Information page - Detailed information for an individual selected room.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
+              </div>
+              <p>
+                The room information details the site name the room located at, which floor it's at, the access tab to show whether the room is restricted to only designated personel for reservations, the (maximum) capacity this room can fit, remarks if any and last but not least the facilities that room equips with.
+              </p>
             </div>
-            <div class="figure-caption">
-              Room Information page - Detailed information for an individual selected room.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              The room information details the site name the room located at, which floor it's at, the access tab to show whether the room is restricted to only designated personel for reservations, the (maximum) capacity this room can fit, remarks if any and last but not least the facilities that room equips with.
-            </p>
-          </div>
-        </neon-animatable>
+          </neon-animatable>
+        </template>
 
-        <neon-animatable page="settings">
-          <div class="wk-container">
-            <div class="settings-page-light-theme">
-              <div class="settings-page-dark-theme" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+        <template is="dom-if" if="[[_settingsOpened]]" restamp="true" strip-whitespace is-page="settings" on-dom-change="_onOpened">
+          <neon-animatable page="settings">
+            <div class="wk-container">
+              <div class="settings-page-light-theme">
+                <div class="settings-page-dark-theme" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
               </div>
-            </div>
-            <div class="figure-caption">
-              Settings page.
-              <br>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              At Settings page, users are allowed to change the theme of the web app.
-              The push notification feature is tied to logged in user's account so logged in user can choose to opt in for push notification for almost instant reminder for their upcoming reservations.
-            </p>
-            <div class="settings-page-light-theme settings-page-theme-change">
-              <div class="settings-page-dark-theme settings-page-theme-change" is-slider-img>
-                <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+              <div class="figure-caption">
+                Settings page.
+                <br>
+                Slide left or right to see the difference between two different themed pages.
               </div>
+              <p>
+                At Settings page, users are allowed to change the theme of the web app.
+                The push notification feature is tied to logged in user's account so logged in user can choose to opt in for push notification for almost instant reminder for their upcoming reservations.
+              </p>
+              <div class="settings-page-light-theme settings-page-theme-change">
+                <div class="settings-page-dark-theme settings-page-theme-change" is-slider-img>
+                  <paper-fab class="comparison-slider" icon="icons:compare-arrows" on-track="_onTrack"></paper-fab>
+                </div>
+              </div>
+              <div class="figure-caption">
+                Choose between two different themes: <b>Dark theme</b> or <b>Light theme</b>.
+                <b></b>
+                Slide left or right to see the difference between two different themed pages.
+              </div>
+              <p>
+                By default, the settings are synced with logged in user's account.
+                In order to show what the web app is capable of, basic settings is shown as such theme changing is exposed to give anonymous users a better view of how things work but the settings will be reset once the web app is closed or no longer active.
+              </p>
             </div>
-            <div class="figure-caption">
-              Choose between two different themes: <b>Dark theme</b> or <b>Light theme</b>.
-              <b></b>
-              Slide left or right to see the difference between two different themed pages.
-            </div>
-            <p>
-              By default, the settings are synced with logged in user's account.
-              In order to show what the web app is capable of, basic settings is shown as such theme changing is exposed to give anonymous users a better view of how things work but the settings will be reset once the web app is closed or no longer active.
-            </p>
-          </div>
-        </neon-animatable>
+          </neon-animatable>
+        </template>
 
-        <neon-animatable page="about">
-          <div class="wk-container" id="aboutPage">
-            <div class="tools">
-              <div class="">
-                Built with:
-              </div>
-              <div class="tools-col">
-                <a href="https://babeljs.io/" class="babel" target="_blank"></a>
-                <a href="https://www.cloudflare.com/" class="cloudflare" target="_blank"></a>
-                <a href="http://www.ecma-international.org/ecma-262/6.0/" class="es6" target="_blank"></a>
-                <a href="http://expressjs.com/" class="express" target="_blank"></a>
-                <a href="https://www.firebase.com/" class="firebase" target="_blank"></a>
-                <a href="http://gulpjs.com/" class="gulp" target="_blank"></a>
-                <a href="https://github.com/" class="github" target="_blank"></a>
-                <a href="https://letsencrypt.org/" class="letsencrypt" target="_blank"></a>
-                <a href="https://lodash.com/" class="lodash" target="_blank"></a>
-                <a href="http://nginx.org/" class="nginx" target="_blank"></a>
-                <a href="https://nodejs.org/en/" class="nodejs" target="_blank"></a>
-                <a href="https://www.polymer-project.org/1.0/" class="polymer" target="_blank"></a>
-                <a href="https://travis-ci.org/" class="travis-ci" target="_blank"></a>
-                <a href="http://webcomponents.org/" class="webcomponents" target="_blank"></a>
-              </div>
-            </div>
+        <template is="dom-if" if="[[_aboutOpened]]" restamp="true" strip-whitespace is-page="about" on-dom-change="_onOpened">
+          <neon-animatable page="about">
+            <div class="wk-container" id="aboutPage">
+              <div class="about-title">About</div>
 
-            <div class="repo">
-              <div class="">
-                The source codes are made available under the MIT license at Github.
+              <div class="tools">
+                <div class="">
+                  Built with:
+                </div>
+                <div class="tools-col">
+                  <a href="https://babeljs.io/" class="babel" target="_blank"></a>
+                  <a href="https://www.cloudflare.com/" class="cloudflare" target="_blank"></a>
+                  <a href="http://www.ecma-international.org/ecma-262/6.0/" class="es6" target="_blank"></a>
+                  <a href="http://expressjs.com/" class="express" target="_blank"></a>
+                  <a href="https://www.firebase.com/" class="firebase" target="_blank"></a>
+                  <a href="http://gulpjs.com/" class="gulp" target="_blank"></a>
+                  <a href="https://github.com/" class="github" target="_blank"></a>
+                  <a href="https://letsencrypt.org/" class="letsencrypt" target="_blank"></a>
+                  <a href="https://lodash.com/" class="lodash" target="_blank"></a>
+                  <a href="http://nginx.org/" class="nginx" target="_blank"></a>
+                  <a href="https://nodejs.org/en/" class="nodejs" target="_blank"></a>
+                  <a href="https://www.polymer-project.org/1.0/" class="polymer" target="_blank"></a>
+                  <a href="https://travis-ci.org/" class="travis-ci" target="_blank"></a>
+                  <a href="http://webcomponents.org/" class="webcomponents" target="_blank"></a>
+                </div>
               </div>
-              <br>
-              Links to the Github repo/ org:
-              <a href="https://github.com/semafloor" target="_blank">Semafloor @ Github</a>
-              <br>
-              It is worth noting that the Polymer elements listed below are specially made for this project:
-              <a href="https://github.com/motss/compound-timepicker" target="_blank">compound-timepicker</a>
-              <a href="https://github.com/motss/jv-datepicker" target="_blank">jv-datepicker</a>
-            </div>
 
-            <div class="author">
-              Find me at:
-              <div class="author-col">
-                <div class="logo github"></div>
-                <a href="https://github.com/motss" target="_blank">@motss</a>
+              <div class="repo">
+                <div class="">
+                  The source codes are made available under the MIT license at Github.
+                </div>
+                <br>
+                Links to the Github repo/ org:
+                <a href="https://github.com/semafloor" target="_blank">Semafloor @ Github</a>
+                <br>
+                It is worth noting that the Polymer elements listed below are specially made for this project:
+                <a href="https://github.com/motss/compound-timepicker" target="_blank">compound-timepicker</a>
+                <a href="https://github.com/motss/jv-datepicker" target="_blank">jv-datepicker</a>
               </div>
-              <div class="author-col">
-                <div class="logo twitter"></div>
-                <a href="https://twitter.com/igarshmyb" target="_blank">@igarshmyb</a>
-              </div>
-              <div class="author-col">
-                <div class="logo google-plus"></div>
-                <a href="https://plus.google.com/103450531185198654718" target="_blank">+igarashimiyabi</a>
-              </div>
-            </div>
 
-            <div class="footer">
-              Made with <div class="logo love">❤️</div> and <div class="logo polymer"></div>.
+              <div class="author">
+                Find me at:
+                <div class="author-col">
+                  <div class="logo github"></div>
+                  <a href="https://github.com/motss" target="_blank">@motss</a>
+                </div>
+                <div class="author-col">
+                  <div class="logo twitter"></div>
+                  <a href="https://twitter.com/igarshmyb" target="_blank">@igarshmyb</a>
+                </div>
+                <div class="author-col">
+                  <div class="logo google-plus"></div>
+                  <a href="https://plus.google.com/103450531185198654718" target="_blank">+igarashimiyabi</a>
+                </div>
+              </div>
+
+              <div class="footer">
+                Made with <div class="logo love">❤️</div> and <div class="logo polymer"></div>.
+              </div>
             </div>
-          </div>
-        </neon-animatable>
+          </neon-animatable>
+        </template>
 
       </neon-animated-pages>
     </div>
@@ -1792,6 +1857,9 @@
            * Set theme for the element.
            */
           themeSelected: String,
+          /**
+           * animation configuration of this element.
+           */
           animationConfig: {
             type: Object,
             value: function() {
@@ -1799,8 +1867,7 @@
                 'entry': [{
                   name: 'cascaded-animation',
                   animation: 'scale-up-animation',
-                  axis: 'x',
-                  nodeDelay: 50,
+                  axis: 'x'
                 }, {
                   name: 'cascaded-animation',
                   animation: 'fade-in-animation',
@@ -1809,52 +1876,44 @@
                   }
                 }],
                 'introEntry': [{
-                  name: 'fade-in-animation',
-                  node: this.$.introFakeToolbar
+                  name: 'fade-in-animation'
                 }, {
                   name: 'slide-from-bottom-animation',
-                  node: this.$.introContent,
                   timing: {
                     delay: 150
                   }
                 }],
                 'frontendEntry': [{
-                  name: 'fade-in-animation',
-                  node: this.$.frontendFakeToolbar
+                  name: 'fade-in-animation'
                 }, {
                   name: 'slide-from-bottom-animation',
-                  node: this.$.frontendContent,
                   timing: {
                     delay: 150
                   }
                 }],
                 'backendEntry': [{
-                  name: 'fade-in-animation',
-                  node: this.$.backendFakeToolbar
+                  name: 'fade-in-animation'
                 }, {
                   name: 'slide-from-bottom-animation',
-                  node: this.$.backendContent,
                   timing: {
                     delay: 150
                   }
                 }],
                 'walkthroughsEntry': [{
-                  name: 'fade-in-animation',
-                  node: this.$.walkthroughsFakeToolbar
+                  name: 'fade-in-animation'
                 }, {
                   name: 'slide-from-bottom-animation',
-                  node: this.$.walkthroughsContent,
                   timing: {
                     delay: 150
                   }
                 }],
                 'aboutEntry': [{
-                  name: 'fade-in-animation',
-                  node: this.$.aboutPage
+                  name: 'fade-in-animation'
                 }]
               };
             }
           },
+
           _page: {
             type: String,
             value: 'home'
@@ -1864,22 +1923,27 @@
           _sliderImgLeft: Number,
           _hasDeRippled: Boolean,
 
-        },
+          _isHomeHeader: Boolean,
+          _isWalkthroughs: Boolean,
+          _walkthroughsTitle: String,
 
-        listeners: {
-          'profileWk.touchmove': '_deRipple',
-          'reserveWk.touchmove': '_deRipple',
-          'searchWk.touchmove': '_deRipple',
-          'currentWk.touchmove': '_deRipple',
-          'roomWk.touchmove': '_deRipple',
-          'settingsWk.touchmove': '_deRipple',
+          _readyToCloseWk: Boolean,
+          _readyToCloseHomeHeader: Boolean,
 
-          'profileWk.up': '_deRipple',
-          'reserveWk.up': '_deRipple',
-          'searchWk.up': '_deRipple',
-          'currentWk.up': '_deRipple',
-          'roomWk.up': '_deRipple',
-          'settingsWk.up': '_deRipple',
+          _introOpened: Boolean,
+          _frontendOpened: Boolean,
+          _backendOpened: Boolean,
+          _walkthroughsOpened: Boolean,
+          _aboutOpened: Boolean,
+
+          _loginOpened: Boolean,
+          _profileOpened: Boolean,
+          _reserveOpened: Boolean,
+          _searchOpened: Boolean,
+          _currentOpened: Boolean,
+          _roomOpened: Boolean,
+          _settingsOpened: Boolean,
+
         },
 
         observers: [
@@ -1894,6 +1958,7 @@
             this.fire('material-animation-config-set');
           });
         },
+
         // on-* type methods.
         _goPage: function(ev) {
           this.debounce('_goPage', function() {
@@ -1903,14 +1968,16 @@
 
               if (_target && _target.tagName === 'DIV' && _target.hasAttribute('sub-title')) {
                 var _subTitle = _target.getAttribute('sub-title');
-                // Set home header title.
-                this._setHomeHeader(_subTitle);
+                var _subTitleOpened = '_' + _subTitle + 'Opened';
 
-                this.set('_page', _subTitle);
-                // Reset scrollTop.
-                this.scrollTop = 0;
-                this.cancelAnimation();
-                this.playAnimation(_subTitle + 'Entry');
+                if (!this[_subTitleOpened]) {
+                  this.set(_subTitleOpened, !0);
+                }else {
+                  this.set('_page', _subTitle);
+                  this.cancelAnimation();
+                  this.playAnimation(_subTitle + 'Entry');
+                }
+
                 return;
               }
 
@@ -1923,21 +1990,23 @@
                 }
                 if (_target && _target.hasAttribute('sub-title')) {
                   var _subTitle = _target.getAttribute('sub-title');
+                  var _subTitleOpened = '_' + _subTitle + 'Opened';
 
-                  // Set home header title.
-                  this._setHomeHeader(_subTitle);
-                  // set new header height in page.
-                  this.toggleClass('is-walkthrough', !0, this);
-                  // Set new background color for about page.
-                  if (_subTitle === 'about') {
-                    this.fire('set-new-header-background', 'is-about-page');
+                  if (!this[_subTitleOpened]) {
+                    this.set(_subTitleOpened, !0);
+                  }else {
+                    this.set('_page', _subTitle);
+                    // Set home header.
+                    this._setHomeHeader();
+
+                    // Set new background color for about page.
+                    if (_subTitle === 'about') {
+                      this.fire('set-new-header-background', 'is-about-page');
+                    }
+
+                    this.cancelAnimation();
+                    this.playAnimation(_subTitle + 'Entry');
                   }
-
-                  this.set('_page', _subTitle);
-                  // Reset scrollTop.
-                  this.scrollTop = 0;
-                  this.cancelAnimation();
-                  this.playAnimation(_subTitle + 'Entry');
                 }
                 this.set('_readyToGoPage', !1);
               }
@@ -1970,13 +2039,19 @@
 
                 if (_target && _target.hasAttribute('wk-title')) {
                   var _wkTitle = _target.getAttribute('wk-title');
+                  var _wkTitleOpened = '_' + _wkTitle + 'Opened';
 
                   this._computeStepperCls(_target, _wkTitle);
 
                   this._setWkHeader(_wkTitle);
-                  this.set('_page', _wkTitle);
-                  // Reset scrollTop;
-                  this.scrollTop = 0;
+
+                  if (!this[_wkTitleOpened]) {
+                    this.set(_wkTitleOpened, !0);
+                  }else {
+                    this.set('_page', _wkTitle);
+                    // Reset scrollTop;
+                    this.scrollTop = 0;
+                  }
                 }
 
                 this.set('_readyToGoWk', !1);
@@ -1991,8 +2066,6 @@
               var _target = ev.currentTarget;
               var _sliderImg = _target.parentElement.getBoundingClientRect().left;
 
-              console.dir(Polymer.dom(ev).localTarget);
-              console.dir(Polymer.dom(ev).rootTarget);
               // TODO: To be removed. Debugging purpose.
               if (_target.tagName !== 'PAPER-FAB') {
                 console.warn('touch sourceEvent is not PAPER-FAB.');
@@ -2042,31 +2115,101 @@
             _ripple.upAction();
           }
         },
+        _onOpened: function(ev) {
+          if (ev.target.if) {
+            var _target = Polymer.dom(ev).rootTarget;
 
+            if (_target && _target.hasAttribute('is-page')) {
+              var _subTitle = _target.getAttribute('is-page');
+
+              // Set animation config's node dynamically.
+              switch (_subTitle) {
+                case 'intro':
+                case 'frontend':
+                case 'backend':
+                case 'walkthroughs':
+                  var _animName = _subTitle + 'Entry';
+                  var _nodeOne = this.$$('#' + _subTitle + 'FakeToolbar');
+                  var _nodeTwo = this.$$('#' + _subTitle + 'Content');
+                  this._setHomeAnimationConfig(_animName, [_nodeOne, _nodeTwo]);
+
+                  this.set('_page', _subTitle);
+                  // Set home header.
+                  this._setHomeHeader();
+
+                  this.cancelAnimation();
+                  this.playAnimation(_subTitle + 'Entry');
+                  break;
+                case 'about':
+                  var _node = this.$$('#aboutPage');
+                  this._setHomeAnimationConfig('aboutEntry', [_node]);
+
+                  this.set('_page', _subTitle);
+                  // Set home header.
+                  this._setHomeHeader();
+                  // Set new background color for about page.
+                  this.fire('set-new-header-background', 'is-about-page');
+
+                  this.cancelAnimation();
+                  this.playAnimation(_subTitle + 'Entry');
+                  break;
+                case 'login':
+                case 'profile':
+                case 'reserve':
+                case 'search':
+                case 'current':
+                case 'room':
+                case 'settings':
+                  this.set('_page', _subTitle);
+                  // Reset scrollTop;
+                  this.scrollTop = 0;
+                default:
+                  console.warn('Error', _subTitle);
+              }
+            }
+          }
+        },
+
+        // methods that produce new result.
         _setHomeHeader: function(_subTitle) {
-          var _headerTitleIdx = [ 'intro', 'frontend', 'backend', 'walkthroughs', 'about' ].indexOf(_subTitle);
-          var _headerTitle = [
-            'Introduction to Semafloor',
-            'How it\'s built (Frontend edition)',
-            'How it\'s built (Backend edition)',
-            'Walkthroughs',
-            'About'
-          ][_headerTitleIdx];
+          // var _headerTitleIdx = [ 'intro', 'frontend', 'backend', 'walkthroughs', 'about' ].indexOf(_subTitle);
+          // var _headerTitle = [
+          //   'Introduction to Semafloor',
+          //   'How it\'s built (Frontend edition)',
+          //   'How it\'s built (Backend edition)',
+          //   'Walkthroughs',
+          //   'About'
+          // ][_headerTitleIdx];
 
           // Fire event to change header.
-          this.fire('set-home-header', {title: _headerTitle});
-        },
-        closeHomeHeader: function() {
-          // Set new header when home header is gone.
-          this.toggleClass('is-walkthrough', !1, this);
+          // this.fire('set-home-header', {title: _headerTitle});
 
-          this.set('_page', 'home');
-          this.cancelAnimation();
-          this.playAnimation('entry');
+          this.fire('set-home-header');
+          this.set('_isHomeHeader', !0);
+        },
+        _closeHomeHeader: function(ev) {
+          this.debounce('_closeHomeHeader', function() {
+            var _type = ev.type;
+
+            if (_type === 'tap') {
+              this.set('_readyToCloseHomeHeader', !0);
+            }else {
+              if (this._readyToCloseHomeHeader) {
+                this.cancelAnimation();
+                this.playAnimation('entry');
+
+                this.set('_page', 'home');
+                this.set('_isHomeHeader', !1);
+                this.fire('close-home-header');
+
+                this.set('_readyToCloseHomeHeader', !1);
+              }
+            }
+          }, 1);
         },
         _setWkHeader: function(_wkTitle) {
           var _wkTitleIdx = [ 'login', 'profile', 'reserve', 'search', 'current', 'room', 'settings' ].indexOf(_wkTitle);
-          var _headerTitle = [
+          var _walkthroughsTitle = [
             'Walkthroughs: Login page',
             'Walkthroughs: My Profile',
             'Walkthroughs: My Reservations',
@@ -2076,14 +2219,28 @@
             'Walkthroughs: Settings',
           ][_wkTitleIdx];
 
-          this.fire('set-wk-header', {title: _headerTitle});
+          this.set('_isWalkthroughs', !0);
+          this.set('_isHomeHeader', !1);
+          this.set('_walkthroughsTitle', _walkthroughsTitle);
         },
-        closeWk: function() {
-          this.set('_page', 'walkthroughs');
-          // Reset scrollTop.
-          this.scrollTop = 0;
-          this.cancelAnimation();
-          this.playAnimation('walkthroughsEntry');
+        _closeWk: function(ev) {
+          this.debounce('_closeWk', function() {
+            var _type = ev.type;
+
+            if (_type === 'tap') {
+              this.set('_readyToCloseWk', !0);
+            }else {
+              if (this._readyToCloseWk) {
+                this.set('_page', 'walkthroughs');
+                this.set('_isWalkthroughs', !1);
+                this.set('_isHomeHeader', !0);
+                this.set('_readyToCloseWk', !1);
+
+                this.cancelAnimation();
+                this.playAnimation('walkthroughsEntry');
+              }
+            }
+          }, 1);
         },
         _computeStepperCls: function(_target, _wkTitle) {
           var _wkTitles = [ 'login', 'profile', 'reserve', 'search', 'current', 'room', 'settings' ];
@@ -2115,13 +2272,15 @@
             this.fire('update-theme-color', {theme: _themeSelected});
           }
         },
+        // Set animation config's node dynamically.
+        _setHomeAnimationConfig: function(_name, _nodes) {
+          var _nodesLen = _nodes.length;
 
-        // TODO: What is Semafloor - a meeting room booking PWA built with Polymer, Lodash, Polymer, etc as well as what makes a PWA PWA.
-        // TODO: Promote how data in this PWA is synced in real time and this is done possible with Firebase.
-        // TODO: Promote push notification and how it can be enabled.
-        // TODO: Briefly explain how this PWA works.
-        // TODO: Briefly explain how its backend works and it's powered by Nginx, NodeJS and HTTP/2.
-        // TODO: Add in Github repo link to this project and what to expect in future release probably with carbon-route (if any chance).
+          for (var i = 0; i < _nodesLen; i++) {
+            this.animationConfig[_name][i].node = _nodes[i];
+          }
+        },
+
       });
     })();
   </script>
