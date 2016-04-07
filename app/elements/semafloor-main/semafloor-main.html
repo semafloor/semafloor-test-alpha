@@ -605,7 +605,7 @@
 
         // Vulcanize bug? main page attached before native web components logged to console.
         this.async(function() {
-          this.fire('main-page-attached', 'main');
+          this.fire('main-page-attached', { VERSION: '0.3.7' });
         }, 1);
       },
 

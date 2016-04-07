@@ -52,6 +52,8 @@
   document.addEventListener('main-page-attached', function(ev) {
     console.log('%c Running on Polymer v' + Polymer.version + ' ' + '%c For more info, please visit https://www.polymer-project.org/1.0/ ', 'background-color: #E91E63; color: #fff', 'background-color: inherit; color: #03a9f4; font-sylte: italic');
     console.log('%c Running on Lodash v' + _.VERSION + ' ' + '%c For more info, please visit https://lodash.com/', 'background-color: #3f51b5; color: #fff', 'background-color: inherit; color: #03a9f4');
+
+    console.log('%c Running on Semafloor v' + ev.detail.VERSION + ' ', 'background-color: #009688; color: #fff');
     var _mainTel = semafloor.getElementsByTagName('*').length;
     var _allTel = document.getElementsByTagName('*').length;
     console.log('Total element nodes in main page w/ Lazy-Loading:', _mainTel);
