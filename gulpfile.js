@@ -148,7 +148,16 @@ gulp.task('copy', function() {
     'app/bower_components/web-animations-js/web-animations-next-lite.min.js.map'
   ]).pipe(gulp.dest(dist('elements')));
 
-  return merge(app, bower, webAnimations)
+  // Missing service-worker.js from platinum-push-messaging.
+  var pushMessaging = gulp.src([
+    'app/bower_components/platinum-push-messaging/service-worker.js'
+  ]).pipe(gulp.dest(dist('elements')));
+  // Missing app.js from scripts.
+  var missingScript = gulp.src([
+    'app/scripts/app.js'
+  ]).pipe($.uglify()).pipe(gulp.dest(dist('scripts')));
+
+  return merge(app, bower, webAnimations, pushMessaging)
     .pipe($.size({
       title: 'copy'
     }));

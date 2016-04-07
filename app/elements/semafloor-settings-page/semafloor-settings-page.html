@@ -201,7 +201,7 @@
         <div class="push-label">
           Subscribe for reservation reminder
         </div>
-        <paper-toggle-button id="pushToggle" class="push-toggle" checked="{{_pushEnabled}}" disabled="[[_pushSupported]]"></paper-toggle-button>
+        <paper-toggle-button id="pushToggle" class="push-toggle" checked="[[_pushEnabled]]" disabled="[[_pushSupported]]" on-tap="_onToggleChange" on-transitionend="_onToggleChange"></paper-toggle-button>
         <paper-ripple id="toggleRipple"></paper-ripple>
       </div>
 
@@ -222,20 +222,20 @@
       </paper-dialog>
     </template>
 
-    <template is="dom-if" if="[[_revealPushMessaging]]" restamp="true" strip-whitespace on-dom-change="_openPushMessaging">
+    <template is="dom-if" if="[[_revealPushMessaging]]" restamp="true" strip-whitespace>
       <platinum-push-messaging id="semafloorPush"
-        enabled="[[_pushEnabled]]"
-        supported="{{_pushSupported}}"
-        message-url="[[_pushMessageUrl]]"
-        click-url="[[_pushClickUrl]]"
-        title="[[_pushTitle]]"
-        tag="[[_pushTag]]"
-        vibrate="[[_vibratePattern]]"
-        on-platinum-push-messaging-push="_pushNotified"
-        on-platinum-push-messaging-click="_pushClicked"
-        on-platinum-push-messaging-error="_pushError"
-        on-subscription-changed="_pushSubscriptionChanged"
-        on-enabled-changed="_pushEnabledChanged"></platinum-push-messaging>
+      enabled="{{_pushEnabled}}"
+      supported="{{_pushSupported}}"
+      click-url="[[_pushClickUrl]]"
+      message-url="[[_pushMessageUrl]]"
+      title="[[_pushTitle]]"
+      tag="[[_pushTag]]"
+      vibrate="[[_vibratePattern]]"
+      on-platinum-push-messaging-push="_pushNotified"
+      on-platinum-push-messaging-click="_pushClicked"
+      on-platinum-push-messaging-error="_pushError"
+      on-subscription-changed="_pushSubscriptionChanged"
+      on-enabled-changed="_pushEnabledChanged"></platinum-push-messaging>
     </template>
   </template>
   <script>
@@ -313,6 +313,7 @@
 
       observers: [
         '_updateThemeColor(themeSelected)',
+        '_updateMessageUrl(authUser)',
       ],
 
       attached: function() {
@@ -330,6 +331,11 @@
         // via user interaction.
         var _semafloorPush = this.$$('#semafloorPush');
 
+        // No op for _semafloorPush is not yet rendered.
+        if (!_semafloorPush) {
+          return;
+        }
+
         if (_invertedPushEnabled) {
           console.log('You have opted in for push notification!');
           _semafloorPush.enable();
@@ -346,6 +352,10 @@
       },
       _pushError: function(ev) {
         console.log('_pushError', ev);
+        // If error occurs such as 'permission denied', disable push messaging.
+        this.$$('#pushToggle').checked = !1;
+        this.set('_pushEnabled', !1);
+        this.$$('#semafloorPush').disable();
       },
       _pushSubscriptionChanged: function(ev) {
         // GCM always needs the subscriptionId passed separately. Note that as of M45,
@@ -403,7 +413,7 @@
             }
           }
         }).catch(function(error) {
-          console.log(error);
+          console.warn(error);
         });
       },
 
@@ -413,29 +423,27 @@
       _togglePush: function(ev) {
         var _type = ev.type;
 
-        if (_type === 'tap') {
-          // If tap on toggle button, do nothing as this not for toggle button.
-          var _target = Polymer.dom(ev).rootTarget;
-          if (_target && _target.tagName === 'PAPER-TOGGLE-BUTTON') {
-            return;
-          }
-          // Trigger ripple's downAction and toggle push state.
-          this._toggleRipple.downAction();
-          // Trigger _optForPush method to enable/ disable push messaging.
-          if (!this._revealPushMessaging) {
-            this.set('_revealPushMessaging', !0);
+        this.debounce('_togglePush', function() {
+          if (_type === 'tap') {
+            // Trigger ripple's downAction and toggle push state.
+            this._toggleRipple.downAction();
+            this.set('_readyToTogglePush', !0);
           }else {
-            this._optForPush(!this._pushEnabled);
-          }
-          this.set('_readyToTogglePush', !0);
-        }else {
-          if (this._readyToTogglePush) {
-            // Trigger ripple's upAction to finish the effect.
-            this._toggleRipple.upAction();
+            if (this._readyToTogglePush) {
+              // Trigger ripple's upAction to finish the effect.
+              this._toggleRipple.upAction();
+              // If tap on toggle button, do nothing as this not for toggle button.
+              var _target = Polymer.dom(ev).rootTarget;
+              if (_target && _target.tagName === 'PAPER-TOGGLE-BUTTON') {
+                return;
+              }
+              // Trigger _optForPush method to enable/ disable push messaging.
+              this._optForPush(!this._pushEnabled);
 
-            this.set('_readyToTogglePush', !1);
+              this.set('_readyToTogglePush', !1);
+            }
           }
-        }
+        }, 1);
       },
       _openThemeDialog: function(ev) {
         var _type = ev.type;
@@ -475,12 +483,32 @@
           _toggleRipple.upAction();
         }
       },
-      _openPushMessaging: function(ev) {
-        var _target = Polymer.dom(ev).rootTarget;
-
-        if (_target.if) {
-          this._optForPush(!this._pushEnabled);
-        }
+      // Toggle change on toggle button and debounce the signal to prevent spamming.
+      _onToggleChange: function(ev) {
+        var _type = ev.type;
+        this.debounce('_onToggleChange', function() {
+          if (_type === 'tap') {
+            this.set('_readyToTogglePush', !0);
+          }else {
+            if (this._readyToTogglePush) {
+              var _target = this.$.pushToggle;
+              var _checked = _target.checked;
+              if (_checked) {
+                this.$$('#semafloorPush').enable();
+              }else {
+                this.$$('#semafloorPush').disable();
+              }
+              this.set('_readyToTogglePush', !1);
+            }
+          }
+        }, 1);
+      },
+      // Unveil platinum-push-messaging when authUser is not null.
+      _updateMessageUrl: function(_authUser) {
+        // workaround: Set logged in user's email to push messaging's title.
+        this.set('_pushMessageUrl', 'https://semafore.motss.koding.io/notification-data.json/' + encodeURIComponent(_authUser.google.email));
+        // workaround: Reveal push messaging element once _pushMessageUrl is set.
+        this.set('_revealPushMessaging', !0);
       },
 
       /**

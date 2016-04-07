@@ -852,11 +852,6 @@
               });
           }
         });
-
-        // workaround: Set logged in user's email to push messaging's title.
-        this.set('_pushMessageUrl', 'https://semafore.motss.koding.io/notification-data.json/' + encodeURIComponent(_authUser.google.email));
-        // workaround: Reveal push messaging element once _pushMessageUrl is set.
-        this.set('_revealPushMessaging', !0);
       },
 
       _loginWithGoogle: function() {
@@ -979,6 +974,7 @@
         this.toggleClass(ev.detail, !0, this.$.header);
       },
 
+      // TODO: Let's say push notification is enabled from device A, however due to account sync, on device B push notification is enabled by default, device B won't receive push notification.
       // TODO: Rewrite all date into slash from dash.
       // TODO: Awaiting Polymer to support native customProp (tabs' selection bar needs polyfill).
       // TODO: Add Semafloor logo maybe?
